@@ -21,6 +21,12 @@ const GRIEF_TILES = [
   { href: '/grief/remember', icon: '📷', label: 'Remember', sub: 'Photos, stories, music' },
 ];
 
+function trialDaysLeft(trialEndsAt: Date | string | null): number | null {
+  if (!trialEndsAt) return null;
+  const ms = new Date(trialEndsAt).getTime() - Date.now();
+  return ms > 0 ? Math.ceil(ms / (1000 * 60 * 60 * 24)) : 0;
+}
+
 export default async function DashboardPage() {
   const { userId } = await auth();
   if (!userId) redirect('/sign-in');
@@ -32,6 +38,8 @@ export default async function DashboardPage() {
   const isPlanning = acct.path === 'planning';
   const firstName = user?.firstName ?? acct.subjectName?.split(' ')[0] ?? 'there';
   const isPaid = billing?.planTier === 'guide';
+  const daysLeft = isPlanning && !isPaid ? trialDaysLeft(billing?.trialEndsAt ?? null) : null;
+  const trialExpired = daysLeft !== null && daysLeft <= 0;
   const tiles = isPlanning ? PLANNING_TILES : GRIEF_TILES;
 
   return (
@@ -58,32 +66,50 @@ export default async function DashboardPage() {
         }}>
           {isPlanning ? `Your plan, ${firstName}` : `Here for you, ${firstName}`}
         </h1>
-        <p style={{ color: 'var(--mg-light)', fontSize: '0.9rem', marginBottom: 28 }}>
+        <p style={{ color: 'var(--mg-light)', fontSize: '0.9rem', marginBottom: 24 }}>
           {isPlanning
             ? `${acct.usState ? acct.usState + ' · ' : ''}Planning ahead`
             : `Supporting the loss of ${acct.subjectName}`}
         </p>
 
-        {/* Upgrade banner for planning free tier */}
-        {isPlanning && !isPaid && (
+        {/* Trial banner */}
+        {isPlanning && !isPaid && daysLeft !== null && !trialExpired && (
           <div style={{
             background: 'linear-gradient(135deg, #fdf3ec, #faeadf)',
-            border: '1px solid rgba(197,123,87,0.3)',
+            border: '1px solid rgba(197,123,87,0.25)',
+            borderRadius: 12, padding: '14px 18px', marginBottom: 24,
+            display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+          }}>
+            <div>
+              <p style={{ color: 'var(--mg-dark)', fontWeight: 600, fontSize: '0.88rem', marginBottom: 2 }}>
+                {daysLeft} {daysLeft === 1 ? 'day' : 'days'} left in your free trial
+              </p>
+              <p style={{ color: 'var(--mg-mid)', fontSize: '0.8rem' }}>
+                $89/year after · No card needed today
+              </p>
+            </div>
+          </div>
+        )}
+
+        {/* Trial expired — upgrade required */}
+        {isPlanning && !isPaid && trialExpired && (
+          <div style={{
+            background: '#fff3f3', border: '1px solid rgba(192,57,43,0.2)',
             borderRadius: 12, padding: '16px 18px', marginBottom: 24,
           }}>
-            <p style={{ color: 'var(--mg-dark)', fontWeight: 600, marginBottom: 4, fontSize: '0.95rem' }}>
-              Start your 14-day free trial
+            <p style={{ color: '#c0392b', fontWeight: 600, marginBottom: 6, fontSize: '0.92rem' }}>
+              Your free trial has ended
             </p>
             <p style={{ color: 'var(--mg-mid)', fontSize: '0.84rem', marginBottom: 12 }}>
-              Unlock all vault sections and your family portal. $89/year after trial.
+              Upgrade to keep access to your vault and family portal.
             </p>
-            <Link href="/api/checkout" style={{
+            <a href="/api/checkout" style={{
               display: 'inline-block', background: 'var(--mg-accent)', color: '#fff',
               padding: '9px 18px', borderRadius: 8, fontSize: '0.88rem', fontWeight: 600,
               textDecoration: 'none',
             }}>
-              Get started free →
-            </Link>
+              Upgrade — $89/year →
+            </a>
           </div>
         )}
 
@@ -93,7 +119,7 @@ export default async function DashboardPage() {
             <Link key={tile.href} href={tile.href} style={{
               background: '#fff', border: '1px solid var(--mg-border)',
               borderRadius: 12, padding: '18px 16px', textDecoration: 'none',
-              display: 'block', transition: 'border-color 0.15s',
+              display: 'block',
             }}>
               <div style={{ fontSize: '1.4rem', marginBottom: 8 }}>{tile.icon}</div>
               <div style={{

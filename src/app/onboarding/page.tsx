@@ -48,25 +48,14 @@ export default function OnboardingPage() {
     });
 
     if (!res.ok) {
-      setError('Something went wrong. Please try again.');
+      const data = await res.json().catch(() => ({}));
+      setError(data.error ?? 'Something went wrong. Please try again.');
       setLoading(false);
       return;
     }
 
-    const data = await res.json();
-
-    if (path === 'planning') {
-      // Redirect to Stripe checkout
-      const checkoutRes = await fetch('/api/checkout', { method: 'POST' });
-      if (checkoutRes.ok) {
-        const { url } = await checkoutRes.json();
-        window.location.href = url;
-      } else {
-        router.push('/dashboard');
-      }
-    } else {
-      router.push('/dashboard');
-    }
+    // Always go straight to dashboard — trial starts now, payment prompted when it expires
+    router.push('/dashboard');
   }
 
   return (
@@ -138,10 +127,10 @@ export default function OnboardingPage() {
             </p>
             {error && <p style={{ color: '#c0392b', fontSize: '0.85rem', marginBottom: 12 }}>{error}</p>}
             <button type="submit" disabled={loading} style={submitStyle}>
-              {loading ? 'Setting up your guide…' : 'Continue to payment →'}
+              {loading ? 'Setting up your guide…' : 'Start my free trial →'}
             </button>
             <p style={{ color: 'var(--mg-light)', fontSize: '0.78rem', textAlign: 'center', marginTop: 10 }}>
-              $89/year · 14-day free trial · Cancel anytime
+              14-day free trial · No card required · $89/year after
             </p>
           </form>
         )}
