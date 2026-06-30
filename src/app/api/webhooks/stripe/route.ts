@@ -3,13 +3,14 @@ import { stripe } from '@/lib/stripe';
 import { db } from '@/db';
 import { accountBilling } from '@/db/schema/billing';
 import { eq } from 'drizzle-orm';
+import Stripe from 'stripe';
 
 export async function POST(req: Request) {
   const body = await req.text();
   const headersList = await headers();
   const sig = headersList.get('stripe-signature')!;
 
-  let event;
+  let event: Stripe.Event;
   try {
     event = stripe.webhooks.constructEvent(body, sig, process.env.STRIPE_WEBHOOK_SECRET!);
   } catch {
@@ -18,13 +19,12 @@ export async function POST(req: Request) {
 
   switch (event.type) {
     case 'checkout.session.completed': {
-      const session = event.data.object;
+      const session = event.data.object as Stripe.Checkout.Session;
       const accountId = session.metadata?.accountId;
       if (!accountId || !session.subscription) break;
 
-      // Fetch the subscription to get the real period end date
-      const sub = await stripe.subscriptions.retrieve(session.subscription as string);
-      const expiresAt = new Date(sub.current_period_end * 1000);
+      // Yearly plan — expire 1 year from now
+      const expiresAt = new Date(Date.now() + 365 * 24 * 60 * 60 * 1000);
 
       await db.update(accountBilling)
         .set({
@@ -40,13 +40,14 @@ export async function POST(req: Request) {
 
     case 'invoice.payment_succeeded': {
       // Fires on every successful renewal — keep planExpiresAt current
-      const invoice = event.data.object;
-      if (invoice.billing_reason === 'subscription_create') break; // already handled above
-      const subId = invoice.subscription as string;
+      const invoice = event.data.object as Stripe.Invoice;
+      if (invoice.billing_reason === 'subscription_create') break; // handled above
+      const subRef = invoice.parent?.subscription_details?.subscription;
+      const subId = typeof subRef === 'string' ? subRef : subRef?.id;
       if (!subId) break;
 
-      const sub = await stripe.subscriptions.retrieve(subId);
-      const expiresAt = new Date(sub.current_period_end * 1000);
+      // invoice.period_end is the end of the billing period just paid
+      const expiresAt = new Date(invoice.period_end * 1000);
 
       await db.update(accountBilling)
         .set({ planTier: 'guide', planExpiresAt: expiresAt, updatedAt: new Date() })
@@ -55,7 +56,7 @@ export async function POST(req: Request) {
     }
 
     case 'customer.subscription.deleted': {
-      const sub = event.data.object;
+      const sub = event.data.object as Stripe.Subscription;
       await db.update(accountBilling)
         .set({ planTier: 'lapsed', lapsedAt: new Date(), updatedAt: new Date() })
         .where(eq(accountBilling.stripeSubscriptionId, sub.id));
