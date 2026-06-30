@@ -5,20 +5,20 @@ import Link from 'next/link';
 
 const PLANNING_TILES = [
   { href: '/vault/finances', icon: '🏦', label: 'Finances', sub: 'Accounts, insurance, property' },
-  { href: '/vault/documents', icon: '📄', label: 'Documents', sub: 'Will, trusts, IDs' },
   { href: '/vault/letters', icon: '✉️', label: 'Letters', sub: 'Messages to release after' },
   { href: '/people', icon: '👥', label: 'People', sub: 'Legacy contact & notifications' },
   { href: '/vault/wishes', icon: '🕊️', label: 'Final wishes', sub: 'Funeral & service details' },
   { href: '/portal', icon: '🔗', label: 'Your portal', sub: 'What your family will see' },
+  { href: null, icon: '📄', label: 'Documents', sub: 'Will, trusts, IDs — coming soon' },
 ];
 
 const GRIEF_TILES = [
-  { href: '/grief/tasks', icon: '✅', label: 'Tasks', sub: 'What to do and when' },
-  { href: '/grief/people', icon: '👥', label: 'People', sub: 'Who to notify' },
-  { href: '/grief/finances', icon: '🏦', label: 'Finances', sub: 'Accounts and bills' },
-  { href: '/grief/calendar', icon: '📅', label: 'Calendar', sub: 'Services and appointments' },
-  { href: '/grief/portal', icon: '🔗', label: 'Memorial portal', sub: 'Share and coordinate' },
-  { href: '/grief/remember', icon: '📷', label: 'Remember', sub: 'Photos, stories, music' },
+  { href: null, icon: '✅', label: 'Tasks', sub: 'What to do and when — coming soon' },
+  { href: null, icon: '👥', label: 'People', sub: 'Who to notify — coming soon' },
+  { href: null, icon: '🏦', label: 'Finances', sub: 'Accounts and bills — coming soon' },
+  { href: null, icon: '📅', label: 'Calendar', sub: 'Services and appointments — coming soon' },
+  { href: null, icon: '🔗', label: 'Memorial portal', sub: 'Share and coordinate — coming soon' },
+  { href: null, icon: '📷', label: 'Remember', sub: 'Photos, stories, music — coming soon' },
 ];
 
 function trialDaysLeft(trialEndsAt: Date | string | null): number | null {
@@ -155,20 +155,35 @@ export default async function DashboardPage({
 
         {/* Vault tiles */}
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
-          {tiles.map(tile => (
-            <Link key={tile.href} href={tile.href} style={{
-              background: '#fff', border: '1px solid var(--mg-border)',
-              borderRadius: 12, padding: '18px 16px', textDecoration: 'none',
-              display: 'block',
-            }}>
-              <div style={{ fontSize: '1.4rem', marginBottom: 8 }}>{tile.icon}</div>
-              <div style={{
-                fontFamily: 'var(--font-playfair), Georgia, serif',
-                color: 'var(--mg-dark)', fontWeight: 600, fontSize: '0.95rem', marginBottom: 3,
-              }}>{tile.label}</div>
-              <div style={{ color: 'var(--mg-light)', fontSize: '0.78rem', lineHeight: 1.4 }}>{tile.sub}</div>
-            </Link>
-          ))}
+          {tiles.map(tile => {
+            const tileContent = (
+              <>
+                <div style={{ fontSize: '1.4rem', marginBottom: 8 }}>{tile.icon}</div>
+                <div style={{
+                  fontFamily: 'var(--font-playfair), Georgia, serif',
+                  color: tile.href ? 'var(--mg-dark)' : 'var(--mg-light)',
+                  fontWeight: 600, fontSize: '0.95rem', marginBottom: 3,
+                }}>{tile.label}</div>
+                <div style={{ color: 'var(--mg-light)', fontSize: '0.78rem', lineHeight: 1.4 }}>{tile.sub}</div>
+              </>
+            );
+            return tile.href ? (
+              <Link key={tile.label} href={tile.href} style={{
+                background: '#fff', border: '1px solid var(--mg-border)',
+                borderRadius: 12, padding: '18px 16px', textDecoration: 'none',
+                display: 'block',
+              }}>
+                {tileContent}
+              </Link>
+            ) : (
+              <div key={tile.label} style={{
+                background: '#faf7f4', border: '1px solid var(--mg-border)',
+                borderRadius: 12, padding: '18px 16px', opacity: 0.6,
+              }}>
+                {tileContent}
+              </div>
+            );
+          })}
         </div>
       </main>
     </div>
