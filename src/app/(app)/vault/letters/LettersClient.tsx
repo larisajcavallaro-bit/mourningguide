@@ -32,6 +32,7 @@ export default function LettersClient({ initial }: { initial: Letter[] }) {
 
   function openEdit(item: Letter) {
     setEditing(item);
+    setSaveError('');
     setForm({
       recipientName: item.recipientName,
       recipientEmail: item.recipientEmail ?? '',

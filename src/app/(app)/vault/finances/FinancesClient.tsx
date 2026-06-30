@@ -52,6 +52,7 @@ export default function FinancesClient({ initial }: { initial: FinancialAccount[
 
   function openEdit(item: FinancialAccount) {
     setEditing(item);
+    setSaveError('');
     setForm({
       category: item.category,
       institutionName: item.institutionName,

@@ -105,6 +105,7 @@ export default function PeopleClient({
             </div>
             <button onClick={() => {
               setLegacyForm({ name: legacy!.name, email: legacy!.email ?? '', phone: legacy!.phone ?? '' });
+              setLegacyError('');
               setShowLegacyForm(true);
             }} style={iconBtnStyle}>Edit</button>
           </div>
