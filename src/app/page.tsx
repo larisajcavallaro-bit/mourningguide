@@ -34,10 +34,10 @@ export default async function HomePage() {
               <div className="coded-rule" />
               <p>Plan your estate at your own pace — or get one clear next step when someone you love has just died. First steps after a loss are always free.</p>
               <div className="coded-actions">
-                <Link className="coded-button primary" href="/sign-up?path=planning">
+                <Link className="coded-button primary" href="/sign-up?redirect_url=%2Fonboarding%3Fpath%3Dplanning">
                   Start planning — free for 14 days
                 </Link>
-                <Link className="coded-button secondary" href="/sign-up?path=grief">
+                <Link className="coded-button secondary" href="/sign-up?redirect_url=%2Fonboarding%3Fpath%3Dgrief">
                   Get help after a loss — free, always
                 </Link>
               </div>
@@ -115,7 +115,7 @@ export default async function HomePage() {
               <h2>When you&apos;re in the fog, we bring one clear next step.</h2>
               <div className="coded-rule" />
               <p className="coded-fog-copy">You shouldn&apos;t have to figure out what to do after a loved one dies while you&apos;re in shock. We give you three things — and nothing more until you&apos;re ready.</p>
-              <Link className="coded-button primary" href="/sign-up?path=grief">See how it works</Link>
+              <Link className="coded-button primary" href="/sign-up?redirect_url=%2Fonboarding%3Fpath%3Dgrief">See how it works</Link>
             </div>
           </section>
 
@@ -125,7 +125,7 @@ export default async function HomePage() {
               <span className="emblem emblem-heart" />
               <p><strong>Grief support is always free.</strong><br />No credit card. No trial period. No time limit. Start right now.</p>
             </div>
-            <Link href="/sign-up?path=grief">Get help after a loss →</Link>
+            <Link href="/sign-up?redirect_url=%2Fonboarding%3Fpath%3Dgrief">Get help after a loss →</Link>
           </section>
         </main>
 

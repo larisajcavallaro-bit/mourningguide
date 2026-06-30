@@ -1,7 +1,7 @@
 'use client';
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useState, useEffect, Suspense } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 
 const US_STATES = [
   'Alabama','Alaska','Arizona','Arkansas','California','Colorado','Connecticut',
@@ -16,8 +16,9 @@ const US_STATES = [
 
 type Path = 'planning' | 'grief';
 
-export default function OnboardingPage() {
+function OnboardingForm() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [step, setStep] = useState<'path' | 'details'>('path');
   const [path, setPath] = useState<Path | null>(null);
   const [name, setName] = useState('');
@@ -25,6 +26,15 @@ export default function OnboardingPage() {
   const [relationship, setRelationship] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+
+  // Pre-select path from ?path= query param (set by homepage CTAs via redirect_url)
+  useEffect(() => {
+    const p = searchParams.get('path');
+    if (p === 'planning' || p === 'grief') {
+      setPath(p);
+      setStep('details');
+    }
+  }, [searchParams]);
 
   function choosePath(p: Path) {
     setPath(p);
@@ -167,6 +177,14 @@ export default function OnboardingPage() {
 
       </div>
     </div>
+  );
+}
+
+export default function OnboardingPage() {
+  return (
+    <Suspense>
+      <OnboardingForm />
+    </Suspense>
   );
 }
 
