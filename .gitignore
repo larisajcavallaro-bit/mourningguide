@@ -42,3 +42,7 @@ next-env.d.ts
 
 # Drizzle
 drizzle/migrations/*.sql
+
+# Clerk skills
+.agents/
+skills-lock.json
