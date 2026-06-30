@@ -52,7 +52,7 @@ export default async function SettingsPage() {
           </SignOutButton>
         </div>
         <p style={{ fontSize: '0.78rem', color: 'var(--mg-light)', marginTop: 16, lineHeight: 1.5 }}>
-          To delete your account and all data, email us at hello@mourninguide.com. We'll process the request within 48 hours.
+          To delete your account and all data, email us at support@mourninguide.com. We'll process the request within 48 hours.
         </p>
       </section>
 

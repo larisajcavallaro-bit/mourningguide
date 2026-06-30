@@ -27,11 +27,20 @@ function trialDaysLeft(trialEndsAt: Date | string | null): number | null {
   return ms > 0 ? Math.ceil(ms / (1000 * 60 * 60 * 24)) : 0;
 }
 
-export default async function DashboardPage() {
+export default async function DashboardPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ upgraded?: string }>;
+}) {
   const { userId } = await auth();
   if (!userId) redirect('/sign-in');
 
-  const [account, user] = await Promise.all([getAccount(userId), currentUser()]);
+  const [{ upgraded }, account, user] = await Promise.all([
+    searchParams,
+    getAccount(userId!),
+    currentUser(),
+  ]);
+
   if (!account) redirect('/onboarding');
 
   const { accounts: acct, account_billing: billing } = account;
@@ -71,6 +80,37 @@ export default async function DashboardPage() {
             ? `${acct.usState ? acct.usState + ' · ' : ''}Planning ahead`
             : `Supporting the loss of ${acct.subjectName}`}
         </p>
+
+        {/* Upgrade success banner */}
+        {upgraded === '1' && (
+          <div style={{
+            background: 'linear-gradient(135deg, #edf7f0, #d8f0e0)',
+            border: '1px solid rgba(39,174,96,0.25)',
+            borderRadius: 12, padding: '14px 18px', marginBottom: 24,
+          }}>
+            <p style={{ color: '#1e7e44', fontWeight: 600, fontSize: '0.88rem', marginBottom: 2 }}>
+              You&apos;re all set — welcome to Guide Plan!
+            </p>
+            <p style={{ color: '#2d6a41', fontSize: '0.8rem' }}>
+              Your vault and family portal are unlocked for the year.
+            </p>
+          </div>
+        )}
+
+        {/* Subscribed badge */}
+        {isPaid && upgraded !== '1' && (
+          <div style={{
+            background: 'linear-gradient(135deg, #fdf3ec, #faeadf)',
+            border: '1px solid rgba(197,123,87,0.25)',
+            borderRadius: 12, padding: '12px 18px', marginBottom: 24,
+            display: 'flex', alignItems: 'center', gap: 10,
+          }}>
+            <span style={{ fontSize: '1rem' }}>✓</span>
+            <p style={{ color: 'var(--mg-dark)', fontWeight: 600, fontSize: '0.85rem', margin: 0 }}>
+              Guide Plan · Active
+            </p>
+          </div>
+        )}
 
         {/* Trial banner */}
         {isPlanning && !isPaid && daysLeft !== null && !trialExpired && (
