@@ -144,7 +144,7 @@ export default async function HomePage() {
           <nav>
             <h4>Support</h4>
             <a href="#">Help Center</a>
-            <a href="/contact">Contact Us</a>
+            <a href="mailto:support@mourninguide.com">Contact Us</a>
             <a href="/privacy">Privacy</a>
           </nav>
           <nav>
