@@ -29,11 +29,13 @@ export default function PeopleClient({
   });
   const [showLegacyForm, setShowLegacyForm] = useState(false);
   const [savingLegacy, setSavingLegacy] = useState(false);
+  const [legacyError, setLegacyError] = useState('');
 
   const [contacts, setContacts] = useState<NotificationContact[]>(initialContacts);
   const [showContactForm, setShowContactForm] = useState(false);
   const [contactForm, setContactForm] = useState({ ...CONTACT_BLANK });
   const [savingContact, setSavingContact] = useState(false);
+  const [contactError, setContactError] = useState('');
   const [deleting, setDeleting] = useState<string | null>(null);
 
   async function saveLegacy(e: React.FormEvent) {
@@ -48,6 +50,9 @@ export default function PeopleClient({
       const { item } = await res.json();
       setLegacy(item);
       setShowLegacyForm(false);
+      setLegacyError('');
+    } else {
+      setLegacyError('Something went wrong. Please try again.');
     }
     setSavingLegacy(false);
   }
@@ -65,6 +70,9 @@ export default function PeopleClient({
       setContacts(prev => [...prev, item]);
       setContactForm({ ...CONTACT_BLANK });
       setShowContactForm(false);
+      setContactError('');
+    } else {
+      setContactError('Something went wrong. Please try again.');
     }
     setSavingContact(false);
   }
@@ -171,6 +179,7 @@ export default function PeopleClient({
             <label style={labelStyle}>Phone</label>
             <input value={legacyForm.phone} onChange={e => setLegacyForm(f => ({ ...f, phone: e.target.value }))}
               type="tel" placeholder="(555) 000-0000" style={inputStyle} />
+            {legacyError && <p style={{ color: '#c0392b', fontSize: '0.84rem', marginBottom: 10 }}>{legacyError}</p>}
             <button type="submit" disabled={savingLegacy} style={submitStyle}>
               {savingLegacy ? 'Saving…' : 'Save legacy contact'}
             </button>
@@ -203,6 +212,7 @@ export default function PeopleClient({
               style={inputStyle}>
               {NOTIFY_PHASES.map(p => <option key={p.value} value={p.value}>{p.label}</option>)}
             </select>
+            {contactError && <p style={{ color: '#c0392b', fontSize: '0.84rem', marginBottom: 10 }}>{contactError}</p>}
             <button type="submit" disabled={savingContact} style={submitStyle}>
               {savingContact ? 'Saving…' : 'Add person'}
             </button>

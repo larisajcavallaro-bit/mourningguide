@@ -16,29 +16,36 @@ const BLANK: Obituary = {
 export default function PortalPage() {
   const [form, setForm] = useState<Obituary>(BLANK);
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState(false);
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
+  const [saveError, setSaveError] = useState('');
   const [tab, setTab] = useState<'edit' | 'preview'>('edit');
 
   useEffect(() => {
-    fetch('/api/vault/obituary').then(r => r.json()).then(({ item }) => {
-      if (item) setForm({
-        name: item.name ?? '', born: item.born ?? '', died: item.died ?? '',
-        city: item.city ?? '', survived: item.survived ?? '',
-        predeceased: item.predeceased ?? '', body: item.body ?? '',
-      });
-      setLoading(false);
-    });
+    fetch('/api/vault/obituary')
+      .then(r => r.ok ? r.json() : Promise.reject())
+      .then(({ item }) => {
+        if (item) setForm({
+          name: item.name ?? '', born: item.born ?? '', died: item.died ?? '',
+          city: item.city ?? '', survived: item.survived ?? '',
+          predeceased: item.predeceased ?? '', body: item.body ?? '',
+        });
+        setLoading(false);
+      })
+      .catch(() => { setLoadError(true); setLoading(false); });
   }, []);
 
   async function save(e: React.FormEvent) {
     e.preventDefault();
     setSaving(true);
+    setSaveError('');
     const res = await fetch('/api/vault/obituary', {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(form),
     });
     if (res.ok) { setSaved(true); setTimeout(() => setSaved(false), 3000); }
+    else { setSaveError('Something went wrong. Please try again.'); }
     setSaving(false);
   }
 
@@ -50,6 +57,12 @@ export default function PortalPage() {
   if (loading) return (
     <AppShell title="Your portal" back={{ href: '/dashboard', label: 'Your plan' }}>
       <p style={{ color: 'var(--mg-light)' }}>Loading…</p>
+    </AppShell>
+  );
+
+  if (loadError) return (
+    <AppShell title="Your portal" back={{ href: '/dashboard', label: 'Your plan' }}>
+      <p style={{ color: '#c0392b', fontSize: '0.9rem' }}>Couldn't load your portal. Please refresh and try again.</p>
     </AppShell>
   );
 
@@ -104,6 +117,7 @@ export default function PortalPage() {
             placeholder="A brief bio or tribute to appear on the portal…"
             style={{ ...inputStyle, resize: 'vertical', lineHeight: 1.7 }} />
 
+          {saveError && <p style={{ color: '#c0392b', fontSize: '0.84rem', marginBottom: 10 }}>{saveError}</p>}
           <button type="submit" disabled={saving} style={submitStyle}>
             {saving ? 'Saving…' : saved ? '✓ Saved' : 'Save portal'}
           </button>

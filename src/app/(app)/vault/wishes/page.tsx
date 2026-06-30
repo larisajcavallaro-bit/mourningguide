@@ -21,31 +21,38 @@ export default function WishesPage() {
   const [form, setForm] = useState<ServiceDetails>(BLANK);
   const [saved, setSaved] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [saveError, setSaveError] = useState('');
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState(false);
 
   useEffect(() => {
-    fetch('/api/vault/wishes').then(r => r.json()).then(({ item }) => {
-      if (item) setForm({
-        type: item.type ?? '', date: item.date ?? '', time: item.time ?? '',
-        venue: item.venue ?? '', address: item.address ?? '', parking: item.parking ?? '',
-        dresscode: item.dresscode ?? '', officiant: item.officiant ?? '',
-        reception: item.reception ?? false,
-        receptionVenue: item.receptionVenue ?? '', receptionAddress: item.receptionAddress ?? '',
-        receptionTime: item.receptionTime ?? '', livestreamUrl: item.livestreamUrl ?? '',
-        notes: item.notes ?? '',
-      });
-      setLoading(false);
-    });
+    fetch('/api/vault/wishes')
+      .then(r => r.ok ? r.json() : Promise.reject())
+      .then(({ item }) => {
+        if (item) setForm({
+          type: item.type ?? '', date: item.date ?? '', time: item.time ?? '',
+          venue: item.venue ?? '', address: item.address ?? '', parking: item.parking ?? '',
+          dresscode: item.dresscode ?? '', officiant: item.officiant ?? '',
+          reception: item.reception ?? false,
+          receptionVenue: item.receptionVenue ?? '', receptionAddress: item.receptionAddress ?? '',
+          receptionTime: item.receptionTime ?? '', livestreamUrl: item.livestreamUrl ?? '',
+          notes: item.notes ?? '',
+        });
+        setLoading(false);
+      })
+      .catch(() => { setLoadError(true); setLoading(false); });
   }, []);
 
   async function save(e: React.FormEvent) {
     e.preventDefault();
     setSaving(true);
+    setSaveError('');
     const res = await fetch('/api/vault/wishes', {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(form),
     });
     if (res.ok) { setSaved(true); setTimeout(() => setSaved(false), 3000); }
+    else { setSaveError('Something went wrong. Please try again.'); }
     setSaving(false);
   }
 
@@ -57,6 +64,12 @@ export default function WishesPage() {
   if (loading) return (
     <AppShell title="Final wishes" back={{ href: '/dashboard', label: 'Your plan' }}>
       <p style={{ color: 'var(--mg-light)', fontSize: '0.9rem' }}>Loading…</p>
+    </AppShell>
+  );
+
+  if (loadError) return (
+    <AppShell title="Final wishes" back={{ href: '/dashboard', label: 'Your plan' }}>
+      <p style={{ color: '#c0392b', fontSize: '0.9rem' }}>Couldn't load your wishes. Please refresh and try again.</p>
     </AppShell>
   );
 
@@ -118,6 +131,7 @@ export default function WishesPage() {
             style={{ ...inputStyle, resize: 'vertical' }} />
         </Section>
 
+        {saveError && <p style={{ color: '#c0392b', fontSize: '0.84rem', marginBottom: 10 }}>{saveError}</p>}
         <button type="submit" disabled={saving} style={submitStyle}>
           {saving ? 'Saving…' : saved ? '✓ Saved' : 'Save wishes'}
         </button>
