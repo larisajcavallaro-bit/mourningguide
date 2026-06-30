@@ -65,8 +65,9 @@ export default function LettersClient({ initial }: { initial: Letter[] }) {
   async function remove(id: string) {
     if (!confirm('Delete this letter? This cannot be undone.')) return;
     setDeleting(id);
-    await fetch(`/api/vault/letters/${id}`, { method: 'DELETE' });
-    setItems(prev => prev.filter(x => x.id !== id));
+    const res = await fetch(`/api/vault/letters/${id}`, { method: 'DELETE' });
+    if (res.ok) setItems(prev => prev.filter(x => x.id !== id));
+    else alert('Could not delete this letter. Please try again.');
     setDeleting(null);
   }
 

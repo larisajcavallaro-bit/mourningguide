@@ -89,8 +89,9 @@ export default function FinancesClient({ initial }: { initial: FinancialAccount[
   async function remove(id: string) {
     if (!confirm('Remove this account?')) return;
     setDeleting(id);
-    await fetch(`/api/vault/finances/${id}`, { method: 'DELETE' });
-    setItems(prev => prev.filter(x => x.id !== id));
+    const res = await fetch(`/api/vault/finances/${id}`, { method: 'DELETE' });
+    if (res.ok) setItems(prev => prev.filter(x => x.id !== id));
+    else alert('Could not remove this account. Please try again.');
     setDeleting(null);
   }
 
@@ -202,6 +203,11 @@ export default function FinancesClient({ initial }: { initial: FinancialAccount[
             <label style={labelStyle}>Where to find paperwork <span style={{ color: 'var(--mg-light)' }}>(optional)</span></label>
             <input value={form.paperworkLocation} onChange={e => setForm(f => ({ ...f, paperworkLocation: e.target.value }))}
               placeholder="e.g. Green folder in filing cabinet, top drawer" style={inputStyle} />
+
+            <label style={labelStyle}>Additional notes <span style={{ color: 'var(--mg-light)' }}>(optional)</span></label>
+            <textarea value={form.notes} onChange={e => setForm(f => ({ ...f, notes: e.target.value }))}
+              placeholder="Anything else your family should know about this account…"
+              rows={2} style={{ ...inputStyle, resize: 'vertical' }} />
 
             {saveError && (
               <p style={{ color: '#c0392b', fontSize: '0.84rem', marginBottom: 10 }}>{saveError}</p>

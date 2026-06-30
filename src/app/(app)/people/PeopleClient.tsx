@@ -33,6 +33,7 @@ export default function PeopleClient({
 
   const [contacts, setContacts] = useState<NotificationContact[]>(initialContacts);
   const [showContactForm, setShowContactForm] = useState(false);
+  const [editingContact, setEditingContact] = useState<NotificationContact | null>(null);
   const [contactForm, setContactForm] = useState({ ...CONTACT_BLANK });
   const [savingContact, setSavingContact] = useState(false);
   const [contactError, setContactError] = useState('');
@@ -57,18 +58,33 @@ export default function PeopleClient({
     setSavingLegacy(false);
   }
 
+  function openEditContact(c: NotificationContact) {
+    setEditingContact(c);
+    setContactForm({
+      name: c.name, email: c.email ?? '', phone: c.phone ?? '',
+      relationship: c.relationship ?? '', notifyPhase: c.notifyPhase ?? 'manual',
+    });
+    setContactError('');
+    setShowContactForm(true);
+  }
+
   async function saveContact(e: React.FormEvent) {
     e.preventDefault();
     setSavingContact(true);
-    const res = await fetch('/api/people/contacts', {
-      method: 'POST',
+    const url = editingContact ? `/api/people/contacts/${editingContact.id}` : '/api/people/contacts';
+    const method = editingContact ? 'PUT' : 'POST';
+    const res = await fetch(url, {
+      method,
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(contactForm),
     });
     if (res.ok) {
       const { item } = await res.json();
-      setContacts(prev => [...prev, item]);
+      setContacts(prev => editingContact
+        ? prev.map(c => c.id === item.id ? item : c)
+        : [...prev, item]);
       setContactForm({ ...CONTACT_BLANK });
+      setEditingContact(null);
       setShowContactForm(false);
       setContactError('');
     } else {
@@ -80,8 +96,9 @@ export default function PeopleClient({
   async function removeContact(id: string) {
     if (!confirm('Remove this person?')) return;
     setDeleting(id);
-    await fetch(`/api/people/contacts/${id}`, { method: 'DELETE' });
-    setContacts(prev => prev.filter(c => c.id !== id));
+    const res = await fetch(`/api/people/contacts/${id}`, { method: 'DELETE' });
+    if (res.ok) setContacts(prev => prev.filter(c => c.id !== id));
+    else alert('Could not remove this person. Please try again.');
     setDeleting(null);
   }
 
@@ -126,7 +143,7 @@ export default function PeopleClient({
           </div>
         </div>
 
-        <button onClick={() => { setContactForm({ ...CONTACT_BLANK }); setShowContactForm(true); }}
+        <button onClick={() => { setEditingContact(null); setContactForm({ ...CONTACT_BLANK }); setContactError(''); setShowContactForm(true); }}
           style={{ ...addBtnStyle, marginBottom: contacts.length ? 16 : 0 }}>
           + Add person
         </button>
@@ -151,10 +168,13 @@ export default function PeopleClient({
                   </div>
                 )}
               </div>
-              <button onClick={() => removeContact(c.id)} disabled={deleting === c.id}
-                style={{ ...iconBtnStyle, color: '#c0392b', flexShrink: 0, marginLeft: 12 }}>
-                {deleting === c.id ? '…' : 'Remove'}
-              </button>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 6, flexShrink: 0, marginLeft: 12 }}>
+                <button onClick={() => openEditContact(c)} style={iconBtnStyle}>Edit</button>
+                <button onClick={() => removeContact(c.id)} disabled={deleting === c.id}
+                  style={{ ...iconBtnStyle, color: '#c0392b' }}>
+                  {deleting === c.id ? '…' : 'Remove'}
+                </button>
+              </div>
             </div>
           ))}
         </div>
@@ -193,7 +213,7 @@ export default function PeopleClient({
         <div style={overlayStyle} onClick={e => { if (e.target === e.currentTarget) setShowContactForm(false); }}>
           <form onSubmit={saveContact} style={sheetStyle}>
             <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 20 }}>
-              <h2 style={sheetHeadStyle}>Add person</h2>
+              <h2 style={sheetHeadStyle}>{editingContact ? 'Edit person' : 'Add person'}</h2>
               <button type="button" onClick={() => setShowContactForm(false)} style={closeBtn}>✕</button>
             </div>
             <label style={labelStyle}>Full name</label>
@@ -215,7 +235,7 @@ export default function PeopleClient({
             </select>
             {contactError && <p style={{ color: '#c0392b', fontSize: '0.84rem', marginBottom: 10 }}>{contactError}</p>}
             <button type="submit" disabled={savingContact} style={submitStyle}>
-              {savingContact ? 'Saving…' : 'Add person'}
+              {savingContact ? 'Saving…' : editingContact ? 'Save changes' : 'Add person'}
             </button>
           </form>
         </div>
