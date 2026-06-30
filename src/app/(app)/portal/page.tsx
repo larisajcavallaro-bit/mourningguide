@@ -22,6 +22,8 @@ export default function PortalPage() {
   const [saveError, setSaveError] = useState('');
   const [tab, setTab] = useState<'edit' | 'preview'>('edit');
 
+  useEffect(() => { document.title = 'Your portal — Mourning Guide'; }, []);
+
   useEffect(() => {
     fetch('/api/vault/obituary')
       .then(r => r.ok ? r.json() : Promise.reject())

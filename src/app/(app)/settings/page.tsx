@@ -41,6 +41,11 @@ export default async function SettingsPage() {
         {acct.path === 'planning' && billing?.planTier !== 'guide' && (
           <a href="/api/checkout" style={linkBtnStyle}>Upgrade to Guide Plan →</a>
         )}
+        {billing?.stripeCustomerId && (
+          <a href="/api/billing-portal" style={{ ...linkBtnStyle, color: 'var(--mg-mid)' }}>
+            Manage subscription →
+          </a>
+        )}
       </section>
 
       {/* Danger zone */}

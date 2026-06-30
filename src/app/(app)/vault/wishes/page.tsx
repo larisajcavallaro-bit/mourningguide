@@ -25,6 +25,8 @@ export default function WishesPage() {
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState(false);
 
+  useEffect(() => { document.title = 'Final wishes — Mourning Guide'; }, []);
+
   useEffect(() => {
     fetch('/api/vault/wishes')
       .then(r => r.ok ? r.json() : Promise.reject())

@@ -1,4 +1,7 @@
+import type { Metadata } from 'next';
 import { auth, currentUser } from '@clerk/nextjs/server';
+
+export const metadata: Metadata = { title: 'Dashboard — Mourning Guide' };
 import { redirect } from 'next/navigation';
 import { getAccount } from '@/lib/account';
 import Link from 'next/link';
