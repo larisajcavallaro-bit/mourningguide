@@ -1,9 +1,10 @@
-import { auth } from '@clerk/nextjs/server';
+import { auth, currentUser } from '@clerk/nextjs/server';
 import { NextResponse } from 'next/server';
 import { db } from '@/db';
 import { accounts } from '@/db/schema/accounts';
 import { legacyContacts } from '@/db/schema/people';
 import { eq } from 'drizzle-orm';
+import { sendLegacyContactInvitation } from '@/lib/emails';
 
 async function getAccountId(userId: string) {
   const rows = await db.select({ id: accounts.id })
@@ -39,6 +40,19 @@ export async function POST(req: Request) {
     email: email?.trim() || null,
     phone: phone?.trim() || null,
   }).returning();
+
+  // Send invitation email to the legacy contact if they have an email
+  if (row.email) {
+    const user = await currentUser();
+    const ownerName = user?.firstName
+      ? `${user.firstName}${user.lastName ? ' ' + user.lastName : ''}`
+      : 'Someone';
+    sendLegacyContactInvitation({
+      to: row.email,
+      contactName: row.name,
+      ownerName,
+    }).catch(() => {});
+  }
 
   return NextResponse.json({ item: row });
 }

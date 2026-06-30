@@ -1,14 +1,16 @@
-import { auth } from '@clerk/nextjs/server';
+import { auth, currentUser } from '@clerk/nextjs/server';
 import { NextResponse } from 'next/server';
 import { db } from '@/db';
 import { accounts, griefProfiles } from '@/db/schema/accounts';
 import { accountBilling } from '@/db/schema/billing';
 import { eq } from 'drizzle-orm';
+import { sendWelcomeEmail } from '@/lib/emails';
 
 export async function POST(req: Request) {
   try {
     const { userId } = await auth();
     if (!userId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    const user = await currentUser();
 
     const body = await req.json();
     const { path, subjectName, usState, relationship } = body;
@@ -50,6 +52,13 @@ export async function POST(req: Request) {
       planTier: 'free',
       trialEndsAt,
     });
+
+    // Send welcome email — fire and forget, don't block the response
+    const email = user?.emailAddresses?.[0]?.emailAddress;
+    const firstName = user?.firstName ?? subjectName.trim().split(' ')[0];
+    if (email) {
+      sendWelcomeEmail({ to: email, firstName, path }).catch(() => {});
+    }
 
     return NextResponse.json({ account });
   } catch (err: any) {
