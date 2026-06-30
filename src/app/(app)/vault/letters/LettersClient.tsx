@@ -19,12 +19,14 @@ export default function LettersClient({ initial }: { initial: Letter[] }) {
   const [editing, setEditing] = useState<Letter | null>(null);
   const [form, setForm] = useState({ ...BLANK });
   const [saving, setSaving] = useState(false);
+  const [saveError, setSaveError] = useState('');
   const [deleting, setDeleting] = useState<string | null>(null);
   const [preview, setPreview] = useState<Letter | null>(null);
 
   function openAdd() {
     setEditing(null);
     setForm({ ...BLANK });
+    setSaveError('');
     setShowForm(true);
   }
 
@@ -53,6 +55,8 @@ export default function LettersClient({ initial }: { initial: Letter[] }) {
         ? prev.map(x => x.id === item.id ? item : x)
         : [...prev, item]);
       setShowForm(false);
+    } else {
+      setSaveError('Something went wrong. Please try again.');
     }
     setSaving(false);
   }
@@ -143,6 +147,9 @@ export default function LettersClient({ initial }: { initial: Letter[] }) {
               <option value="delayed">30 days after activation</option>
             </select>
 
+            {saveError && (
+              <p style={{ color: '#c0392b', fontSize: '0.84rem', marginBottom: 10 }}>{saveError}</p>
+            )}
             <button type="submit" disabled={saving} style={submitStyle}>
               {saving ? 'Saving…' : editing ? 'Save changes' : 'Save letter'}
             </button>

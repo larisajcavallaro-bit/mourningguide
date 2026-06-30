@@ -40,11 +40,13 @@ export default function FinancesClient({ initial }: { initial: FinancialAccount[
   const [editing, setEditing] = useState<FinancialAccount | null>(null);
   const [form, setForm] = useState({ ...BLANK });
   const [saving, setSaving] = useState(false);
+  const [saveError, setSaveError] = useState('');
   const [deleting, setDeleting] = useState<string | null>(null);
 
   function openAdd() {
     setEditing(null);
     setForm({ ...BLANK });
+    setSaveError('');
     setShowForm(true);
   }
 
@@ -77,6 +79,8 @@ export default function FinancesClient({ initial }: { initial: FinancialAccount[
         ? prev.map(x => x.id === item.id ? item : x)
         : [...prev, item]);
       setShowForm(false);
+    } else {
+      setSaveError('Something went wrong. Please try again.');
     }
     setSaving(false);
   }
@@ -198,6 +202,9 @@ export default function FinancesClient({ initial }: { initial: FinancialAccount[
             <input value={form.paperworkLocation} onChange={e => setForm(f => ({ ...f, paperworkLocation: e.target.value }))}
               placeholder="e.g. Green folder in filing cabinet, top drawer" style={inputStyle} />
 
+            {saveError && (
+              <p style={{ color: '#c0392b', fontSize: '0.84rem', marginBottom: 10 }}>{saveError}</p>
+            )}
             <button type="submit" disabled={saving} style={submitStyle}>
               {saving ? 'Saving…' : editing ? 'Save changes' : 'Add account'}
             </button>
