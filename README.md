@@ -1,5 +1,22 @@
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
+## Staff admin dashboard
+
+The admin UI lives at **`/admin`** in the Mourning Guide app (not the Clerk dashboard).
+
+1. Sign in at `/sign-in` with your **personal Clerk account** (e.g. `larisajcavallaro@gmail.com`).
+2. Open **Settings → Admin dashboard**, or go directly to `/admin`.
+
+`support@mourninguide.com` is the customer-facing support address for emails — it does not need to be a Clerk login unless you create that user.
+
+Allowed admin emails default to `larisajcavallaro@gmail.com` and `support@mourninguide.com`. Override in `.env.local`:
+
+```bash
+ADMIN_EMAILS=larisajcavallaro@gmail.com
+```
+
+See `project-mourning-guide/docs/ADMIN_DASHBOARD.md` for full documentation.
+
 ## Getting Started
 
 First, run the development server:

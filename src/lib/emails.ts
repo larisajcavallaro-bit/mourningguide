@@ -467,6 +467,34 @@ function deletionRequestHtml(firstName: string) {
   `, 'You can undo this any time in the next 48 hours — just reply.');
 }
 
+// ── Marketing subscribe confirmation ──────────────────────────────────────────
+
+function marketingSubscribeConfirmationHtml(unsubscribeUrl: string) {
+  return layout(`
+    ${greeting('Hello,')}
+    ${body('Thanks for subscribing to Mourning Guide updates. We\'ll send occasional notes about new features, thoughtful guidance, and product improvements — never spam.')}
+    ${body('If you ever want to stop receiving these emails, you can unsubscribe instantly using the link below. Important account, billing, and security messages are separate and may still be sent if you have an account with us.')}
+    <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin:8px 0;">
+      <tr><td style="padding:12px 24px;border:1.5px solid #d4c5bc;border-radius:10px;">
+        <a href="${unsubscribeUrl}" style="color:#9c8880;font-family:Georgia,serif;font-size:0.9rem;text-decoration:none;">
+          Unsubscribe from product updates
+        </a>
+      </td></tr>
+    </table>
+    ${sign()}
+  `, 'You can unsubscribe at any time.');
+}
+
+function marketingEmailFooter(unsubscribeUrl: string) {
+  return `<p style="margin:0;font-size:0.72rem;color:#b8a89e;line-height:1.8;letter-spacing:0.02em;">
+    <a href="https://mourninguide.com" style="color:#b8a89e;text-decoration:none;">mourninguide.com</a>
+    &nbsp;&nbsp;·&nbsp;&nbsp;
+    <a href="mailto:support@mourninguide.com" style="color:#b8a89e;text-decoration:none;">support@mourninguide.com</a>
+    &nbsp;&nbsp;·&nbsp;&nbsp;
+    <a href="${unsubscribeUrl}" style="color:#b8a89e;text-decoration:none;">Unsubscribe</a>
+  </p>`;
+}
+
 // ── Public API ────────────────────────────────────────────────────────────────
 
 export async function sendWelcomeEmail({
@@ -619,3 +647,17 @@ export async function sendDeletionRequest({
     html: deletionRequestHtml(firstName),
   });
 }
+
+export async function sendMarketingSubscribeConfirmation({
+  to, unsubscribeUrl: unsubUrl,
+}: { to: string; unsubscribeUrl: string }) {
+  return resend.emails.send({
+    from: FROM,
+    to,
+    subject: 'You\'re subscribed to Mourning Guide updates',
+    html: marketingSubscribeConfirmationHtml(unsubUrl),
+  });
+}
+
+/** Footer snippet for future broadcast/marketing campaigns. */
+export { marketingEmailFooter };

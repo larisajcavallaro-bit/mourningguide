@@ -9,6 +9,9 @@ const isPublicRoute = createRouteMatcher([
   '/terms',
   '/contact',
   '/help',
+  '/reviews',
+  '/reviews/(.*)',
+  '/unsubscribe',
   '/robots.txt',
   '/sitemap.xml',
   '/sign-in(.*)',
@@ -26,6 +29,9 @@ const isPublicRoute = createRouteMatcher([
   '/api/activate/(.*)', // activation + cancel endpoints (token-authenticated)
   '/api/cron/(.*)',    // cron jobs (CRON_SECRET-authenticated)
   '/api/webhooks/(.*)', // Stripe + Clerk webhooks bypass auth
+  '/api/reviews',         // public review list + submit (POST moderated)
+  '/api/marketing/subscribe',
+  '/api/marketing/unsubscribe',
   '/marketing/(.*)',
 ]);
 

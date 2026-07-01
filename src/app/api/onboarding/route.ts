@@ -30,6 +30,7 @@ export async function POST(req: Request) {
 
     const [account] = await db.insert(accounts).values({
       clerkUserId: userId,
+      ownerEmail: user?.emailAddresses?.[0]?.emailAddress?.toLowerCase() ?? null,
       path,
       subjectName: subjectName.trim(),
       usState: usState ?? null,

@@ -1,3 +1,4 @@
+import FooterSubscribe from './FooterSubscribe';
 import Link from 'next/link';
 import '../app/design.css';
 
@@ -42,6 +43,7 @@ export default function MarketingShell({
             <h4>Product</h4>
             <Link href="/how-it-works">How It Works</Link>
             <Link href="/pricing">Pricing</Link>
+            <Link href="/reviews">Reviews</Link>
           </nav>
           <nav aria-label="Footer support links">
             <h4>Support</h4>
@@ -49,20 +51,13 @@ export default function MarketingShell({
             <Link href="/contact">Contact Us</Link>
             <Link href="/privacy">Privacy</Link>
             <Link href="/terms">Terms</Link>
+            <Link href="/unsubscribe">Unsubscribe</Link>
           </nav>
           <nav aria-label="Footer company links">
             <h4>Company</h4>
             <Link href="/about">About</Link>
           </nav>
-          <form>
-            <h4>Stay in the know</h4>
-            <p>Thoughtful guidance and updates.</p>
-            <label>
-              <span style={{ position: 'absolute', width: 1, height: 1, overflow: 'hidden', clip: 'rect(0 0 0 0)' }}>Email address</span>
-              <input type="email" placeholder="Your email address" />
-            </label>
-            <button type="button">›</button>
-          </form>
+          <FooterSubscribe />
         </footer>
       </div>
     </div>

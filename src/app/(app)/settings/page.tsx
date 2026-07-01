@@ -2,8 +2,10 @@ import { auth, currentUser } from '@clerk/nextjs/server';
 import { redirect } from 'next/navigation';
 import { SignOutButton } from '@clerk/nextjs';
 import { getAccount } from '@/lib/account';
+import { isAdminEmail } from '@/lib/admin';
 import AppShell from '@/components/AppShell';
 import DeleteAccountButton from './DeleteAccountButton';
+import MarketingOptInToggle from './MarketingOptInToggle';
 
 export const metadata = { title: 'Settings — Mourning Guide' };
 
@@ -16,6 +18,7 @@ export default async function SettingsPage() {
 
   const { accounts: acct, account_billing: billing } = account;
   const email = user?.emailAddresses?.[0]?.emailAddress ?? '—';
+  const showAdmin = isAdminEmail(email);
 
   return (
     <AppShell title="Settings">
@@ -49,6 +52,23 @@ export default async function SettingsPage() {
           </a>
         )}
       </div>
+
+      <p className="section-label-lg">Communications</p>
+      <div className="entry-card" style={{ marginBottom: 24 }}>
+        <MarketingOptInToggle initial={acct.marketingOptIn} />
+      </div>
+
+      {showAdmin && (
+        <>
+          <p className="section-label-lg">Staff</p>
+          <div className="entry-card" style={{ marginBottom: 24 }}>
+            <a href="/admin" className="list-card" style={{ marginTop: 0 }}>
+              <strong>Admin dashboard</strong>
+              <p>Customers, metrics, reviews, and marketing email exports.</p>
+            </a>
+          </div>
+        </>
+      )}
 
       <p className="section-label-lg">Account actions</p>
       <div className="entry-card">

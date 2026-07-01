@@ -9,6 +9,8 @@ export const activationStatusEnum = pgEnum('activation_status', ['active', 'acti
 export const accounts = pgTable('accounts', {
   id: uuid('id').primaryKey().defaultRandom(),
   clerkUserId: text('clerk_user_id').notNull().unique(),
+  ownerEmail: text('owner_email'),
+  marketingOptIn: boolean('marketing_opt_in').default(true).notNull(),
   path: pathEnum('path').notNull(),
   usState: text('us_state'),
   subjectName: text('subject_name'),
