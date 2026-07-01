@@ -154,15 +154,46 @@ function welcomeGriefHtml(firstName: string) {
 function legacyInvitationHtml(contactName: string, ownerName: string) {
   return layout(`
     ${greeting(`Dear ${contactName},`)}
-    ${body(`${ownerName} has done something quietly extraordinary — they\'ve sat down and organized everything their family will need, so that when the time comes, the people they love won\'t have to carry that weight alone.`)}
-    ${body(`And they\'ve chosen you to be the one who carries it forward.`)}
-    ${pullQuote(`Being named a legacy contact is an act of deep trust. It means ${ownerName} believes you are the person who will handle things with care, with love, and with the kind of calm that families need most in hard moments.`)}
-    ${body('When the time comes, you\'ll be the one to activate their guide — releasing their letters to the people they addressed them to, sharing their wishes with the family, and making sure nothing important gets lost.')}
-    ${body('You don\'t need to do anything right now. This email is simply so you know — so that when that moment arrives, it isn\'t a surprise, and you feel prepared.')}
+    ${body(`You're receiving this email because <strong style="color:#2f241f;">${ownerName}</strong> has named you as their legacy contact — and we wanted to make sure you understood exactly what that means, and why it matters so much.`)}
+    ${body(`First, a little about us. Mourning Guide is a private vault where people organize everything their family will need when they\'re gone — their financial accounts, their final wishes, personal letters written to the people they love, and instructions for who to contact and when. Think of it as the most thoughtful gift a person can leave behind.`)}
+    ${pullQuote(`${ownerName} is building that gift right now. And they\'ve chosen you to be the one who opens it for the family when the time comes.`)}
+    ${body(`As their legacy contact, you\'ll be the person who activates their guide. When that day arrives, you\'ll have access to everything they\'ve prepared:`)}
+
+    <table role="presentation" cellpadding="0" cellspacing="0" border="0"
+      style="width:100%;margin:8px 0 28px;border-radius:14px;overflow:hidden;border:1px solid #e8dfd6;">
+      <tr style="background:#faf6f2;">
+        <td style="padding:16px 18px;border-bottom:1px solid #e8dfd6;">
+          <div style="font-size:0.88rem;font-weight:600;color:#2f241f;margin-bottom:4px;">📬 &nbsp;Personal letters</div>
+          <div style="font-size:0.84rem;color:#6b5c55;line-height:1.7;">Messages written directly to the people they love — released the moment you activate the guide. Words they may never have said out loud.</div>
+        </td>
+      </tr>
+      <tr style="background:#fffdf9;">
+        <td style="padding:16px 18px;border-bottom:1px solid #e8dfd6;">
+          <div style="font-size:0.88rem;font-weight:600;color:#2f241f;margin-bottom:4px;">🕊️ &nbsp;Final wishes</div>
+          <div style="font-size:0.84rem;color:#6b5c55;line-height:1.7;">Service preferences, music, readings, who to call — everything the family needs to honor them, exactly as they wanted.</div>
+        </td>
+      </tr>
+      <tr style="background:#faf6f2;">
+        <td style="padding:16px 18px;border-bottom:1px solid #e8dfd6;">
+          <div style="font-size:0.88rem;font-weight:600;color:#2f241f;margin-bottom:4px;">🏦 &nbsp;Financial accounts</div>
+          <div style="font-size:0.84rem;color:#6b5c55;line-height:1.7;">Bank accounts, insurance policies, investments — organized and labeled so the family knows exactly what exists, where it is, and who to call.</div>
+        </td>
+      </tr>
+      <tr style="background:#fffdf9;">
+        <td style="padding:16px 18px;">
+          <div style="font-size:0.88rem;font-weight:600;color:#2f241f;margin-bottom:4px;">👥 &nbsp;Who to notify</div>
+          <div style="font-size:0.84rem;color:#6b5c55;line-height:1.7;">A list of family, friends, and contacts — organized by who should be told first — so no one is forgotten and nothing falls through the cracks.</div>
+        </td>
+      </tr>
+    </table>
+
+    ${body(`Think about what it usually looks like when someone passes away without any of this in place. Family members searching through drawers for account numbers. Nobody knowing which insurance company to call. Siblings disagreeing about what their loved one actually wanted. Important people going unnotified for weeks.`)}
+    ${pullQuote(`${ownerName} is making sure none of that happens to you. That\'s what this is.`)}
+    ${body(`<strong style="color:#2f241f;">You don\'t need to do anything right now.</strong> You don\'t need to create an account, log in, or take any action at all. When the time comes, we\'ll walk you through everything step by step. This email is simply so you know — so that day, if it comes, isn\'t a surprise.`)}
     ${divider()}
-    ${body(`If you have any questions at all, please reply to this email or write to us at <a href="mailto:support@mourninguide.com" style="color:#c57b57;text-decoration:none;">support@mourninguide.com</a>. We\'re honored to support you both.`)}
+    ${body(`If you have questions — about what Mourning Guide is, what your role involves, or anything else — just reply to this email. We\'re real people and we\'re honored to be part of this.`)}
     ${sign()}
-  `, `${ownerName} chose you because they trust you completely.`);
+  `, `${ownerName} is giving their family an extraordinary gift. You\'re the one who gets to deliver it.`);
 }
 
 // ── Activation notification ───────────────────────────────────────────────────
