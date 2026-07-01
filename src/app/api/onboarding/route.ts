@@ -61,8 +61,9 @@ export async function POST(req: Request) {
     }
 
     return NextResponse.json({ account });
-  } catch (err: any) {
+  } catch (err: unknown) {
     console.error('Onboarding error:', err);
-    return NextResponse.json({ error: err?.message ?? 'Unknown error' }, { status: 500 });
+    const message = err instanceof Error ? err.message : 'Unknown error';
+    return NextResponse.json({ error: message }, { status: 500 });
   }
 }

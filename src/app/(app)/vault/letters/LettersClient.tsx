@@ -8,7 +8,7 @@ export type Letter = {
   recipientEmail: string | null;
   body: string;
   releaseTiming: string | null;
-  createdAt: string;
+  createdAt: Date | string;
 };
 
 const BLANK = { recipientName: '', recipientEmail: '', body: '', releaseTiming: 'immediate' };
@@ -73,107 +73,119 @@ export default function LettersClient({ initial }: { initial: Letter[] }) {
 
   return (
     <>
-      <button onClick={openAdd} style={addBtnStyle}>+ Write a letter</button>
+      <h1 className="page-heading">Letters</h1>
+      <p className="page-sub">Write letters to the people you love. They&apos;ll be delivered to your legacy contact after activation — as private messages, not public posts.</p>
+
+      <button onClick={openAdd} className="add-btn">+ Write a letter</button>
 
       {items.length === 0 && (
-        <div style={{ textAlign: 'center', color: 'var(--mg-light)', marginTop: 48 }}>
-          <div style={{ fontSize: '2rem', marginBottom: 12 }}>✉️</div>
-          <p style={{ fontSize: '0.9rem' }}>No letters yet.</p>
-          <p style={{ fontSize: '0.84rem', lineHeight: 1.5 }}>
-            Write messages to the people you love — to be delivered after you're gone. To your partner, your kids, a best friend.
-          </p>
+        <div className="empty-state">
+          <div className="emoji">✉️</div>
+          <p>No letters yet. Write messages to the people you love — to be delivered after you&apos;re gone. To your partner, your kids, a best friend.</p>
         </div>
       )}
 
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-        {items.map(item => (
-          <div key={item.id} style={cardStyle}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-              <div style={{ flex: 1 }}>
-                <div style={{ fontWeight: 600, color: 'var(--mg-dark)', fontSize: '0.95rem' }}>
-                  To: {item.recipientName}
+      {items.map(item => (
+        <div key={item.id} className="entry-card">
+          <div className="entry-card-row">
+            <div style={{ flex: 1 }}>
+              <div className="entry-title">To: {item.recipientName}</div>
+              {item.recipientEmail ? (
+                <div className="entry-meta">{item.recipientEmail}</div>
+              ) : (
+                <div className="warn-note" style={{ marginTop: 6 }}>
+                  No email — this letter can&apos;t be delivered automatically. Add one so we can send it.
                 </div>
-                {item.recipientEmail && (
-                  <div style={{ fontSize: '0.8rem', color: 'var(--mg-light)', marginTop: 2 }}>{item.recipientEmail}</div>
-                )}
-                <div style={{ fontSize: '0.82rem', color: 'var(--mg-mid)', marginTop: 6, lineHeight: 1.5 }}>
-                  {item.body.length > 140 ? item.body.slice(0, 140) + '…' : item.body}
-                </div>
-                <div style={{ fontSize: '0.75rem', color: 'var(--mg-light)', marginTop: 8 }}>
-                  {item.releaseTiming === 'immediate' ? '🔓 Released immediately' : '⏳ Delayed release'}
-                </div>
+              )}
+              <div className="entry-sub">{item.body.length > 140 ? item.body.slice(0, 140) + '…' : item.body}</div>
+              <div className="entry-meta" style={{ marginTop: 6 }}>
+                {item.releaseTiming === 'immediate' ? '🔓 Released immediately' : '⏳ Delayed release'}
               </div>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 6, marginLeft: 12, flexShrink: 0 }}>
-                <button onClick={() => setPreview(item)} style={iconBtnStyle}>Read</button>
-                <button onClick={() => openEdit(item)} style={iconBtnStyle}>Edit</button>
-                <button onClick={() => remove(item.id)} disabled={deleting === item.id}
-                  style={{ ...iconBtnStyle, color: '#c0392b' }}>
-                  {deleting === item.id ? '…' : 'Delete'}
-                </button>
-              </div>
+            </div>
+            <div className="entry-actions" style={{ flexDirection: 'column', gap: 6 }}>
+              <button onClick={() => setPreview(item)} className="entry-link-btn">Read</button>
+              <button onClick={() => openEdit(item)} className="entry-link-btn">Edit</button>
+              <button onClick={() => remove(item.id)} disabled={deleting === item.id} className="entry-link-btn danger">
+                {deleting === item.id ? '…' : 'Delete'}
+              </button>
             </div>
           </div>
-        ))}
-      </div>
+        </div>
+      ))}
 
-      {/* Write/Edit form */}
       {showForm && (
-        <div style={overlayStyle} onClick={e => { if (e.target === e.currentTarget) setShowForm(false); }}>
-          <form onSubmit={save} style={sheetStyle}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 20 }}>
-              <h2 style={sheetHeadStyle}>{editing ? 'Edit letter' : 'Write a letter'}</h2>
-              <button type="button" onClick={() => setShowForm(false)} style={closeBtn}>✕</button>
+        <div className="sheet-overlay" onClick={e => { if (e.target === e.currentTarget) setShowForm(false); }}>
+          <form onSubmit={save} className="sheet">
+            <div className="sheet-head">
+              <h2 className="sheet-title">{editing ? 'Edit letter' : 'Write a letter'}</h2>
+              <button type="button" onClick={() => setShowForm(false)} className="sheet-close">✕</button>
             </div>
 
-            <label style={labelStyle}>To</label>
-            <input value={form.recipientName}
-              onChange={e => setForm(f => ({ ...f, recipientName: e.target.value }))}
-              placeholder="Recipient's name" required style={inputStyle} />
+            <div className="field">
+              <label>To</label>
+              <input value={form.recipientName}
+                onChange={e => setForm(f => ({ ...f, recipientName: e.target.value }))}
+                placeholder="Recipient's name" required />
+            </div>
 
-            <label style={labelStyle}>Email <span style={{ color: 'var(--mg-light)' }}>(optional — for delivery)</span></label>
-            <input value={form.recipientEmail}
-              onChange={e => setForm(f => ({ ...f, recipientEmail: e.target.value }))}
-              placeholder="their@email.com" type="email" style={inputStyle} />
+            <div className="field">
+              <label>Email <span className="opt">(optional — for delivery)</span></label>
+              <input value={form.recipientEmail}
+                onChange={e => setForm(f => ({ ...f, recipientEmail: e.target.value }))}
+                placeholder="their@email.com" type="email" />
+            </div>
 
-            <label style={labelStyle}>Your letter</label>
-            <textarea value={form.body}
-              onChange={e => setForm(f => ({ ...f, body: e.target.value }))}
-              placeholder="Dear…" required rows={10}
-              style={{ ...inputStyle, resize: 'vertical', fontFamily: 'Georgia, serif', lineHeight: 1.7 }} />
+            <div className="field">
+              <label>Your letter</label>
+              <textarea value={form.body}
+                onChange={e => setForm(f => ({ ...f, body: e.target.value }))}
+                placeholder="Dear…" required rows={10}
+                style={{ fontFamily: 'var(--serif)', lineHeight: 1.7 }} />
+            </div>
 
-            <label style={labelStyle}>Release timing</label>
-            <select value={form.releaseTiming}
-              onChange={e => setForm(f => ({ ...f, releaseTiming: e.target.value }))}
-              style={inputStyle}>
-              <option value="immediate">Immediately upon activation</option>
-              <option value="delayed">30 days after activation</option>
-            </select>
+            <div className="field" style={{ marginBottom: 0 }}>
+              <label>Release timing</label>
+              <div className="delivery-options">
+                <label className={`delivery-option ${form.releaseTiming === 'immediate' ? 'selected' : ''}`}>
+                  <input type="radio" name="releaseTiming" checked={form.releaseTiming === 'immediate'}
+                    onChange={() => setForm(f => ({ ...f, releaseTiming: 'immediate' }))} style={{ display: 'none' }} />
+                  <span className="delivery-radio" />
+                  <div>
+                    <div className="delivery-label">Immediately upon activation</div>
+                    <div className="delivery-sub">Delivered as soon as your guide is activated.</div>
+                  </div>
+                </label>
+                <label className={`delivery-option ${form.releaseTiming === 'delayed' ? 'selected' : ''}`}>
+                  <input type="radio" name="releaseTiming" checked={form.releaseTiming === 'delayed'}
+                    onChange={() => setForm(f => ({ ...f, releaseTiming: 'delayed' }))} style={{ display: 'none' }} />
+                  <span className="delivery-radio" />
+                  <div>
+                    <div className="delivery-label">30 days after activation</div>
+                    <div className="delivery-sub">Held back so the recipient isn&apos;t overwhelmed right away.</div>
+                  </div>
+                </label>
+              </div>
+            </div>
 
-            {saveError && (
-              <p style={{ color: '#c0392b', fontSize: '0.84rem', marginBottom: 10 }}>{saveError}</p>
-            )}
-            <button type="submit" disabled={saving} style={submitStyle}>
+            {saveError && <p className="field-error" style={{ marginTop: 16 }}>{saveError}</p>}
+            <button type="submit" disabled={saving} className="save-btn">
               {saving ? 'Saving…' : editing ? 'Save changes' : 'Save letter'}
             </button>
           </form>
         </div>
       )}
 
-      {/* Read preview */}
       {preview && (
-        <div style={overlayStyle} onClick={e => { if (e.target === e.currentTarget) setPreview(null); }}>
-          <div style={{ ...sheetStyle, maxHeight: '85vh', overflowY: 'auto' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 20 }}>
+        <div className="sheet-overlay" onClick={e => { if (e.target === e.currentTarget) setPreview(null); }}>
+          <div className="sheet" style={{ maxHeight: '85vh', overflowY: 'auto' }}>
+            <div className="sheet-head">
               <div>
-                <div style={{ fontSize: '0.78rem', color: 'var(--mg-light)', marginBottom: 4 }}>Letter to</div>
-                <h2 style={sheetHeadStyle}>{preview.recipientName}</h2>
+                <div style={{ fontSize: '0.78rem', color: '#9a7a6a', marginBottom: 4 }}>Letter to</div>
+                <h2 className="sheet-title">{preview.recipientName}</h2>
               </div>
-              <button onClick={() => setPreview(null)} style={closeBtn}>✕</button>
+              <button onClick={() => setPreview(null)} className="sheet-close">✕</button>
             </div>
-            <div style={{
-              fontFamily: 'Georgia, serif', color: 'var(--mg-dark)',
-              lineHeight: 1.8, fontSize: '1rem', whiteSpace: 'pre-wrap',
-            }}>
+            <div style={{ fontFamily: 'var(--serif)', color: '#2f241f', lineHeight: 1.8, fontSize: '1rem', whiteSpace: 'pre-wrap' }}>
               {preview.body}
             </div>
           </div>
@@ -182,44 +194,3 @@ export default function LettersClient({ initial }: { initial: Letter[] }) {
     </>
   );
 }
-
-const addBtnStyle: React.CSSProperties = {
-  display: 'block', width: '100%', padding: '13px',
-  borderRadius: 10, background: 'var(--mg-accent)', color: '#fff',
-  fontWeight: 600, fontSize: '0.95rem', cursor: 'pointer', border: 'none', marginBottom: 24,
-};
-const cardStyle: React.CSSProperties = {
-  background: '#fff', border: '1px solid var(--mg-border)', borderRadius: 12, padding: '16px',
-};
-const iconBtnStyle: React.CSSProperties = {
-  background: 'none', border: 'none', color: 'var(--mg-accent)',
-  fontSize: '0.82rem', cursor: 'pointer', padding: 0, fontWeight: 500,
-};
-const overlayStyle: React.CSSProperties = {
-  position: 'fixed', inset: 0, background: 'rgba(47,36,31,0.45)', zIndex: 50,
-  display: 'flex', alignItems: 'flex-end',
-};
-const sheetStyle: React.CSSProperties = {
-  background: '#fff', borderRadius: '18px 18px 0 0', padding: '28px 22px 40px',
-  width: '100%', maxWidth: 520, margin: '0 auto',
-};
-const sheetHeadStyle: React.CSSProperties = {
-  fontFamily: 'var(--font-playfair), Georgia, serif', fontSize: '1.15rem', color: 'var(--mg-dark)',
-};
-const closeBtn: React.CSSProperties = {
-  background: 'none', border: 'none', color: 'var(--mg-light)', fontSize: '1.2rem', cursor: 'pointer',
-};
-const labelStyle: React.CSSProperties = {
-  display: 'block', fontSize: '0.82rem', color: 'var(--mg-mid)', fontWeight: 500, marginBottom: 6,
-};
-const inputStyle: React.CSSProperties = {
-  display: 'block', width: '100%', padding: '10px 13px',
-  borderRadius: 9, border: '1.5px solid var(--mg-border-strong)',
-  background: '#fff', fontSize: '0.92rem', color: 'var(--mg-dark)',
-  marginBottom: 16, outline: 'none', boxSizing: 'border-box',
-};
-const submitStyle: React.CSSProperties = {
-  display: 'block', width: '100%', padding: '13px',
-  borderRadius: 10, background: 'var(--mg-accent)', color: '#fff',
-  fontWeight: 600, fontSize: '0.95rem', cursor: 'pointer', border: 'none', marginTop: 8,
-};

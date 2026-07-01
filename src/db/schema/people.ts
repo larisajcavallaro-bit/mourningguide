@@ -12,6 +12,8 @@ export const legacyContacts = pgTable('legacy_contacts', {
   phone: text('phone'),
   clerkUserId: text('clerk_user_id'),
   inviteStatus: inviteStatusEnum('invite_status').default('pending').notNull(),
+  activationToken: text('activation_token'),
+  inviteEmailedAt: timestamp('invite_emailed_at'),
   createdAt: timestamp('created_at').defaultNow().notNull(),
 });
 
@@ -23,6 +25,7 @@ export const notificationContacts = pgTable('notification_contacts', {
   phone: text('phone'),
   relationship: text('relationship'),
   notifyPhase: notifyPhaseEnum('notify_phase').default('manual'),
+  scheduledNotifyAt: timestamp('scheduled_notify_at'), // when this contact should be auto-notified (by phase)
   notified: boolean('notified').default(false),
   notifiedAt: timestamp('notified_at'),
   createdAt: timestamp('created_at').defaultNow().notNull(),

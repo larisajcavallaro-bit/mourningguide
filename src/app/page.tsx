@@ -13,15 +13,15 @@ export default async function HomePage() {
 
         {/* Header */}
         <header className="coded-header">
-          <a className="coded-logo" href="/">
+          <Link className="coded-logo" href="/">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src="/mg-icon.svg" alt="" />
             <span className="coded-logo-wordmark">Mourning Guide</span>
-          </a>
+          </Link>
           <nav className="coded-nav">
-            <a href="/how-it-works">How It Works</a>
-            <a href="/pricing">Pricing</a>
-            <a href="/about">About</a>
+            <Link href="/how-it-works">How It Works</Link>
+            <Link href="/pricing">Pricing</Link>
+            <Link href="/about">About</Link>
           </nav>
           <Link className="coded-signin" href="/sign-in">Sign in</Link>
         </header>
@@ -51,7 +51,7 @@ export default async function HomePage() {
 
           {/* Support moments */}
           <section className="coded-moments">
-            <h2>Support for life's most important moments.</h2>
+            <h2>Support for life&apos;s most important moments.</h2>
             <div className="coded-moment-grid">
               <article>
                 <span className="emblem emblem-lock" />
@@ -138,20 +138,19 @@ export default async function HomePage() {
           </div>
           <nav>
             <h4>Product</h4>
-            <a href="/how-it-works">How It Works</a>
-            <a href="/pricing">Pricing</a>
+            <Link href="/how-it-works">How It Works</Link>
+            <Link href="/pricing">Pricing</Link>
           </nav>
           <nav>
             <h4>Support</h4>
-            <a href="#">Help Center</a>
-            <a href="mailto:support@mourninguide.com">Contact Us</a>
-            <a href="/privacy">Privacy</a>
+            <Link href="/help">Help Center</Link>
+            <Link href="/contact">Contact Us</Link>
+            <Link href="/privacy">Privacy</Link>
+            <Link href="/terms">Terms</Link>
           </nav>
           <nav>
             <h4>Company</h4>
-            <a href="/about">About</a>
-            <a href="#">Careers</a>
-            <a href="#">Press</a>
+            <Link href="/about">About</Link>
           </nav>
           <form action="#">
             <h4>Stay in the know</h4>

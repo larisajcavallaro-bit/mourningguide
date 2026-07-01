@@ -24,6 +24,8 @@ export const letters = pgTable('letters', {
   recipientEmail: text('recipient_email'),
   body: text('body').notNull(), // encrypted at application layer before storage
   releaseTiming: text('release_timing').default('immediate'), // immediate | delayed
+  deliveryStatus: text('delivery_status').default('pending'), // pending | scheduled | sent | skipped | failed
+  scheduledReleaseAt: timestamp('scheduled_release_at'), // when a delayed/held letter should be sent
   releasedAt: timestamp('released_at'),
   createdAt: timestamp('created_at').defaultNow().notNull(),
 });
@@ -31,10 +33,20 @@ export const letters = pgTable('letters', {
 export const photos = pgTable('photos', {
   id: uuid('id').primaryKey().defaultRandom(),
   accountId: uuid('account_id').notNull().references(() => accounts.id, { onDelete: 'cascade' }),
-  storageKey: text('storage_key').notNull(), // R2 object key
+  storageKey: text('storage_key').notNull(), // full Vercel Blob public URL
   caption: text('caption'),
   forService: boolean('for_service').default(false),
   uploadedBy: text('uploaded_by').default('planner'),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+});
+
+export const documents = pgTable('documents', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  accountId: uuid('account_id').notNull().references(() => accounts.id, { onDelete: 'cascade' }),
+  storageKey: text('storage_key').notNull(), // full Vercel Blob URL
+  fileName: text('file_name').notNull(),
+  category: text('category'), // will | trust | id | insurance | property | other
+  notes: text('notes'),
   createdAt: timestamp('created_at').defaultNow().notNull(),
 });
 
@@ -49,6 +61,7 @@ export const obituary = pgTable('obituaries', {
   predeceased: text('predeceased'),
   body: text('body'),
   published: boolean('published').default(false),
+  publishedAt: timestamp('published_at'),
   updatedAt: timestamp('updated_at').defaultNow().notNull(),
 });
 

@@ -1,7 +1,10 @@
 import { pgTable, uuid, text, timestamp, boolean, pgEnum } from 'drizzle-orm/pg-core';
 
-export const pathEnum = pgEnum('path', ['planning', 'grief']);
-export const activationStatusEnum = pgEnum('activation_status', ['active', 'activated', 'grief_active']);
+// NOTE: the type name must NOT be 'path' — Postgres has a built-in geometric
+// type named `path`, and the collision caused the column to be created with the
+// wrong type (breaking all account inserts). Keep this named `account_path`.
+export const pathEnum = pgEnum('account_path', ['planning', 'grief']);
+export const activationStatusEnum = pgEnum('activation_status', ['active', 'activation_pending', 'activated', 'grief_active']);
 
 export const accounts = pgTable('accounts', {
   id: uuid('id').primaryKey().defaultRandom(),
@@ -11,6 +14,8 @@ export const accounts = pgTable('accounts', {
   subjectName: text('subject_name'),
   activationStatus: activationStatusEnum('activation_status').default('active').notNull(),
   activatedAt: timestamp('activated_at'),
+  portalToken: text('portal_token'), // public memorial portal slug
+  deletionRequestedAt: timestamp('deletion_requested_at'), // self-service deletion request
   createdAt: timestamp('created_at').defaultNow().notNull(),
   updatedAt: timestamp('updated_at').defaultNow().notNull(),
 });

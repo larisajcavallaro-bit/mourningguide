@@ -1,6 +1,5 @@
 import { auth, currentUser } from '@clerk/nextjs/server';
 import { NextResponse } from 'next/server';
-import { redirect } from 'next/navigation';
 import { stripe } from '@/lib/stripe';
 import { getAccount } from '@/lib/account';
 
@@ -40,7 +39,8 @@ export async function POST() {
   try {
     const url = await createCheckoutUrl(userId);
     return NextResponse.json({ url });
-  } catch (err: any) {
-    return NextResponse.json({ error: err.message }, { status: 500 });
+  } catch (err: unknown) {
+    const message = err instanceof Error ? err.message : 'Something went wrong';
+    return NextResponse.json({ error: message }, { status: 500 });
   }
 }

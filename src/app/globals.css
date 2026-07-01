@@ -1,8 +1,29 @@
 @import "tailwindcss";
 
+/* ── Design system — sourced from the real prototype styles.css ────────────── */
 :root {
+  --bg: #f7f0e7;
+  --bg-soft: #fdfbf7;
+  --panel: rgba(255, 252, 248, 0.78);
+  --panel-strong: #efe5da;
+  --ink: #34261f;
+  --ink-soft: #695749;
+  --line: rgba(76, 58, 49, 0.12);
+  --stone: #cdbdac;
+  --stone-deep: #ad9986;
+  --accent: #d88963;
+  --accent-soft: #efc2a7;
+  --terracotta: #c57b57;
+  --shadow: 0 24px 60px rgba(67, 46, 33, 0.08);
+  --radius-xl: 32px;
+  --radius-lg: 24px;
+  --radius-md: 18px;
+  --serif: "Iowan Old Style", "Palatino Linotype", "Book Antiqua", Palatino, Georgia, serif;
+  --sans: "Avenir Next", "Segoe UI", Inter, system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+
+  /* App tokens re-pointed to the real palette so existing (app) pages inherit it */
   --mg-bg: #fffaf4;
-  --mg-bg-card: #ffffff;
+  --mg-bg-card: #fffcf8;
   --mg-dark: #2f241f;
   --mg-mid: #594b43;
   --mg-light: #9a7a6a;
@@ -10,16 +31,20 @@
   --mg-accent-hover: #b36a47;
   --mg-border: rgba(145, 104, 82, 0.14);
   --mg-border-strong: rgba(145, 104, 82, 0.28);
+
+  /* Font aliases so var(--font-playfair)/var(--font-geist-sans) render the real design fonts */
+  --font-playfair: var(--serif);
+  --font-geist-sans: var(--sans);
 }
 
 @theme inline {
-  --font-sans: var(--font-geist-sans);
-  --font-serif: var(--font-playfair);
+  --font-sans: var(--sans);
+  --font-serif: var(--serif);
 }
 
 body {
   background: var(--mg-bg);
-  color: var(--mg-dark);
-  font-family: var(--font-sans), Arial, Helvetica, sans-serif;
+  color: var(--ink);
+  font-family: var(--sans);
   -webkit-font-smoothing: antialiased;
 }

@@ -12,6 +12,7 @@ export const accountBilling = pgTable('account_billing', {
   stripeSubscriptionId: text('stripe_subscription_id'),
   trialEndsAt: timestamp('trial_ends_at'),
   lapsedAt: timestamp('lapsed_at'),
+  trialExpiryEmailedAt: timestamp('trial_expiry_emailed_at'),
   createdAt: timestamp('created_at').defaultNow().notNull(),
   updatedAt: timestamp('updated_at').defaultNow().notNull(),
 });
