@@ -35,12 +35,12 @@ export default function CustomersClient({
     if (filters.plan !== 'all') params.set('plan', filters.plan);
     if (filters.marketingOnly) params.set('marketingOnly', '1');
     const qs = params.toString();
-    return `/api/admin/customers/export${qs ? `?${qs}` : ''}`;
+    return `/api/staff/customers/export${qs ? `?${qs}` : ''}`;
   }, [filters]);
 
   async function copyMarketingEmails() {
     try {
-      const res = await fetch('/api/admin/marketing/emails');
+      const res = await fetch('/api/staff/marketing/emails');
       const data = await res.json();
       if (!res.ok) throw new Error(data.error ?? 'Could not load emails');
       await navigator.clipboard.writeText((data.emails as string[]).join(', '));

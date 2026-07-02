@@ -26,7 +26,7 @@ export default function ReviewsClient({
     setBusyId(id);
     setError(null);
     try {
-      const res = await fetch(`/api/admin/reviews/${id}`, {
+      const res = await fetch(`/api/staff/reviews/${id}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),
@@ -49,7 +49,7 @@ export default function ReviewsClient({
         {(['all', 'pending', 'published', 'rejected'] as const).map(status => (
           <a
             key={status}
-            href={status === 'all' ? '/admin/reviews' : `/admin/reviews?status=${status}`}
+            href={status === 'all' ? '/staff/reviews' : `/staff/reviews?status=${status}`}
             className={`admin-btn${statusFilter === status ? ' primary' : ''}`}
           >
             {status === 'all' ? 'All' : status.charAt(0).toUpperCase() + status.slice(1)}

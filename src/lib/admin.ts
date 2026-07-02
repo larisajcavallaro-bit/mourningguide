@@ -9,7 +9,7 @@ import { countOptedInMarketingEmails, getOptedInMarketingEmails } from '@/lib/ma
 
 const GUIDE_PLAN_ANNUAL = 89;
 
-/** Emails allowed to access /admin. support@ is the business address; add your personal Clerk login here too. */
+/** Emails allowed to access /staff. support@ is the business address; add your personal Clerk login here too. */
 const DEFAULT_ADMIN_EMAILS = [
   'larisajcavallaro@gmail.com',
   'support@mourninguide.com',
@@ -29,7 +29,7 @@ export function isAdminEmail(email: string | null | undefined): boolean {
 }
 export async function requireAdminStaff(): Promise<{ email: string }> {
   const { userId } = await auth();
-  if (!userId) redirect('/sign-in?redirect_url=/admin');
+  if (!userId) redirect('/sign-in?redirect_url=/staff');
 
   const user = await currentUser();
   const email = user?.emailAddresses?.[0]?.emailAddress;

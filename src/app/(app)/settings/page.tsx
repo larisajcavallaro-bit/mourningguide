@@ -62,7 +62,7 @@ export default async function SettingsPage() {
         <>
           <p className="section-label-lg">Staff</p>
           <div className="entry-card" style={{ marginBottom: 24 }}>
-            <a href="/admin" className="list-card" style={{ marginTop: 0 }}>
+            <a href="/staff" className="list-card" style={{ marginTop: 0 }}>
               <strong>Admin dashboard</strong>
               <p>Customers, metrics, reviews, and marketing email exports.</p>
             </a>

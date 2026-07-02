@@ -9,9 +9,9 @@ interface AdminShellProps {
 }
 
 const NAV: { key: AdminNavKey; href: string; label: string }[] = [
-  { key: 'dashboard', href: '/admin', label: 'Overview' },
-  { key: 'customers', href: '/admin/customers', label: 'Customers' },
-  { key: 'reviews', href: '/admin/reviews', label: 'Reviews' },
+  { key: 'dashboard', href: '/staff', label: 'Overview' },
+  { key: 'customers', href: '/staff/customers', label: 'Customers' },
+  { key: 'reviews', href: '/staff/reviews', label: 'Reviews' },
 ];
 
 export default function AdminShell({ children, title, active }: AdminShellProps) {

@@ -29,9 +29,9 @@ export default async function AdminDashboardPage() {
       <div className="admin-panel">
         <h2>Quick links</h2>
         <div className="admin-toolbar">
-          <a className="admin-btn primary" href="/admin/customers">View customers</a>
-          <a className="admin-btn" href="/api/admin/customers/export?marketingOnly=1">Export marketing emails (CSV)</a>
-          <a className="admin-btn" href="/admin/reviews">Moderate reviews</a>
+          <a className="admin-btn primary" href="/staff/customers">View customers</a>
+          <a className="admin-btn" href="/api/staff/customers/export?marketingOnly=1">Export marketing emails (CSV)</a>
+          <a className="admin-btn" href="/staff/reviews">Moderate reviews</a>
           <a className="admin-btn" href="/reviews" target="_blank" rel="noreferrer">Public reviews page</a>
         </div>
         <p style={{ margin: 0, fontSize: '0.84rem', color: '#9a7a6a', lineHeight: 1.6 }}>
