@@ -1,44 +1,93 @@
 'use client';
 
+import { upload } from '@vercel/blob/client';
 import Link from 'next/link';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { SETUPS, type Field, type SetupConfig } from './rememberSetups';
+
+type RememberItem = {
+  id: string;
+  values: Record<string, string>;
+};
 
 export default function RememberSetupClient({ setupKey }: { setupKey: string }) {
   const setup = SETUPS[setupKey] ?? SETUPS.photos;
-  const storageKey = `mg.remember.${setup.slug}`;
   const [values, setValues] = useState<Record<string, string>>({});
-  const [items, setItems] = useState<Array<Record<string, string>>>(() => {
-    if (typeof window === 'undefined') return [];
-    try {
-      return JSON.parse(localStorage.getItem(storageKey) ?? '[]');
-    } catch {
-      return [];
-    }
-  });
+  const [items, setItems] = useState<RememberItem[]>([]);
+  const [files, setFiles] = useState<Record<string, File | null>>({});
   const [saved, setSaved] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [saveError, setSaveError] = useState('');
+  const [loading, setLoading] = useState(true);
 
   function update(id: string, value: string) {
     setValues(v => ({ ...v, [id]: value }));
   }
 
-  function persist(next: Array<Record<string, string>>) {
-    setItems(next);
-    localStorage.setItem(storageKey, JSON.stringify(next));
-  }
+  useEffect(() => {
+    let active = true;
+    fetch(`/api/remember/entries?kind=${encodeURIComponent(setup.slug)}`)
+      .then(r => r.ok ? r.json() : Promise.reject())
+      .then(({ items }) => {
+        if (active) setItems(items ?? []);
+      })
+      .catch(() => {
+        if (active) setSaveError('Could not load saved entries. Please refresh and try again.');
+      })
+      .finally(() => {
+        if (active) setLoading(false);
+      });
+    return () => { active = false; };
+  }, [setup.slug]);
 
-  function save() {
+  async function save() {
     const required = setup.fields.find(f => 'required' in f && f.required && !values[f.id]?.trim());
     if (required) return;
-    const next = [...items, values];
-    persist(next);
-    setValues({});
-    setSaved(true);
-    setTimeout(() => setSaved(false), 2500);
+    setSaving(true);
+    setSaveError('');
+
+    let storageKey = '';
+    let fileName = '';
+    const fileField = setup.fields.find((field): field is Extract<Field, { type: 'file' }> => field.type === 'file');
+    const file = fileField ? files[fileField.id] : null;
+
+    try {
+      if (file) {
+        const blob = await upload(file.name, file, {
+          access: 'public',
+          handleUploadUrl: '/api/remember/upload',
+        });
+        storageKey = blob.url;
+        fileName = file.name;
+      }
+
+      const payload = buildPayload(setup.slug, values, storageKey, fileName);
+      const res = await fetch('/api/remember/entries', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+      if (!res.ok) throw new Error('save failed');
+      const { item } = await res.json();
+      setItems(prev => [item, ...prev]);
+      setValues({});
+      setFiles({});
+      setSaved(true);
+      setTimeout(() => setSaved(false), 2500);
+    } catch {
+      setSaveError('Could not save this entry. Please try again.');
+    } finally {
+      setSaving(false);
+    }
   }
 
-  function remove(index: number) {
-    persist(items.filter((_, i) => i !== index));
+  async function remove(id: string) {
+    const res = await fetch(`/api/remember/entries/${id}`, { method: 'DELETE' });
+    if (!res.ok) {
+      setSaveError('Could not remove this entry. Please try again.');
+      return;
+    }
+    setItems(prev => prev.filter(item => item.id !== id));
   }
 
   return (
@@ -54,27 +103,40 @@ export default function RememberSetupClient({ setupKey }: { setupKey: string }) 
 
       <div className="portal-pad">
         {saved && <div className="save-flash show">Saved.</div>}
+        {loading && <p className="portal-muted">Loading saved entries...</p>}
+        {saveError && <p className="field-error">{saveError}</p>}
         {setup.fields.map(field => (
-          <SetupField key={field.id} field={field} value={values[field.id] ?? ''} onChange={value => update(field.id, value)} />
+          <SetupField
+            key={field.id}
+            field={field}
+            value={values[field.id] ?? ''}
+            onChange={value => update(field.id, value)}
+            onFileSelect={(file) => {
+              if (field.type === 'file') {
+                setFiles(prev => ({ ...prev, [field.id]: file }));
+                update(field.id, file?.name ?? '');
+              }
+            }}
+          />
         ))}
-        <button type="button" className="save-btn" onClick={save}>{setup.saveLabel}</button>
+        <button type="button" className="save-btn" onClick={save} disabled={saving}>{saving ? 'Saving...' : setup.saveLabel}</button>
         <button type="button" className="add-another-btn" onClick={() => setValues({})}>+ {setup.addAnotherLabel}</button>
       </div>
 
       {items.length > 0 && (
         <div className="designed-saved-section remember-saved">
           <h3>{setup.savedTitle}</h3>
-          {items.map((item, index) => {
-            const summary = setup.summary(item);
+          {items.map((item) => {
+            const summary = setup.summary(item.values);
             return (
-              <div key={`${summary.title}-${index}`} className="saved-pill">
+              <div key={item.id} className="saved-pill">
                 <div className="pill-icon"><SetupIcon name={setup.icon} small /></div>
                 <div className="pill-main">
                   <div className="pill-name">{summary.title}</div>
                   <div className="pill-meta">{summary.meta}</div>
                 </div>
                 <div className="pill-actions">
-                  <button type="button" onClick={() => remove(index)}>Remove</button>
+                  <button type="button" onClick={() => remove(item.id)}>Remove</button>
                 </div>
               </div>
             );
@@ -85,13 +147,36 @@ export default function RememberSetupClient({ setupKey }: { setupKey: string }) 
   );
 }
 
-function SetupField({ field, value, onChange }: { field: Field; value: string; onChange: (value: string) => void }) {
+function buildPayload(kind: string, values: Record<string, string>, storageKey: string, fileName: string) {
+  return {
+    kind,
+    storageKey: storageKey || undefined,
+    fileName: fileName || undefined,
+    title: values.caption || values.title || values.name || (kind === 'obituary' ? 'Obituary / eulogy notes' : ''),
+    recipient: values.recipient || values.reader || '',
+    deliveryTarget: kind === 'photos' ? 'portal' : values.recipient ? 'private' : 'both',
+    body: values.memory || values.notes || values.body || '',
+    values,
+  };
+}
+
+function SetupField({
+  field,
+  value,
+  onChange,
+  onFileSelect,
+}: {
+  field: Field;
+  value: string;
+  onChange: (value: string) => void;
+  onFileSelect: (file: File | null) => void;
+}) {
   if (field.type === 'file') {
     return (
       <div className="field">
         <label>{field.label}</label>
         <div className="photo-upload-area remember-upload">
-          <input type="file" accept={field.accept} onChange={e => onChange(e.target.files?.[0]?.name ?? '')} />
+          <input type="file" accept={field.accept} onChange={e => onFileSelect(e.target.files?.[0] ?? null)} />
           <div className="upload-icon"><SetupIcon name="photo" small /></div>
           <div className="upload-title">{field.title}</div>
           <div className="upload-sub">{field.sub}</div>

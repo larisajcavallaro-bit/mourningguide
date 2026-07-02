@@ -1,7 +1,7 @@
 import { db } from '@/db';
 import { accounts } from '@/db/schema/accounts';
-import { obituary, serviceDetails, photos } from '@/db/schema/vault';
-import { eq } from 'drizzle-orm';
+import { obituary, serviceDetails, photos, rememberEntries } from '@/db/schema/vault';
+import { eq, and, desc } from 'drizzle-orm';
 import { notFound } from 'next/navigation';
 import type { Metadata } from 'next';
 
@@ -23,7 +23,11 @@ async function load(token: string) {
     .where(eq(photos.accountId, acct.id))
     .orderBy(photos.createdAt);
 
-  return { obit, service: service ?? null, photos: photoRows };
+  const rememberPhotoRows = await db.select().from(rememberEntries)
+    .where(and(eq(rememberEntries.accountId, acct.id), eq(rememberEntries.kind, 'photos')))
+    .orderBy(desc(rememberEntries.createdAt));
+
+  return { obit, service: service ?? null, photos: photoRows, rememberPhotos: rememberPhotoRows };
 }
 
 export async function generateMetadata(
@@ -44,12 +48,12 @@ export default async function PublicMemorialPage(
   const { token } = await params;
   const data = await load(token);
   if (!data) notFound();
-  const { obit, service, photos: gallery } = data;
+  const { obit, service, photos: gallery, rememberPhotos } = data;
 
   const dateLine = [obit.born, obit.died].filter(Boolean).join(' — ');
   const showService = service && (service.date || service.venue);
   const portrait = gallery[0] ?? null;
-  const rest = gallery.slice(1);
+  const rest = rememberPhotos.filter((item) => item.storageKey);
 
   return (
     <div style={{ minHeight: '100vh', background: '#f5ede6' }}>
@@ -143,7 +147,7 @@ export default async function PublicMemorialPage(
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 3, borderRadius: 10, overflow: 'hidden' }}>
                 {rest.map(p => (
                   // eslint-disable-next-line @next/next/no-img-element
-                  <img key={p.id} src={p.storageKey} alt={p.caption ?? ''}
+                  <img key={p.id} src={p.storageKey!} alt={p.title ?? ''}
                     style={{ aspectRatio: '1', width: '100%', objectFit: 'cover', filter: 'sepia(0.12) contrast(1.03)' }} />
                 ))}
               </div>

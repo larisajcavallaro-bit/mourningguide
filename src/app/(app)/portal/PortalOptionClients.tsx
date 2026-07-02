@@ -188,17 +188,47 @@ const DEFAULT_GIFT: GiftSetting = {
 };
 
 export function GallerySettingsClient() {
-  const [settings, setSettings] = useSavedState('mg.portal.gallery', {
+  const [settings, setSettings] = useState({
     layout: 'grid' as GalleryLayout,
     captions: true,
     familyUploads: true,
     visitorUploads: false,
   });
   const [saved, setSaved] = useState(false);
+  const [saveError, setSaveError] = useState('');
+
+  useEffect(() => {
+    fetch('/api/portal/settings')
+      .then(r => r.ok ? r.json() : Promise.reject())
+      .then(({ item }) => {
+        if (item?.gallery) setSettings({
+          layout: item.gallery.layout ?? 'grid',
+          captions: item.gallery.captions ?? true,
+          familyUploads: item.gallery.familyUploads ?? true,
+          visitorUploads: item.gallery.visitorUploads ?? false,
+        });
+      })
+      .catch(() => {});
+  }, []);
+
+  async function saveSettings() {
+    setSaveError('');
+    const res = await fetch('/api/portal/settings', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ patch: { gallery: settings } }),
+    });
+    if (!res.ok) {
+      setSaveError('Could not save gallery settings. Please try again.');
+      return;
+    }
+    flash(setSaved);
+  }
 
   return (
     <PortalPageFrame icon="gallery" title="Photo gallery" sub="Choose how your photos are displayed. The gallery colors will match your portal theme.">
       {saved && <SaveFlash>Gallery settings saved.</SaveFlash>}
+      {saveError && <p className="field-error">{saveError}</p>}
 
       <p className="section-label-lg">Gallery layout</p>
       <div className="layout-grid">
@@ -217,23 +247,53 @@ export function GallerySettingsClient() {
       <SettingRow title="Show captions" desc="Display the story or caption beneath each photo." on={settings.captions} onToggle={() => setSettings({ ...settings, captions: !settings.captions })} />
       <SettingRow title="Family can add photos" desc="Allow legacy contacts to upload photos after your passing." on={settings.familyUploads} onToggle={() => setSettings({ ...settings, familyUploads: !settings.familyUploads })} />
       <SettingRow title="Visitors can add photos" desc="Anyone with the portal link can contribute photos for family review." on={settings.visitorUploads} onToggle={() => setSettings({ ...settings, visitorUploads: !settings.visitorUploads })} />
-      <button className="save-btn" onClick={() => flash(setSaved)}>Save gallery settings</button>
+      <button className="save-btn" onClick={saveSettings}>Save gallery settings</button>
     </PortalPageFrame>
   );
 }
 
 export function GuestbookSettingsClient() {
-  const [settings, setSettings] = useSavedState('mg.portal.guestbook', {
+  const [settings, setSettings] = useState({
     access: 'anyone' as GuestbookAccess,
     moderation: true,
     photoAttachments: true,
     anonymous: false,
   });
   const [saved, setSaved] = useState(false);
+  const [saveError, setSaveError] = useState('');
+
+  useEffect(() => {
+    fetch('/api/portal/settings')
+      .then(r => r.ok ? r.json() : Promise.reject())
+      .then(({ item }) => {
+        if (item?.guestbook) setSettings({
+          access: item.guestbook.access ?? 'anyone',
+          moderation: item.guestbook.moderation ?? true,
+          photoAttachments: item.guestbook.photoAttachments ?? true,
+          anonymous: item.guestbook.anonymous ?? false,
+        });
+      })
+      .catch(() => {});
+  }, []);
+
+  async function saveSettings() {
+    setSaveError('');
+    const res = await fetch('/api/portal/settings', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ patch: { guestbook: settings } }),
+    });
+    if (!res.ok) {
+      setSaveError('Could not save guestbook settings. Please try again.');
+      return;
+    }
+    flash(setSaved);
+  }
 
   return (
     <PortalPageFrame icon="guestbook" title="Guestbook" sub="Let family and friends leave messages on your portal. You choose who can post and how messages are reviewed.">
       {saved && <SaveFlash>Guestbook settings saved.</SaveFlash>}
+      {saveError && <p className="field-error">{saveError}</p>}
 
       <p className="section-label-lg">Preview</p>
       <div className="gb-preview">
@@ -261,14 +321,24 @@ export function GuestbookSettingsClient() {
       <SettingRow title="Review before publishing" desc="Legacy contacts approve each message before it appears on the portal." on={settings.moderation} onToggle={() => setSettings({ ...settings, moderation: !settings.moderation })} />
       <SettingRow title="Allow photo attachments" desc="Visitors can include a photo with their message." on={settings.photoAttachments} onToggle={() => setSettings({ ...settings, photoAttachments: !settings.photoAttachments })} />
       <SettingRow title="Anonymous posts allowed" desc="Visitors do not need to provide their name." on={settings.anonymous} onToggle={() => setSettings({ ...settings, anonymous: !settings.anonymous })} />
-      <button className="save-btn" onClick={() => flash(setSaved)}>Save guestbook settings</button>
+      <button className="save-btn" onClick={saveSettings}>Save guestbook settings</button>
     </PortalPageFrame>
   );
 }
 
 export function WaysToHelpClient() {
-  const [settings, setSettings] = useSavedState<Record<string, HelpSetting>>('mg.portal.help', {});
+  const [settings, setSettings] = useState<Record<string, HelpSetting>>({});
   const [saved, setSaved] = useState(false);
+  const [saveError, setSaveError] = useState('');
+
+  useEffect(() => {
+    fetch('/api/portal/settings')
+      .then(r => r.ok ? r.json() : Promise.reject())
+      .then(({ item }) => {
+        if (item?.waysToHelp) setSettings(item.waysToHelp);
+      })
+      .catch(() => {});
+  }, []);
 
   function itemFor(id: string): HelpSetting {
     return settings[id] ?? { on: false, url: '', label: '' };
@@ -278,11 +348,26 @@ export function WaysToHelpClient() {
     setSettings({ ...settings, [id]: { ...itemFor(id), ...patch } });
   }
 
+  async function saveSettings() {
+    setSaveError('');
+    const res = await fetch('/api/portal/settings', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ patch: { waysToHelp: settings } }),
+    });
+    if (!res.ok) {
+      setSaveError('Could not save ways to help. Please try again.');
+      return;
+    }
+    flash(setSaved);
+  }
+
   const enabled = HELP_GROUPS.flatMap(group => group.items).filter(item => itemFor(item.id).on).slice(0, 4);
 
   return (
     <PortalPageFrame icon="help" title="Ways to help" sub="Show visitors how they can support your family: meals, fundraising, travel, memorial donations, and practical help.">
       {saved && <SaveFlash>Ways to help saved.</SaveFlash>}
+      {saveError && <p className="field-error">{saveError}</p>}
       <div className="admin-note">
         <PortalIcon name="info" small />
         <span>Links to these services are for convenience. Mourning Guide is not affiliated with these platforms and receives no referral fees or commissions.</span>
@@ -331,7 +416,7 @@ export function WaysToHelpClient() {
         </section>
       ))}
 
-      <button className="save-btn" onClick={() => flash(setSaved)}>Save ways to help</button>
+      <button className="save-btn" onClick={saveSettings}>Save ways to help</button>
     </PortalPageFrame>
   );
 }
@@ -342,13 +427,22 @@ export function ServiceDetailsClient({ initial }: { initial: InitialServiceDetai
   const [saved, setSaved] = useState(false);
   const [saveError, setSaveError] = useState('');
   const [catalog, setCatalog] = useState<Catalog | null>(null);
-  const [gifts, setGifts] = useSavedState<Record<string, GiftSetting>>('mg.portal.gifts', {});
+  const [gifts, setGifts] = useState<Record<string, GiftSetting>>({});
 
   useEffect(() => {
     fetch('/data/memorial-keepsakes.json')
       .then(r => r.ok ? r.json() : null)
       .then(data => setCatalog(data))
       .catch(() => setCatalog(null));
+  }, []);
+
+  useEffect(() => {
+    fetch('/api/portal/settings')
+      .then(r => r.ok ? r.json() : Promise.reject())
+      .then(({ item }) => {
+        if (item?.gifts) setGifts(item.gifts);
+      })
+      .catch(() => {});
   }, []);
 
   async function save(e: React.FormEvent) {
@@ -361,6 +455,11 @@ export function ServiceDetailsClient({ initial }: { initial: InitialServiceDetai
       body: JSON.stringify(form),
     });
     if (res.ok) {
+      await fetch('/api/portal/settings', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ patch: { gifts } }),
+      }).catch(() => {});
       setSaved(true);
       setTimeout(() => setSaved(false), 2500);
     } else {
@@ -598,29 +697,6 @@ function Toggle({ on, onToggle }: { on: boolean; onToggle: () => void }) {
 
 function SaveFlash({ children }: { children: React.ReactNode }) {
   return <div className="save-flash show">{children}</div>;
-}
-
-function useSavedState<T>(key: string, initial: T): [T, (value: T) => void] {
-  const [value, setValue] = useState<T>(() => {
-    if (typeof window === 'undefined') return initial;
-    try {
-      const raw = window.localStorage.getItem(key);
-      const parsed = raw ? JSON.parse(raw) : null;
-      if (parsed && typeof parsed === 'object' && initial && typeof initial === 'object' && !Array.isArray(initial)) {
-        return { ...(initial as Record<string, unknown>), ...parsed } as T;
-      }
-      return parsed ?? initial;
-    } catch {
-      return initial;
-    }
-  });
-
-  function save(next: T) {
-    setValue(next);
-    window.localStorage.setItem(key, JSON.stringify(next));
-  }
-
-  return [value, save];
 }
 
 function flash(setSaved: (value: boolean) => void) {

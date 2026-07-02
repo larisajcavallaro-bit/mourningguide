@@ -50,6 +50,21 @@ export const documents = pgTable('documents', {
   createdAt: timestamp('created_at').defaultNow().notNull(),
 });
 
+export const rememberEntries = pgTable('remember_entries', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  accountId: uuid('account_id').notNull().references(() => accounts.id, { onDelete: 'cascade' }),
+  kind: text('kind').notNull(), // photo | voice_video | music | speaker | obituary_note
+  storageKey: text('storage_key'), // blob-backed assets only
+  fileName: text('file_name'),
+  title: text('title'),
+  recipient: text('recipient'),
+  deliveryTarget: text('delivery_target'), // portal | private | both
+  body: text('body'),
+  metadata: jsonb('metadata'),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  updatedAt: timestamp('updated_at').defaultNow().notNull(),
+});
+
 export const obituary = pgTable('obituaries', {
   id: uuid('id').primaryKey().defaultRandom(),
   accountId: uuid('account_id').notNull().references(() => accounts.id, { onDelete: 'cascade' }).unique(),
@@ -82,5 +97,16 @@ export const serviceDetails = pgTable('service_details', {
   receptionTime: text('reception_time'),
   livestreamUrl: text('livestream_url'),
   notes: text('notes'),
+  updatedAt: timestamp('updated_at').defaultNow().notNull(),
+});
+
+export const portalSettings = pgTable('portal_settings', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  accountId: uuid('account_id').notNull().references(() => accounts.id, { onDelete: 'cascade' }).unique(),
+  theme: jsonb('theme'),
+  gallery: jsonb('gallery'),
+  guestbook: jsonb('guestbook'),
+  waysToHelp: jsonb('ways_to_help'),
+  gifts: jsonb('gifts'),
   updatedAt: timestamp('updated_at').defaultNow().notNull(),
 });

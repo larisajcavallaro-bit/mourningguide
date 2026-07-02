@@ -15,6 +15,7 @@ type Obituary = {
 };
 
 type Photo = { id: string; storageKey: string; caption: string | null };
+type ThemeSettings = { crop: 'circle' | 'square'; theme: string[]; pattern: string; accent: string };
 
 const BLANK: Obituary = {
   name: '',
@@ -65,17 +66,7 @@ const LIGHT = [
 const PATTERNS = ['Plain', 'Soft light', 'Garden', 'Paper', 'Quiet lines'];
 const ACCENTS = ['#c57b57', '#6b7c6e', '#506f86', '#8a5c3e', '#9f4d49', '#2f241f'];
 
-function savedPortalSettings() {
-  if (typeof window === 'undefined') return {};
-  try {
-    return JSON.parse(window.localStorage.getItem('mg.portal.settings') ?? '{}');
-  } catch {
-    return {};
-  }
-}
-
 export default function PortalClient() {
-  const initialSettings = savedPortalSettings();
   const [form, setForm] = useState<Obituary>(BLANK);
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState(false);
@@ -85,28 +76,26 @@ export default function PortalClient() {
   const [photos, setPhotos] = useState<Photo[]>([]);
   const [uploading, setUploading] = useState(false);
   const [photoError, setPhotoError] = useState('');
-  const [crop, setCrop] = useState<'circle' | 'square'>(initialSettings.crop ?? 'circle');
-  const [theme, setTheme] = useState<string[]>(initialSettings.theme ?? COOL[0]);
-  const [pattern, setPattern] = useState<string>(initialSettings.pattern ?? PATTERNS[0]);
-  const [accent, setAccent] = useState<string>(initialSettings.accent ?? ACCENTS[0]);
+  const [crop, setCrop] = useState<'circle' | 'square'>('circle');
+  const [theme, setTheme] = useState<string[]>(COOL[0]);
+  const [pattern, setPattern] = useState<string>(PATTERNS[0]);
+  const [accent, setAccent] = useState<string>(ACCENTS[0]);
   const [published, setPublished] = useState(false);
   const [portalUrl, setPortalUrl] = useState<string | null>(null);
   const [publishing, setPublishing] = useState(false);
   const [publishError, setPublishError] = useState('');
   const [copied, setCopied] = useState(false);
+  const [settingsLoaded, setSettingsLoaded] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
-
-  useEffect(() => {
-    localStorage.setItem('mg.portal.settings', JSON.stringify({ theme, pattern, accent, crop }));
-  }, [theme, pattern, accent, crop]);
 
   useEffect(() => {
     Promise.all([
       fetch('/api/vault/obituary').then(r => r.ok ? r.json() : Promise.reject()),
       fetch('/api/vault/photos').then(r => r.ok ? r.json() : { items: [] }),
       fetch('/api/portal/publish').then(r => r.ok ? r.json() : null),
+      fetch('/api/portal/settings').then(r => r.ok ? r.json() : { item: null }),
     ])
-      .then(([obit, photoData, publishData]) => {
+      .then(([obit, photoData, publishData, settingsData]) => {
         if (obit.item) setForm({
           name: obit.item.name ?? '',
           born: obit.item.born ?? '',
@@ -121,10 +110,30 @@ export default function PortalClient() {
           setPublished(publishData.published);
           setPortalUrl(publishData.url);
         }
+        const themeSettings = settingsData?.item?.theme as ThemeSettings | undefined;
+        if (themeSettings) {
+          setCrop(themeSettings.crop ?? 'circle');
+          setTheme(Array.isArray(themeSettings.theme) ? themeSettings.theme : COOL[0]);
+          setPattern(themeSettings.pattern ?? PATTERNS[0]);
+          setAccent(themeSettings.accent ?? ACCENTS[0]);
+        }
+        setSettingsLoaded(true);
         setLoading(false);
       })
       .catch(() => { setLoadError(true); setLoading(false); });
   }, []);
+
+  useEffect(() => {
+    if (!settingsLoaded) return;
+    const timeout = setTimeout(() => {
+      fetch('/api/portal/settings', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ patch: { theme: { theme, pattern, accent, crop } } }),
+      }).catch(() => {});
+    }, 300);
+    return () => clearTimeout(timeout);
+  }, [accent, crop, pattern, settingsLoaded, theme]);
 
   async function uploadPortrait(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
