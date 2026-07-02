@@ -23,6 +23,8 @@ type ServiceDetails = {
   notes: string;
 };
 
+type InitialServiceDetails = { [K in keyof ServiceDetails]?: ServiceDetails[K] | null } | null;
+
 type HelpSetting = {
   on: boolean;
   url: string;
@@ -75,6 +77,26 @@ const BLANK_SERVICE: ServiceDetails = {
   livestreamUrl: '',
   notes: '',
 };
+
+function initialServiceForm(initial: InitialServiceDetails): ServiceDetails {
+  if (!initial) return BLANK_SERVICE;
+  return {
+    type: initial.type ?? '',
+    date: initial.date ?? '',
+    time: initial.time ?? '',
+    venue: initial.venue ?? '',
+    address: initial.address ?? '',
+    parking: initial.parking ?? '',
+    dresscode: initial.dresscode ?? '',
+    officiant: initial.officiant ?? '',
+    reception: initial.reception ?? false,
+    receptionVenue: initial.receptionVenue ?? '',
+    receptionAddress: initial.receptionAddress ?? '',
+    receptionTime: initial.receptionTime ?? '',
+    livestreamUrl: initial.livestreamUrl ?? '',
+    notes: initial.notes ?? '',
+  };
+}
 
 const HELP_GROUPS: Array<{ title: string; items: Array<{ id: string; label: string; desc: string; placeholder: string; mark: string; tone: string; custom?: boolean }> }> = [
   {
@@ -314,40 +336,13 @@ export function WaysToHelpClient() {
   );
 }
 
-export function ServiceDetailsClient() {
-  const [form, setForm] = useState<ServiceDetails>(BLANK_SERVICE);
-  const [loading, setLoading] = useState(true);
-  const [loadError, setLoadError] = useState(false);
+export function ServiceDetailsClient({ initial }: { initial: InitialServiceDetails }) {
+  const [form, setForm] = useState<ServiceDetails>(() => initialServiceForm(initial));
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
   const [saveError, setSaveError] = useState('');
   const [catalog, setCatalog] = useState<Catalog | null>(null);
   const [gifts, setGifts] = useSavedState<Record<string, GiftSetting>>('mg.portal.gifts', {});
-
-  useEffect(() => {
-    fetch('/api/vault/wishes')
-      .then(r => r.ok ? r.json() : Promise.reject())
-      .then(({ item }) => {
-        if (item) setForm({
-          type: item.type ?? '',
-          date: item.date ?? '',
-          time: item.time ?? '',
-          venue: item.venue ?? '',
-          address: item.address ?? '',
-          parking: item.parking ?? '',
-          dresscode: item.dresscode ?? '',
-          officiant: item.officiant ?? '',
-          reception: item.reception ?? false,
-          receptionVenue: item.receptionVenue ?? '',
-          receptionAddress: item.receptionAddress ?? '',
-          receptionTime: item.receptionTime ?? '',
-          livestreamUrl: item.livestreamUrl ?? '',
-          notes: item.notes ?? '',
-        });
-        setLoading(false);
-      })
-      .catch(() => { setLoadError(true); setLoading(false); });
-  }, []);
 
   useEffect(() => {
     fetch('/data/memorial-keepsakes.json')
@@ -385,14 +380,6 @@ export function ServiceDetailsClient() {
 
   function updateGift(id: string, patch: Partial<GiftSetting>) {
     setGifts({ ...gifts, [id]: { ...giftFor(id), ...patch } });
-  }
-
-  if (loading) {
-    return <PortalPageFrame icon="service" title="Service & gifts" sub="Loading service details..."><p style={{ color: '#9a7a6a' }}>Loading...</p></PortalPageFrame>;
-  }
-
-  if (loadError) {
-    return <PortalPageFrame icon="service" title="Service & gifts" sub="Add funeral home details, service wishes, and optional memorial keepsakes."><p className="field-error">Couldn&apos;t load service details. Please refresh and try again.</p></PortalPageFrame>;
   }
 
   return (
