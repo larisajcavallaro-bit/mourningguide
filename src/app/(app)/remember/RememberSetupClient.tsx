@@ -2,9 +2,10 @@
 
 import Link from 'next/link';
 import { useState } from 'react';
-import type { Field, SetupConfig } from './rememberSetups';
+import { SETUPS, type Field, type SetupConfig } from './rememberSetups';
 
-export default function RememberSetupClient({ setup }: { setup: SetupConfig }) {
+export default function RememberSetupClient({ setupKey }: { setupKey: string }) {
+  const setup = SETUPS[setupKey] ?? SETUPS.photos;
   const storageKey = `mg.remember.${setup.slug}`;
   const [values, setValues] = useState<Record<string, string>>({});
   const [items, setItems] = useState<Array<Record<string, string>>>(() => {
