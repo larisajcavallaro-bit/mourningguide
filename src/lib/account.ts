@@ -59,7 +59,23 @@ export function formatAccountLabel(
   return { label: 'My plan', sublabel: name };
 }
 
+/** Backfill owner memberships for accounts created before the memberships table. */
+async function ensureLegacyMemberships(clerkUserId: string): Promise<void> {
+  const legacyAccounts = await db
+    .select({ id: accounts.id })
+    .from(accounts)
+    .where(eq(accounts.clerkUserId, clerkUserId));
+
+  if (!legacyAccounts.length) return;
+
+  await Promise.all(
+    legacyAccounts.map((acct) => createAccountMembership(clerkUserId, acct.id, 'owner')),
+  );
+}
+
 export async function getUserMemberships(clerkUserId: string): Promise<AccountMembershipRow[]> {
+  await ensureLegacyMemberships(clerkUserId);
+
   const rows = await db
     .select({
       membershipId: accountMemberships.id,
