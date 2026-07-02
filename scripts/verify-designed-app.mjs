@@ -144,6 +144,101 @@ const checks = [
       "title: 'Obituary & eulogy'",
     ],
   },
+  {
+    file: 'src/app/(app)/remember/photos/page.tsx',
+    name: 'Remember photos route',
+    require: [
+      'RememberSetupClient',
+      'setupKey="photos"',
+      'title="Photos & memories"',
+    ],
+  },
+  {
+    file: 'src/app/(app)/remember/voice-video/page.tsx',
+    name: 'Remember voice-video route',
+    require: [
+      'RememberSetupClient',
+      'setupKey="voice-video"',
+      'title="Voice & video"',
+    ],
+  },
+  {
+    file: 'src/app/(app)/remember/music/page.tsx',
+    name: 'Remember music route',
+    require: [
+      'RememberSetupClient',
+      'setupKey="music"',
+      'title="Music"',
+    ],
+  },
+  {
+    file: 'src/app/(app)/remember/speakers/page.tsx',
+    name: 'Remember speakers route',
+    require: [
+      'RememberSetupClient',
+      'setupKey="speakers"',
+      'title="Speakers & readings"',
+    ],
+  },
+  {
+    file: 'src/app/(app)/remember/obituary/page.tsx',
+    name: 'Remember obituary route',
+    require: [
+      'RememberSetupClient',
+      'setupKey="obituary"',
+      'title="Obituary & eulogy"',
+    ],
+  },
+  {
+    file: 'src/app/(app)/people/successors/page.tsx',
+    name: 'Legacy contacts route',
+    require: [
+      'PeopleClient',
+      'mode="legacy"',
+      'title="Legacy contacts"',
+    ],
+  },
+  {
+    file: 'src/app/(app)/people/notify/page.tsx',
+    name: 'People notify route',
+    require: [
+      'PeopleClient',
+      'mode="notify"',
+      'title="People to notify"',
+    ],
+  },
+  {
+    file: 'src/app/(app)/portal/gallery/page.tsx',
+    name: 'Portal gallery route',
+    require: [
+      'GallerySettingsClient',
+      'title="Portal"',
+    ],
+  },
+  {
+    file: 'src/app/(app)/portal/guestbook/page.tsx',
+    name: 'Portal guestbook route',
+    require: [
+      'GuestbookSettingsClient',
+      'title="Portal"',
+    ],
+  },
+  {
+    file: 'src/app/(app)/portal/ways-to-help/page.tsx',
+    name: 'Portal ways-to-help route',
+    require: [
+      'WaysToHelpClient',
+      'title="Portal"',
+    ],
+  },
+  {
+    file: 'src/app/(app)/portal/service-details/page.tsx',
+    name: 'Portal service-details route',
+    require: [
+      'ServiceDetailsClient',
+      'title="Portal"',
+    ],
+  },
 ];
 
 const sharedForbid = [
