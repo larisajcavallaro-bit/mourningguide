@@ -25,9 +25,11 @@ const checks = [
       'area-tile',
       'tile-icon',
       'Your planning areas',
+      "['Funeral & final wishes', 'Burial or cremation preferences, service wishes, pre-paid arrangements', '/vault/wishes'",
     ],
     forbid: [
       '<div className="tile-icon">+</div>',
+      "['Documents', 'Upload IDs, policies, wills, trusts, and files', '/vault/documents'",
     ],
   },
   {

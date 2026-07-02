@@ -28,8 +28,7 @@ const AREAS: VaultArea[] = [
   ['Pets', 'Vet, care instructions, new home', '/vault/finances?category=pet', icon(<><path d="M11 20c0-2.5-2-4-2-7a3 3 0 0 1 6 0c0 3-2 4.5-2 7"/><circle cx="6" cy="8" r="2"/><circle cx="18" cy="8" r="2"/><circle cx="4" cy="14" r="1.5"/><circle cx="20" cy="14" r="1.5"/></>)],
   ['Special items & sentimental', 'Jewelry, art, heirlooms', '/vault/finances?category=special_item', icon(<><path d="M6 3h12l3 5-9 13L3 8z"/><path d="M3 8h18"/><path d="M12 21V8M6 3l3 5M18 3l-3 5"/></>)],
   ['Government & benefits', 'Social Security, VA benefits, pension, Medicare', '/vault/finances?category=government', icon(<><path d="M3 21h18"/><path d="M3 10h18"/><path d="M5 6l7-3 7 3"/><path d="M7 10v11M11 10v11M13 10v11M17 10v11"/></>)],
-  ['Funeral & final wishes', 'Burial, cremation, service wishes, prepaid arrangements', '/portal/service-details', icon(<><path d="M12 22V12"/><path d="M12 12C12 7 7 4 4 6c3 1 5 4 8 6z"/><path d="M12 12c0-5 5-8 8-6-3 1-5 4-8 6z"/><path d="M8 22h8"/></>)],
-  ['Documents', 'Upload IDs, policies, wills, trusts, and files', '/vault/documents', icon(<><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></>)],
+  ['Funeral & final wishes', 'Burial or cremation preferences, service wishes, pre-paid arrangements', '/vault/wishes', icon(<><path d="M12 22V12"/><path d="M12 12C12 7 7 4 4 6c3 1 5 4 8 6z"/><path d="M12 12c0-5 5-8 8-6-3 1-5 4-8 6z"/><path d="M8 22h8"/></>)],
 ];
 
 export default async function VaultOverviewPage() {
