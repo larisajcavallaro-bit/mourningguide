@@ -16,6 +16,7 @@ const isPublicRoute = createRouteMatcher([
   '/sitemap.xml',
   '/sign-in(.*)',
   '/sign-up(.*)',
+  '/onboarding',
   '/dashboard',
   '/people',
   '/settings',
