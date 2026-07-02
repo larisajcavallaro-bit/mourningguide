@@ -120,6 +120,10 @@ const checks = [
       'institution-search-icon',
       'inst-dropdown',
       'Other (type name)',
+      'Last 8 of VIN',
+      'Who should take this pet after you pass?',
+      'Co-owners & partner names',
+      'Estimated value',
     ],
   },
   {

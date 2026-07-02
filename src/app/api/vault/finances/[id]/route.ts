@@ -14,7 +14,7 @@ export async function PUT(req: Request, { params }: { params: Promise<{ id: stri
 
   const { id } = await params;
   const body = await req.json();
-  const { category, institutionName, accountType, lastFour, whoToCall, purposeNotes, paperworkLocation, notes } = body;
+  const { category, institutionName, accountType, lastFour, whoToCall, purposeNotes, paperworkLocation, notes, details } = body;
 
   const [row] = await db.update(financialAccounts).set({
     category,
@@ -24,6 +24,7 @@ export async function PUT(req: Request, { params }: { params: Promise<{ id: stri
     whoToCall: whoToCall?.trim() || null,
     purposeNotes: purposeNotes?.trim() || null,
     paperworkLocation: paperworkLocation?.trim() || null,
+    details: details && typeof details === 'object' ? details : null,
     notes: notes?.trim() || null,
     updatedAt: new Date(),
   })

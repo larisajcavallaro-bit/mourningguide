@@ -26,7 +26,7 @@ export async function POST(req: Request) {
   const { accountId } = authResult;
 
   const body = await req.json();
-  const { category, institutionName, accountType, lastFour, whoToCall, purposeNotes, paperworkLocation, notes } = body;
+  const { category, institutionName, accountType, lastFour, whoToCall, purposeNotes, paperworkLocation, notes, details } = body;
 
   if (!category || !institutionName?.trim()) {
     return NextResponse.json({ error: 'category and institutionName required' }, { status: 400 });
@@ -41,6 +41,7 @@ export async function POST(req: Request) {
     whoToCall: whoToCall?.trim() || null,
     purposeNotes: purposeNotes?.trim() || null,
     paperworkLocation: paperworkLocation?.trim() || null,
+    details: details && typeof details === 'object' ? details : null,
     notes: notes?.trim() || null,
   }).returning();
 

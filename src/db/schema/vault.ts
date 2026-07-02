@@ -12,6 +12,7 @@ export const financialAccounts = pgTable('financial_accounts', {
   purposeNotes: text('purpose_notes'),
   paperworkLocation: text('paperwork_location'),
   companyGuideId: text('company_guide_id'),
+  details: jsonb('details').$type<Record<string, string | null> | null>(),
   notes: text('notes'),
   createdAt: timestamp('created_at').defaultNow().notNull(),
   updatedAt: timestamp('updated_at').defaultNow().notNull(),

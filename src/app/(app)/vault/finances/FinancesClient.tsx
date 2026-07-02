@@ -3,6 +3,9 @@
 import Link from 'next/link';
 import { useEffect, useMemo, useRef, useState } from 'react';
 
+type DetailValue = string | null | undefined;
+type FinancialDetails = Record<string, DetailValue> | null;
+
 export type FinancialAccount = {
   id: string;
   category: string;
@@ -13,6 +16,7 @@ export type FinancialAccount = {
   purposeNotes: string | null;
   paperworkLocation: string | null;
   notes: string | null;
+  details: FinancialDetails;
 };
 
 type AreaMeta = {
@@ -28,6 +32,24 @@ type AreaMeta = {
   locationLabel: string;
   locationPlaceholder: string;
   showInstructions?: boolean;
+};
+
+type CustomField = {
+  key: string;
+  label: string;
+  type: 'text' | 'textarea' | 'select' | 'tel';
+  placeholder?: string;
+  options?: string[];
+  hint?: string;
+  dangerHint?: string;
+};
+
+type CustomFormConfig = {
+  formTitle: string;
+  addAnotherLabel: string;
+  fields: CustomField[];
+  primaryKey: string;
+  summary: (details: Record<string, string>) => string;
 };
 
 const AREA_META: Record<string, AreaMeta> = {
@@ -321,6 +343,84 @@ const INSTITUTIONS: Record<string, string[]> = {
   ],
 };
 
+const VEHICLE_MANUFACTURERS = [
+  'Toyota', 'Ford', 'Honda', 'Chevrolet / GMC', 'BMW', 'Mercedes-Benz', 'Volkswagen', 'Audi',
+  'Tesla', 'Subaru', 'Nissan', 'Hyundai', 'Kia', 'Ram', 'Jeep', 'Chrysler / Dodge',
+  'Lexus', 'Cadillac', 'Buick', 'Mazda', 'Volvo', 'Land Rover / Range Rover', 'Porsche',
+  'Harley-Davidson', 'Yamaha (motorcycle)', 'Honda (motorcycle)', 'Kawasaki', 'Suzuki',
+  'Sea-Doo / Ski-Doo', 'Yamaha (boat)', 'Bayliner', 'Other',
+];
+
+const VEHICLE_YEARS = Array.from({ length: 90 }, (_, index) => String(new Date().getFullYear() - index));
+
+const CUSTOM_FORMS: Record<string, CustomFormConfig> = {
+  special_item: {
+    formTitle: 'Add a special item or keepsake',
+    addAnotherLabel: '+ Add another item',
+    primaryKey: 'description',
+    fields: [
+      { key: 'itemType', label: 'Item type', type: 'select', options: ['Jewelry', 'Artwork', 'Antiques / furniture', 'Musical instrument', 'Watch', 'Collectible', 'Family heirloom', 'China / silverware', 'Books / manuscripts', 'Clothing / textiles', 'Religious item', 'Other'] },
+      { key: 'description', label: 'Description', type: 'textarea', placeholder: "e.g. Grandmother's pearl necklace, 3-strand, with gold clasp. Given to her on her wedding day in 1952." },
+      { key: 'estimatedValue', label: 'Estimated value', type: 'text', placeholder: 'e.g. $2,500', hint: 'Approximate - for insurance or estate purposes.' },
+      { key: 'location', label: 'Where can this item be found?', type: 'text', placeholder: 'e.g. Bedroom jewelry box, top drawer / Fireproof safe in study' },
+      { key: 'specialNotes', label: 'Additional notes', type: 'textarea', placeholder: 'e.g. I would like Maria to have this. It has been in the family for 70 years.', hint: 'Who should receive it, sentimental history, and any context your family should know.' },
+    ],
+    summary: (details) => [details.itemType, details.description ? `${details.description.slice(0, 40)}${details.description.length > 40 ? '...' : ''}` : ''].filter(Boolean).join(' · '),
+  },
+  pet: {
+    formTitle: 'Add a pet',
+    addAnotherLabel: '+ Add another pet',
+    primaryKey: 'petName',
+    fields: [
+      { key: 'petType', label: 'Type of animal', type: 'select', options: ['Dog', 'Cat', 'Bird', 'Fish / aquarium', 'Rabbit', 'Guinea pig', 'Hamster', 'Horse', 'Reptile', 'Other'] },
+      { key: 'petName', label: "Pet's name", type: 'text', placeholder: 'e.g. Max' },
+      { key: 'petGender', label: 'Gender', type: 'select', options: ['Male', 'Female', 'Unknown'] },
+      { key: 'vetName', label: 'Vet name & clinic', type: 'text', placeholder: 'e.g. Dr. Sarah Kim - Riverside Animal Clinic' },
+      { key: 'vetPhone', label: 'Vet phone number', type: 'tel', placeholder: 'e.g. (555) 000-0000' },
+      { key: 'ownershipDocs', label: 'Ownership paperwork location', type: 'text', placeholder: 'e.g. Blue folder in desk drawer / Filing cabinet, 2nd shelf' },
+      { key: 'microchipCompany', label: 'Microchip company', type: 'text', placeholder: 'e.g. HomeAgain, AKC Reunite, 24PetWatch', hint: 'If applicable.' },
+      { key: 'microchipNumber', label: 'Microchip number', type: 'text', placeholder: 'e.g. 982000123456789' },
+      { key: 'medicationSchedule', label: 'Medications & schedule', type: 'textarea', placeholder: "e.g. Apoquel 16mg - 1 tablet every morning\nHeartgard Plus - 1 chewable on the 1st of each month", hint: 'List each medication, dose, and how often.' },
+      { key: 'foodSchedule', label: 'Food type, amount & feeding schedule', type: 'textarea', placeholder: "e.g. Hill's Science Diet Adult - 1 cup dry kibble, twice daily (7am and 6pm). One treat allowed per day." },
+      { key: 'newHome', label: 'Who should take this pet after you pass?', type: 'textarea', placeholder: 'e.g. My daughter Maria has agreed to take Max. Her number is (555) 000-0000. She already knows Max well.' },
+    ],
+    summary: (details) => [details.petName, details.petType].filter(Boolean).join(' · '),
+  },
+  vehicle: {
+    formTitle: 'Add a vehicle',
+    addAnotherLabel: '+ Add another vehicle',
+    primaryKey: 'manufacturer',
+    fields: [
+      { key: 'manufacturer', label: 'Manufacturer', type: 'select', options: VEHICLE_MANUFACTURERS },
+      { key: 'vehicleType', label: 'Vehicle type', type: 'select', options: ['Car / Sedan', 'SUV / Crossover', 'Truck / Pickup', 'Van / Minivan', 'Motorcycle', 'Boat', 'RV / Motorhome', 'Trailer', 'ATV / Side-by-side', 'Other'] },
+      { key: 'model', label: 'Model', type: 'text', placeholder: 'e.g. Camry, F-150, CRV' },
+      { key: 'year', label: 'Year', type: 'select', options: VEHICLE_YEARS },
+      { key: 'vinLast8', label: 'Last 8 of VIN', type: 'text', placeholder: 'e.g. A1234567', dangerHint: 'Do not store a full VIN here - last 8 only. Full VIN on title belongs in your fireproof safe, not this app.' },
+      { key: 'paperwork', label: 'Title & registration location', type: 'text', placeholder: 'e.g. Title in fireproof safe / Registration in glove box' },
+      { key: 'hasLoan', label: 'Is there a loan on this vehicle?', type: 'select', options: ['No - owned outright', 'Yes - there is a loan'] },
+    ],
+    summary: (details) => [details.year, details.manufacturer, details.model].filter(Boolean).join(' '),
+  },
+  business: {
+    formTitle: 'Add a business interest',
+    addAnotherLabel: '+ Add another business',
+    primaryKey: 'businessName',
+    fields: [
+      { key: 'businessName', label: 'Business name', type: 'text', placeholder: 'e.g. Smith Plumbing LLC, Oakwood Properties Partnership' },
+      { key: 'businessType', label: 'Business type', type: 'select', options: ['Sole proprietorship', 'LLC (Single-member)', 'LLC (Multi-member)', 'S-Corporation', 'C-Corporation', 'General partnership', 'Limited partnership (LP)', 'Limited liability partnership (LLP)', 'Franchise', 'Shares in private company', 'Other'] },
+      { key: 'ownershipLevel', label: 'Your level of ownership', type: 'text', placeholder: 'e.g. 50% / Sole owner / 1,000 shares of 10,000 total' },
+      { key: 'shares', label: 'Number of shares', type: 'text', placeholder: 'e.g. 500 Class A shares', hint: 'If applicable.' },
+      { key: 'partners', label: 'Co-owners & partner names', type: 'textarea', placeholder: 'e.g. Jane Doe (50% owner) - (555) 000-0000\nRobert Chen (minority investor)' },
+      { key: 'businessAdvisor', label: 'Business accountant or attorney', type: 'text', placeholder: 'e.g. Mary Chen CPA - (555) 000-0000' },
+      { key: 'businessDocs', label: 'Key documents location', type: 'text', placeholder: 'e.g. Operating agreement in office filing cabinet, 2nd drawer', hint: 'Operating agreement, share certificates, tax records, and similar documents.' },
+      { key: 'businessNotes', label: 'Additional notes', type: 'textarea', placeholder: 'e.g. Business has a buy-sell agreement in place. Jane Doe has right of first refusal on my shares.' },
+    ],
+    summary: (details) => [details.businessName, details.businessType].filter(Boolean).join(' · '),
+  },
+};
+
+const CUSTOM_CATEGORY_KEYS = new Set(Object.keys(CUSTOM_FORMS));
+
 const BLANK = {
   category: '',
   institutionName: '',
@@ -334,6 +434,171 @@ const BLANK = {
 
 function categoryFromParam(value?: string) {
   return value && AREA_META[value] ? value : 'bank';
+}
+
+function normalizeDetails(details: FinancialDetails): Record<string, string> {
+  if (!details || typeof details !== 'object' || Array.isArray(details)) return {};
+  return Object.fromEntries(Object.entries(details).map(([key, value]) => [key, typeof value === 'string' ? value : value == null ? '' : String(value)]));
+}
+
+function blankCustomDetails(category: string) {
+  const config = CUSTOM_FORMS[category];
+  if (!config) return {};
+  return Object.fromEntries(config.fields.map((field) => [field.key, '']));
+}
+
+function legacyCustomDetails(category: string, item?: FinancialAccount | null) {
+  if (!item) return blankCustomDetails(category);
+  const details = normalizeDetails(item.details);
+  if (Object.keys(details).length) {
+    return { ...blankCustomDetails(category), ...details };
+  }
+
+  if (category === 'vehicle') {
+    return {
+      ...blankCustomDetails(category),
+      manufacturer: item.institutionName ?? '',
+      vehicleType: item.accountType ?? '',
+      paperwork: item.paperworkLocation ?? '',
+      vehicleNotes: item.notes ?? '',
+    };
+  }
+
+  if (category === 'pet') {
+    return {
+      ...blankCustomDetails(category),
+      petName: item.institutionName ?? '',
+      petType: item.accountType ?? '',
+      ownershipDocs: item.paperworkLocation ?? '',
+      newHome: item.purposeNotes ?? '',
+      vetName: item.whoToCall ?? '',
+      specialNotes: item.notes ?? '',
+    };
+  }
+
+  if (category === 'business') {
+    return {
+      ...blankCustomDetails(category),
+      businessName: item.institutionName ?? '',
+      businessType: item.accountType ?? '',
+      businessDocs: item.paperworkLocation ?? '',
+      businessNotes: item.notes ?? '',
+      businessAdvisor: item.whoToCall ?? '',
+      partners: item.purposeNotes ?? '',
+    };
+  }
+
+  if (category === 'special_item') {
+    return {
+      ...blankCustomDetails(category),
+      description: item.institutionName ?? '',
+      itemType: item.accountType ?? '',
+      location: item.paperworkLocation ?? '',
+      specialNotes: item.notes ?? '',
+    };
+  }
+
+  return blankCustomDetails(category);
+}
+
+function customPayload(category: string, details: Record<string, string>) {
+  if (category === 'vehicle') {
+    const institutionName = [details.year, details.manufacturer, details.model].filter(Boolean).join(' ').trim() || details.manufacturer || details.model;
+    return {
+      institutionName,
+      accountType: details.vehicleType || null,
+      lastFour: null,
+      whoToCall: null,
+      purposeNotes: details.hasLoan === 'Yes - there is a loan' ? 'This vehicle still has a loan.' : null,
+      paperworkLocation: details.paperwork || null,
+      notes: details.vehicleNotes || null,
+      details,
+    };
+  }
+
+  if (category === 'pet') {
+    return {
+      institutionName: details.petName || '',
+      accountType: details.petType || null,
+      lastFour: null,
+      whoToCall: [details.vetName, details.vetPhone].filter(Boolean).join(' - ') || null,
+      purposeNotes: details.newHome || null,
+      paperworkLocation: details.ownershipDocs || null,
+      notes: null,
+      details,
+    };
+  }
+
+  if (category === 'business') {
+    return {
+      institutionName: details.businessName || '',
+      accountType: details.businessType || null,
+      lastFour: null,
+      whoToCall: details.businessAdvisor || null,
+      purposeNotes: details.partners || null,
+      paperworkLocation: details.businessDocs || null,
+      notes: details.businessNotes || null,
+      details,
+    };
+  }
+
+  return {
+    institutionName: details.description || details.itemType || '',
+    accountType: details.itemType || null,
+    lastFour: null,
+    whoToCall: null,
+    purposeNotes: details.estimatedValue || null,
+    paperworkLocation: details.location || null,
+    notes: details.specialNotes || null,
+    details,
+  };
+}
+
+function itemTitle(item: FinancialAccount) {
+  const details = normalizeDetails(item.details);
+  if (item.category === 'vehicle') {
+    return [details.year, details.manufacturer, details.model].filter(Boolean).join(' ') || item.institutionName;
+  }
+  if (item.category === 'pet') return details.petName || item.institutionName;
+  if (item.category === 'business') return details.businessName || item.institutionName;
+  if (item.category === 'special_item') return details.description || item.institutionName;
+  return item.institutionName;
+}
+
+function itemMeta(item: FinancialAccount) {
+  const details = normalizeDetails(item.details);
+  if (item.category === 'vehicle') {
+    return [details.vehicleType, details.paperwork].filter(Boolean).join(' - ');
+  }
+  if (item.category === 'pet') {
+    return [details.petType, details.ownershipDocs].filter(Boolean).join(' - ');
+  }
+  if (item.category === 'business') {
+    return [details.businessType, details.ownershipLevel].filter(Boolean).join(' - ');
+  }
+  if (item.category === 'special_item') {
+    return [details.itemType, details.location].filter(Boolean).join(' - ');
+  }
+  return [item.accountType, item.paperworkLocation].filter(Boolean).join(' - ');
+}
+
+function itemBody(item: FinancialAccount) {
+  const details = normalizeDetails(item.details);
+  if (item.category === 'vehicle') {
+    return details.hasLoan === 'Yes - there is a loan'
+      ? 'There is a loan on this vehicle. Add lender details in Credit cards & loans.'
+      : details.vehicleNotes || '';
+  }
+  if (item.category === 'pet') {
+    return details.newHome || details.foodSchedule || details.medicationSchedule || '';
+  }
+  if (item.category === 'business') {
+    return details.businessNotes || details.partners || '';
+  }
+  if (item.category === 'special_item') {
+    return details.specialNotes || details.estimatedValue || '';
+  }
+  return item.purposeNotes || '';
 }
 
 function Icon({ name }: { name: string }) {
@@ -355,9 +620,12 @@ function Icon({ name }: { name: string }) {
 export default function FinancesClient({ initial, initialCategory }: { initial: FinancialAccount[]; initialCategory?: string }) {
   const activeCategory = categoryFromParam(initialCategory);
   const area = AREA_META[activeCategory];
+  const isCustomCategory = CUSTOM_CATEGORY_KEYS.has(activeCategory);
+  const customConfig = CUSTOM_FORMS[activeCategory];
   const [items, setItems] = useState<FinancialAccount[]>(initial);
   const [editing, setEditing] = useState<FinancialAccount | null>(null);
   const [form, setForm] = useState({ ...BLANK, category: activeCategory });
+  const [customDetails, setCustomDetails] = useState<Record<string, string>>(blankCustomDetails(activeCategory));
   const [saving, setSaving] = useState(false);
   const [saveError, setSaveError] = useState('');
   const [saved, setSaved] = useState(false);
@@ -382,6 +650,14 @@ export default function FinancesClient({ initial, initialCategory }: { initial: 
   }, [activeCategory, form.institutionName]);
 
   useEffect(() => {
+    setCustomDetails(blankCustomDetails(activeCategory));
+    setForm({ ...BLANK, category: activeCategory });
+    setEditing(null);
+    setSaveError('');
+    setSaved(false);
+  }, [activeCategory]);
+
+  useEffect(() => {
     function onPointerDown(event: MouseEvent) {
       if (!institutionWrapRef.current?.contains(event.target as Node)) {
         setInstitutionFocused(false);
@@ -392,6 +668,10 @@ export default function FinancesClient({ initial, initialCategory }: { initial: 
     document.addEventListener('mousedown', onPointerDown);
     return () => document.removeEventListener('mousedown', onPointerDown);
   }, []);
+
+  function setCustomValue(key: string, value: string) {
+    setCustomDetails((prev) => ({ ...prev, [key]: value }));
+  }
 
   function edit(item: FinancialAccount) {
     setEditing(item);
@@ -407,11 +687,13 @@ export default function FinancesClient({ initial, initialCategory }: { initial: 
       paperworkLocation: item.paperworkLocation ?? '',
       notes: item.notes ?? '',
     });
+    setCustomDetails(legacyCustomDetails(item.category, item));
   }
 
   function clearForm() {
     setEditing(null);
     setForm({ ...BLANK, category: activeCategory });
+    setCustomDetails(blankCustomDetails(activeCategory));
     setSaveError('');
   }
 
@@ -420,7 +702,17 @@ export default function FinancesClient({ initial, initialCategory }: { initial: 
     setSaving(true);
     setSaveError('');
     setSaved(false);
-    const payload = { ...form, category: activeCategory };
+
+    const payload = isCustomCategory
+      ? { category: activeCategory, ...customPayload(activeCategory, customDetails) }
+      : { ...form, category: activeCategory };
+
+    if (!payload.institutionName?.trim()) {
+      setSaveError('Please complete the main field before saving this item.');
+      setSaving(false);
+      return;
+    }
+
     const url = editing ? `/api/vault/finances/${editing.id}` : '/api/vault/finances';
     const method = editing ? 'PUT' : 'POST';
     const res = await fetch(url, {
@@ -428,15 +720,18 @@ export default function FinancesClient({ initial, initialCategory }: { initial: 
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload),
     });
+
     if (res.ok) {
       const { item } = await res.json();
       setItems((prev) => editing ? prev.map((x) => (x.id === item.id ? item : x)) : [...prev, item]);
       setSaved(true);
       setEditing(null);
       setForm({ ...BLANK, category: activeCategory });
+      setCustomDetails(blankCustomDetails(activeCategory));
     } else {
       setSaveError('Something went wrong. Please try again.');
     }
+
     setSaving(false);
   }
 
@@ -497,128 +792,172 @@ export default function FinancesClient({ initial, initialCategory }: { initial: 
 
       <section className="planning-detail-grid">
         <form onSubmit={save} className="planning-detail-form">
-          <h2>{editing ? 'Edit entry' : area.formTitle}</h2>
+          <h2>{editing ? 'Edit entry' : customConfig?.formTitle ?? area.formTitle}</h2>
 
           {saved && <div className="success-flash show">Entry saved to your plan.</div>}
 
-          <div className="field">
-            <label>{area.institutionLabel}</label>
-            <div className="institution-wrap" ref={institutionWrapRef}>
-              <svg className="institution-search-icon" width="16" height="16" fill="none" viewBox="0 0 24 24">
-                <circle cx="11" cy="11" r="7" stroke="#9a7a6a" strokeWidth="2" />
-                <path d="m20 20-3.5-3.5" stroke="#9a7a6a" strokeWidth="2" strokeLinecap="round" />
-              </svg>
-              <input
-                value={form.institutionName}
-                onChange={(e) => setForm((f) => ({ ...f, institutionName: e.target.value }))}
-                onFocus={() => setInstitutionFocused(true)}
-                onKeyDown={(e) => {
-                  if (!institutionOptions.length) return;
-                  if (e.key === 'ArrowDown') {
-                    e.preventDefault();
-                    setInstitutionFocused(true);
-                    setFocusedInstitutionIndex((current) => (current + 1) % institutionOptions.length);
-                  } else if (e.key === 'ArrowUp') {
-                    e.preventDefault();
-                    setInstitutionFocused(true);
-                    setFocusedInstitutionIndex((current) => (current <= 0 ? institutionOptions.length - 1 : current - 1));
-                  } else if (e.key === 'Enter' && focusedInstitutionIndex >= 0 && institutionOptions[focusedInstitutionIndex]) {
-                    e.preventDefault();
-                    setForm((f) => ({ ...f, institutionName: institutionOptions[focusedInstitutionIndex] }));
-                    setInstitutionFocused(false);
-                    setFocusedInstitutionIndex(-1);
-                  } else if (e.key === 'Escape') {
-                    setInstitutionFocused(false);
-                    setFocusedInstitutionIndex(-1);
-                  }
-                }}
-                placeholder={area.institutionPlaceholder}
-                required
-                autoComplete="off"
-              />
-              <div className={`inst-dropdown ${showInstitutionDropdown ? 'open' : ''}`}>
-                {institutionOptions.map((name, index) => (
-                  <button
-                    key={name}
-                    type="button"
-                    className={`inst-option ${focusedInstitutionIndex === index ? 'focused' : ''}`}
-                    onMouseDown={(e) => e.preventDefault()}
-                    onClick={() => {
-                      setForm((f) => ({ ...f, institutionName: name === 'Other (type name)' ? '' : name }));
-                      setInstitutionFocused(false);
-                      setFocusedInstitutionIndex(-1);
+          {isCustomCategory && customConfig ? (
+            <>
+              {customConfig.fields.map((field) => (
+                <div className="field" key={field.key}>
+                  <label>{field.label}</label>
+                  {field.type === 'textarea' ? (
+                    <textarea
+                      value={customDetails[field.key] ?? ''}
+                      onChange={(e) => setCustomValue(field.key, e.target.value)}
+                      placeholder={field.placeholder}
+                    />
+                  ) : field.type === 'select' ? (
+                    <select
+                      value={customDetails[field.key] ?? ''}
+                      onChange={(e) => setCustomValue(field.key, e.target.value)}
+                    >
+                      <option value="">Select...</option>
+                      {field.options?.map((option) => <option key={option} value={option}>{option}</option>)}
+                    </select>
+                  ) : (
+                    <input
+                      type={field.type}
+                      value={customDetails[field.key] ?? ''}
+                      onChange={(e) => setCustomValue(field.key, e.target.value)}
+                      placeholder={field.placeholder}
+                      maxLength={field.key === 'vinLast8' ? 8 : undefined}
+                      style={field.key === 'vinLast8' ? { fontFamily: 'monospace' } : undefined}
+                    />
+                  )}
+                  {field.hint && <p className="field-hint">{field.hint}</p>}
+                  {field.dangerHint && <p className="field-hint danger">{field.dangerHint}</p>}
+                </div>
+              ))}
+
+              {activeCategory === 'vehicle' && customDetails.hasLoan === 'Yes - there is a loan' && (
+                <div className="custom-inline-note">
+                  Add the lender details in your <Link href="/vault/finances?category=credit_card">Credit cards & loans</Link> area. No need to enter them twice.
+                </div>
+              )}
+            </>
+          ) : (
+            <>
+              <div className="field">
+                <label>{area.institutionLabel}</label>
+                <div className="institution-wrap" ref={institutionWrapRef}>
+                  <svg className="institution-search-icon" width="16" height="16" fill="none" viewBox="0 0 24 24">
+                    <circle cx="11" cy="11" r="7" stroke="#9a7a6a" strokeWidth="2" />
+                    <path d="m20 20-3.5-3.5" stroke="#9a7a6a" strokeWidth="2" strokeLinecap="round" />
+                  </svg>
+                  <input
+                    value={form.institutionName}
+                    onChange={(e) => setForm((f) => ({ ...f, institutionName: e.target.value }))}
+                    onFocus={() => setInstitutionFocused(true)}
+                    onKeyDown={(e) => {
+                      if (!institutionOptions.length) return;
+                      if (e.key === 'ArrowDown') {
+                        e.preventDefault();
+                        setInstitutionFocused(true);
+                        setFocusedInstitutionIndex((current) => (current + 1) % institutionOptions.length);
+                      } else if (e.key === 'ArrowUp') {
+                        e.preventDefault();
+                        setInstitutionFocused(true);
+                        setFocusedInstitutionIndex((current) => (current <= 0 ? institutionOptions.length - 1 : current - 1));
+                      } else if (e.key === 'Enter' && focusedInstitutionIndex >= 0 && institutionOptions[focusedInstitutionIndex]) {
+                        e.preventDefault();
+                        setForm((f) => ({ ...f, institutionName: institutionOptions[focusedInstitutionIndex] }));
+                        setInstitutionFocused(false);
+                        setFocusedInstitutionIndex(-1);
+                      } else if (e.key === 'Escape') {
+                        setInstitutionFocused(false);
+                        setFocusedInstitutionIndex(-1);
+                      }
                     }}
-                  >
-                    <span className="inst-name">{name}</span>
-                    {name === 'Other (type name)' && <span className="inst-badge">Custom</span>}
-                  </button>
-                ))}
+                    placeholder={area.institutionPlaceholder}
+                    required
+                    autoComplete="off"
+                  />
+                  <div className={`inst-dropdown ${showInstitutionDropdown ? 'open' : ''}`}>
+                    {institutionOptions.map((name, index) => (
+                      <button
+                        key={name}
+                        type="button"
+                        className={`inst-option ${focusedInstitutionIndex === index ? 'focused' : ''}`}
+                        onMouseDown={(e) => e.preventDefault()}
+                        onClick={() => {
+                          setForm((f) => ({ ...f, institutionName: name === 'Other (type name)' ? '' : name }));
+                          setInstitutionFocused(false);
+                          setFocusedInstitutionIndex(-1);
+                        }}
+                      >
+                        <span className="inst-name">{name}</span>
+                        {name === 'Other (type name)' && <span className="inst-badge">Custom</span>}
+                      </button>
+                    ))}
+                  </div>
+                </div>
               </div>
-            </div>
-          </div>
 
-          <div className="field">
-            <label>{area.accountTypeLabel ?? 'What type is this?'}</label>
-            <select value={form.accountType} onChange={(e) => setForm((f) => ({ ...f, accountType: e.target.value }))}>
-              <option value="">Select...</option>
-              {area.accountTypes.map((type) => <option key={type} value={type}>{type}</option>)}
-            </select>
-          </div>
+              <div className="field">
+                <label>{area.accountTypeLabel ?? 'What type is this?'}</label>
+                <select value={form.accountType} onChange={(e) => setForm((f) => ({ ...f, accountType: e.target.value }))}>
+                  <option value="">Select...</option>
+                  {area.accountTypes.map((type) => <option key={type} value={type}>{type}</option>)}
+                </select>
+              </div>
 
-          <div className="field">
-            <label>Last 4 digits <span className="opt">(optional - never the full number)</span></label>
-            <input
-              value={form.lastFour}
-              onChange={(e) => setForm((f) => ({ ...f, lastFour: e.target.value.replace(/\D/g, '').slice(0, 4) }))}
-              placeholder="e.g. 4821"
-              inputMode="numeric"
-              maxLength={4}
-            />
-          </div>
+              <div className="field">
+                <label>Last 4 digits <span className="opt">(optional - never the full number)</span></label>
+                <input
+                  value={form.lastFour}
+                  onChange={(e) => setForm((f) => ({ ...f, lastFour: e.target.value.replace(/\D/g, '').slice(0, 4) }))}
+                  placeholder="e.g. 4821"
+                  inputMode="numeric"
+                  maxLength={4}
+                />
+              </div>
 
-          <div className="field">
-            <label>{area.locationLabel}</label>
-            <input
-              value={form.paperworkLocation}
-              onChange={(e) => setForm((f) => ({ ...f, paperworkLocation: e.target.value }))}
-              placeholder={area.locationPlaceholder}
-            />
-            <p className="field-hint">Tell your family where to look, not the actual login details.</p>
-          </div>
+              <div className="field">
+                <label>{area.locationLabel}</label>
+                <input
+                  value={form.paperworkLocation}
+                  onChange={(e) => setForm((f) => ({ ...f, paperworkLocation: e.target.value }))}
+                  placeholder={area.locationPlaceholder}
+                />
+                <p className="field-hint">Tell your family where to look, not the actual login details.</p>
+              </div>
 
-          <div className="field">
-            <label>Who should they call? <span className="opt">(optional)</span></label>
-            <input
-              value={form.whoToCall}
-              onChange={(e) => setForm((f) => ({ ...f, whoToCall: e.target.value }))}
-              placeholder="e.g. Estate services, advisor, HR, agent, or trusted contact"
-            />
-          </div>
+              <div className="field">
+                <label>Who should they call? <span className="opt">(optional)</span></label>
+                <input
+                  value={form.whoToCall}
+                  onChange={(e) => setForm((f) => ({ ...f, whoToCall: e.target.value }))}
+                  placeholder="e.g. Estate services, advisor, HR, agent, or trusted contact"
+                />
+              </div>
 
-          <div className="field">
-            <label>What should your family know?</label>
-            <textarea
-              value={form.purposeNotes}
-              onChange={(e) => setForm((f) => ({ ...f, purposeNotes: e.target.value }))}
-              placeholder="e.g. This is our main household account. Mortgage is auto-paid from here."
-            />
-          </div>
+              <div className="field">
+                <label>What should your family know?</label>
+                <textarea
+                  value={form.purposeNotes}
+                  onChange={(e) => setForm((f) => ({ ...f, purposeNotes: e.target.value }))}
+                  placeholder="e.g. This is our main household account. Mortgage is auto-paid from here."
+                />
+              </div>
 
-          <div className="field">
-            <label>Additional notes <span className="opt">(optional)</span></label>
-            <textarea
-              value={form.notes}
-              onChange={(e) => setForm((f) => ({ ...f, notes: e.target.value }))}
-              placeholder="Anything else your family should know. Do not include passwords, SSNs, PINs, or full account numbers."
-            />
-            <p className="field-hint danger">Never write account numbers, passwords, SSNs, or PINs here.</p>
-          </div>
+              <div className="field">
+                <label>Additional notes <span className="opt">(optional)</span></label>
+                <textarea
+                  value={form.notes}
+                  onChange={(e) => setForm((f) => ({ ...f, notes: e.target.value }))}
+                  placeholder="Anything else your family should know. Do not include passwords, SSNs, PINs, or full account numbers."
+                />
+                <p className="field-hint danger">Never write account numbers, passwords, SSNs, or PINs here.</p>
+              </div>
+            </>
+          )}
 
           {saveError && <p className="field-error">{saveError}</p>}
 
           <button type="submit" disabled={saving} className="save-btn">{saving ? 'Saving...' : editing ? 'Save changes' : 'Save entry'}</button>
           <button type="button" className="add-another-btn" onClick={clearForm}>
-            {editing ? 'Cancel edit' : area.addAnotherLabel ?? '+ Add another account'}
+            {editing ? 'Cancel edit' : customConfig?.addAnotherLabel ?? area.addAnotherLabel ?? '+ Add another account'}
           </button>
         </form>
 
@@ -635,9 +974,9 @@ export default function FinancesClient({ initial, initialCategory }: { initial: 
                 <div className="saved-pill" key={item.id}>
                   <div className="pill-icon"><Icon name={area.icon} /></div>
                   <div className="pill-main">
-                    <div className="pill-name">{item.institutionName}{item.lastFour ? ` ...${item.lastFour}` : ''}</div>
-                    <div className="pill-meta">{[item.accountType, item.paperworkLocation].filter(Boolean).join(' - ')}</div>
-                    {item.purposeNotes && <p>{item.purposeNotes}</p>}
+                    <div className="pill-name">{itemTitle(item)}</div>
+                    <div className="pill-meta">{itemMeta(item)}</div>
+                    {itemBody(item) && <p>{itemBody(item)}</p>}
                   </div>
                   <div className="pill-actions">
                     <button type="button" onClick={() => edit(item)}>Edit</button>

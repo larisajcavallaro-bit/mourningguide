@@ -318,6 +318,16 @@
 .inst-option:hover, .inst-option.focused { background: rgba(200,109,73,0.07); }
 .inst-name { font-weight: 500; font-size: 0.9rem; color: #2f241f; }
 .inst-badge { font-size: 0.7rem; font-weight: 700; padding: 2px 8px; border-radius: 20px; background: rgba(200,109,73,0.1); color: #c86945; white-space: nowrap; }
+.custom-inline-note {
+  background: rgba(197,123,87,0.07);
+  border: 1px solid rgba(197,123,87,0.22);
+  border-radius: 12px;
+  padding: 12px 14px;
+  font-size: 0.83rem;
+  color: #5c3a28;
+  line-height: 1.5;
+}
+.custom-inline-note a { color: #c57b57; font-weight: 700; text-decoration: none; }
 .field-hint.danger { color: #a83030; font-weight: 600; }
 .add-another-btn {
   width: 100%; min-height: 44px; border-radius: 14px;
