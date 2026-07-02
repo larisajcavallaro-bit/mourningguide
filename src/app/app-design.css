@@ -355,13 +355,56 @@
   content: '';
   position: absolute;
   inset: 0;
-  opacity: 0.18;
+  opacity: 0.52;
   pointer-events: none;
 }
-.pattern-1::before { background: radial-gradient(circle at 28% 24%, #fff 0 10%, transparent 11%), radial-gradient(circle at 74% 70%, #fff 0 8%, transparent 9%); }
-.pattern-2::before { background: linear-gradient(135deg, rgba(255,255,255,0.32) 0 18%, transparent 18% 100%), linear-gradient(45deg, transparent 0 72%, rgba(255,255,255,0.22) 72% 100%); }
-.pattern-3::before { background: repeating-linear-gradient(0deg, rgba(255,255,255,0.22) 0 1px, transparent 1px 15px); }
-.pattern-4::before { background: repeating-linear-gradient(135deg, rgba(255,255,255,0.16) 0 2px, transparent 2px 18px); }
+.pattern-0::before {
+  background: none;
+}
+.pattern-1::before {
+  background:
+    radial-gradient(circle at 18% 22%, rgba(255,255,255,0.34) 0 2px, transparent 2.6px),
+    radial-gradient(circle at 34% 62%, rgba(255,255,255,0.28) 0 1.6px, transparent 2.2px),
+    radial-gradient(circle at 68% 28%, rgba(255,255,255,0.3) 0 2px, transparent 2.5px),
+    radial-gradient(circle at 82% 74%, rgba(255,255,255,0.26) 0 1.7px, transparent 2.4px);
+  background-size: 26px 26px, 30px 30px, 24px 24px, 34px 34px;
+  background-position: 0 0, 6px 10px, 8px 4px, 14px 12px;
+}
+.pattern-2::before {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='92' height='92' viewBox='0 0 92 92'%3E%3Cellipse cx='24' cy='46' rx='14' ry='6' fill='rgba(255,255,255,0.28)' transform='rotate(-38 24 46)'/%3E%3Cellipse cx='68' cy='22' rx='12' ry='5' fill='rgba(255,255,255,0.24)' transform='rotate(20 68 22)'/%3E%3Cellipse cx='64' cy='72' rx='12' ry='5' fill='rgba(255,255,255,0.24)' transform='rotate(-28 64 72)'/%3E%3Cellipse cx='28' cy='78' rx='10' ry='4' fill='rgba(255,255,255,0.18)' transform='rotate(46 28 78)'/%3E%3C/svg%3E");
+  background-size: 92px 92px;
+  background-repeat: repeat;
+  background-position: center;
+}
+.pattern-3::before {
+  background:
+    linear-gradient(rgba(255,255,255,0.14), rgba(255,255,255,0.14)),
+    repeating-linear-gradient(
+      0deg,
+      rgba(255,255,255,0.12) 0 1px,
+      transparent 1px 16px
+    ),
+    repeating-linear-gradient(
+      90deg,
+      rgba(255,255,255,0.08) 0 1px,
+      transparent 1px 18px
+    );
+  background-size: auto, 100% 16px, 18px 100%;
+}
+.pattern-4::before {
+  background:
+    repeating-linear-gradient(
+      135deg,
+      rgba(255,255,255,0.18) 0 2px,
+      transparent 2px 16px
+    ),
+    repeating-linear-gradient(
+      45deg,
+      rgba(255,255,255,0.1) 0 1px,
+      transparent 1px 24px
+    );
+  background-size: 22px 22px, 30px 30px;
+}
 .portal-preview-photo {
   width: 82px;
   height: 82px;
@@ -446,7 +489,66 @@
 .pattern-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; margin-bottom: 16px; }
 .pattern-card { border: 2px solid rgba(145,104,82,0.15); border-radius: 12px; overflow: hidden; cursor: pointer; aspect-ratio: 1; position: relative; background: #f5ede6; padding: 0; }
 .pattern-card.selected { border-color: #c57b57; border-width: 3px; }
-.pattern-card-inner { display: block; width: 100%; height: 100%; background: linear-gradient(160deg,#efe4da,#d8c5b5); }
+.pattern-card-inner {
+  display: block;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(160deg,#efe4da,#d8c5b5);
+  position: relative;
+}
+.pattern-card-inner::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  opacity: 0.9;
+}
+.pattern-card-inner.pattern-0::after {
+  background: none;
+}
+.pattern-card-inner.pattern-1::after {
+  background:
+    radial-gradient(circle at 18% 22%, rgba(255,255,255,0.55) 0 2px, transparent 2.6px),
+    radial-gradient(circle at 34% 62%, rgba(255,255,255,0.42) 0 1.6px, transparent 2.2px),
+    radial-gradient(circle at 68% 28%, rgba(255,255,255,0.48) 0 2px, transparent 2.5px),
+    radial-gradient(circle at 82% 74%, rgba(255,255,255,0.38) 0 1.7px, transparent 2.4px);
+  background-size: 26px 26px, 30px 30px, 24px 24px, 34px 34px;
+  background-position: 0 0, 6px 10px, 8px 4px, 14px 12px;
+}
+.pattern-card-inner.pattern-2::after {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='92' height='92' viewBox='0 0 92 92'%3E%3Cellipse cx='24' cy='46' rx='14' ry='6' fill='rgba(255,255,255,0.46)' transform='rotate(-38 24 46)'/%3E%3Cellipse cx='68' cy='22' rx='12' ry='5' fill='rgba(255,255,255,0.36)' transform='rotate(20 68 22)'/%3E%3Cellipse cx='64' cy='72' rx='12' ry='5' fill='rgba(255,255,255,0.36)' transform='rotate(-28 64 72)'/%3E%3Cellipse cx='28' cy='78' rx='10' ry='4' fill='rgba(255,255,255,0.28)' transform='rotate(46 28 78)'/%3E%3C/svg%3E");
+  background-size: 92px 92px;
+  background-repeat: repeat;
+  background-position: center;
+}
+.pattern-card-inner.pattern-3::after {
+  background:
+    linear-gradient(rgba(255,255,255,0.14), rgba(255,255,255,0.14)),
+    repeating-linear-gradient(
+      0deg,
+      rgba(255,255,255,0.22) 0 1px,
+      transparent 1px 14px
+    ),
+    repeating-linear-gradient(
+      90deg,
+      rgba(255,255,255,0.12) 0 1px,
+      transparent 1px 18px
+    );
+  background-size: auto, 100% 14px, 18px 100%;
+}
+.pattern-card-inner.pattern-4::after {
+  background:
+    repeating-linear-gradient(
+      135deg,
+      rgba(255,255,255,0.24) 0 2px,
+      transparent 2px 16px
+    ),
+    repeating-linear-gradient(
+      45deg,
+      rgba(255,255,255,0.14) 0 1px,
+      transparent 1px 24px
+    );
+  background-size: 22px 22px, 30px 30px;
+}
 .pattern-card-label { position: absolute; bottom: 0; left: 0; right: 0; background: rgba(255,252,248,0.92); font-size: 0.58rem; font-weight: 700; text-align: center; padding: 3px 2px; color: #594b43; }
 .color2-grid { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 4px; }
 .color2-swatch { width: 34px; height: 34px; border-radius: 50%; border: 2px solid transparent; cursor: pointer; transition: transform 0.1s, border-color 0.1s; }

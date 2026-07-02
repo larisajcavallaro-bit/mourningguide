@@ -64,6 +64,21 @@ const checks = [
     ],
   },
   {
+    file: 'src/app/app-design.css',
+    name: 'Portal pattern styling',
+    require: [
+      '.portal-preview-header::before',
+      '.pattern-1::before',
+      '.pattern-2::before',
+      '.pattern-3::before',
+      '.pattern-4::before',
+      '.pattern-card-inner.pattern-1::after',
+      '.pattern-card-inner.pattern-2::after',
+      '.pattern-card-inner.pattern-3::after',
+      '.pattern-card-inner.pattern-4::after',
+    ],
+  },
+  {
     file: 'src/app/(app)/portal/PortalOptionClients.tsx',
     name: 'Portal option pages',
     require: [
