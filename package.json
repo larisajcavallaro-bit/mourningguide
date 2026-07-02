@@ -4,7 +4,8 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "verify:design": "node ./scripts/verify-designed-app.mjs",
+    "build": "npm run verify:design && next build",
     "start": "next start",
     "lint": "eslint",
     "db:generate": "drizzle-kit generate",
