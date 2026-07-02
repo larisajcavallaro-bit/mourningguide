@@ -48,15 +48,16 @@ export default async function DashboardPage({
 
   if (!account) redirect('/onboarding');
 
-  const { accounts: acct, account_billing: billing } = account;
+  const { accounts: acct, account_billing: billing, membership } = account;
   const isPlanning = acct.path === 'planning';
+  const isCollaborator = membership.role === 'admin';
   const firstName = user?.firstName ?? acct.subjectName?.split(' ')[0] ?? 'there';
   const isPaid = billing?.planTier === 'guide';
-  const daysLeft = isPlanning && !isPaid ? trialDaysLeft(billing?.trialEndsAt ?? null) : null;
+  const daysLeft = isPlanning && !isPaid && !isCollaborator ? trialDaysLeft(billing?.trialEndsAt ?? null) : null;
   const trialExpired = daysLeft !== null && daysLeft <= 0;
 
-  // Fire trial expiry email once when trial just expired
-  if (trialExpired && billing && !billing.trialExpiryEmailedAt) {
+  // Fire trial expiry email once when trial just expired (owner only)
+  if (!isCollaborator && trialExpired && billing && !billing.trialExpiryEmailedAt) {
     const email = user?.emailAddresses?.[0]?.emailAddress;
     if (email) {
       sendTrialExpiryEmail({ to: email, firstName }).catch(() => {});
@@ -67,11 +68,13 @@ export default async function DashboardPage({
     }
   }
 
-  const meta = isPaid
-    ? 'Guide Plan · Active'
-    : daysLeft !== null && !trialExpired
-      ? `Free trial · ${daysLeft} ${daysLeft === 1 ? 'day' : 'days'} left`
-      : undefined;
+  const meta = isCollaborator
+    ? 'Shared family plan'
+    : isPaid
+      ? 'Guide Plan · Active'
+      : daysLeft !== null && !trialExpired
+        ? `Free trial · ${daysLeft} ${daysLeft === 1 ? 'day' : 'days'} left`
+        : undefined;
 
   return (
     <AppShell active="home" meta={meta}>
@@ -98,20 +101,25 @@ export default async function DashboardPage({
       </div>
 
       {/* Banners */}
+      {isCollaborator && (
+        <div className="app-banner trial">
+          <strong>You&apos;re helping manage this family plan.</strong> Billing is handled by the person who set it up — you won&apos;t be charged.
+        </div>
+      )}
       {upgraded === '1' && (
         <div className="app-banner success">
           <strong>You&apos;re all set — welcome to Guide Plan.</strong> Your vault and family portal are unlocked for the year.
         </div>
       )}
-      {isPlanning && !isPaid && daysLeft !== null && !trialExpired && upgraded !== '1' && (
+      {isPlanning && !isCollaborator && !isPaid && daysLeft !== null && !trialExpired && upgraded !== '1' && (
         <div className="app-banner trial">
           <strong>{daysLeft} {daysLeft === 1 ? 'day' : 'days'} left in your free trial.</strong> $89/year after · No card needed today.
         </div>
       )}
-      {isPlanning && !isPaid && trialExpired && (
+      {isPlanning && !isCollaborator && !isPaid && trialExpired && (
         <div className="app-banner warn">
-          <strong>Your free trial has ended.</strong> Continue with Guide Plan to keep access.{' '}
-          <a href="/api/checkout" style={{ color: '#a5342a', fontWeight: 700 }}>Upgrade — $89/year →</a>
+          <strong>Your free trial has ended.</strong> Subscribe to Guide Plan to keep this planning vault active.{' '}
+          <a href="/api/checkout" style={{ color: '#a5342a', fontWeight: 700 }}>Subscribe — $89/year →</a>
         </div>
       )}
 

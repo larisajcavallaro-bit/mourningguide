@@ -2,8 +2,7 @@ import { NextResponse } from 'next/server';
 import { auth } from '@clerk/nextjs/server';
 import { db } from '@/db';
 import { customerReviews } from '@/db/schema/admin';
-import { accounts } from '@/db/schema/accounts';
-import { eq } from 'drizzle-orm';
+import { authAccount, resolveActiveAccountId } from '@/lib/account';
 import { getPublishedReviews } from '@/lib/admin';
 
 export async function GET() {
@@ -44,12 +43,7 @@ export async function POST(req: Request) {
   let accountId: string | null = null;
   const { userId } = await auth();
   if (userId) {
-    const [account] = await db
-      .select({ id: accounts.id })
-      .from(accounts)
-      .where(eq(accounts.clerkUserId, userId))
-      .limit(1);
-    accountId = account?.id ?? null;
+    accountId = await resolveActiveAccountId(userId);
   }
 
   const [review] = await db.insert(customerReviews).values({

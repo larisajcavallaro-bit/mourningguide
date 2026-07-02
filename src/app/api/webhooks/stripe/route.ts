@@ -2,11 +2,11 @@ import { headers } from 'next/headers';
 import { stripe } from '@/lib/stripe';
 import { db } from '@/db';
 import { accountBilling } from '@/db/schema/billing';
-import { accounts } from '@/db/schema/accounts';
 import { eq } from 'drizzle-orm';
 import Stripe from 'stripe';
 import { createClerkClient } from '@clerk/backend';
 import { sendUpgradeConfirmation, sendPaymentFailedEmail, sendRenewalReminder } from '@/lib/emails';
+import { getAccountOwnerClerkId } from '@/lib/account';
 
 const clerk = createClerkClient({ secretKey: process.env.CLERK_SECRET_KEY! });
 
@@ -45,10 +45,9 @@ export async function POST(req: Request) {
 
       // Send upgrade confirmation email
       try {
-        const accountRows = await db.select({ clerkUserId: accounts.clerkUserId })
-          .from(accounts).where(eq(accounts.id, accountId)).limit(1);
-        if (accountRows[0]) {
-          const user = await clerk.users.getUser(accountRows[0].clerkUserId);
+        const ownerClerkId = await getAccountOwnerClerkId(accountId);
+        if (ownerClerkId) {
+          const user = await clerk.users.getUser(ownerClerkId);
           const email = user.emailAddresses?.[0]?.emailAddress;
           const firstName = user.firstName ?? 'there';
           if (email) {
@@ -88,11 +87,10 @@ export async function POST(req: Request) {
           .where(eq(accountBilling.stripeCustomerId, customerId)).limit(1);
         if (!billingRows[0]) break;
 
-        const accountRows = await db.select({ clerkUserId: accounts.clerkUserId })
-          .from(accounts).where(eq(accounts.id, billingRows[0].accountId)).limit(1);
-        if (!accountRows[0]) break;
+        const ownerClerkId = await getAccountOwnerClerkId(billingRows[0].accountId);
+        if (!ownerClerkId) break;
 
-        const user = await clerk.users.getUser(accountRows[0].clerkUserId);
+        const user = await clerk.users.getUser(ownerClerkId);
         const email = user.emailAddresses?.[0]?.emailAddress;
         const firstName = user.firstName ?? 'there';
         if (!email) break;
@@ -127,12 +125,10 @@ export async function POST(req: Request) {
 
         if (!billingRows[0]) break;
 
-        const accountRows = await db.select({ clerkUserId: accounts.clerkUserId })
-          .from(accounts).where(eq(accounts.id, billingRows[0].accountId)).limit(1);
+        const ownerClerkId = await getAccountOwnerClerkId(billingRows[0].accountId);
+        if (!ownerClerkId) break;
 
-        if (!accountRows[0]) break;
-
-        const user = await clerk.users.getUser(accountRows[0].clerkUserId);
+        const user = await clerk.users.getUser(ownerClerkId);
         const email = user.emailAddresses?.[0]?.emailAddress;
         const firstName = user.firstName ?? 'there';
         if (!email) break;

@@ -45,6 +45,42 @@ const MAIN = `
     </div>
   </section>
 
+  <section style="margin-top:52px;padding:40px;border:1px solid rgba(142,95,70,0.18);border-radius:28px;background:radial-gradient(circle at top left,rgba(216,137,99,0.1),transparent 42%),linear-gradient(145deg,rgba(255,255,255,0.72),rgba(255,250,244,0.94));box-shadow:0 18px 40px rgba(67,46,33,0.08);">
+    <p style="font-size:0.75rem;font-weight:800;letter-spacing:0.14em;text-transform:uppercase;color:#c86d49;margin:0 0 10px;">For families helping a parent</p>
+    <h2 style="font-family:var(--serif);font-size:clamp(1.9rem,3vw,2.6rem);font-weight:500;margin:0 0 16px;max-width:24ch;">Set it up for them. Keep your own plan too.</h2>
+    <p style="color:#594b43;font-size:1rem;line-height:1.72;margin:0 0 28px;max-width:62ch;">Many adult children build a Mourning Guide for a parent who will never open an app — and keep a separate plan for themselves. One email login. Two plans. Switch anytime from the header.</p>
+
+    <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px;margin-bottom:28px;">
+      <div style="padding:24px;border:1px solid rgba(142,95,70,0.14);border-radius:20px;background:rgba(255,255,255,0.55);">
+        <h3 style="font-family:var(--serif);font-size:1.2rem;font-weight:500;margin:0 0 8px;color:#2f241f;">1. Add a plan for them</h3>
+        <p style="color:#594b43;font-size:0.88rem;line-height:1.65;margin:0;">Choose <strong>A parent or loved one</strong> at signup — or add another plan later from Settings. Enter their name and state. You build the vault; they are the person the plan is for.</p>
+      </div>
+      <div style="padding:24px;border:1px solid rgba(142,95,70,0.14);border-radius:20px;background:rgba(255,255,255,0.55);">
+        <h3 style="font-family:var(--serif);font-size:1.2rem;font-weight:500;margin:0 0 8px;color:#2f241f;">2. No text required</h3>
+        <p style="color:#594b43;font-size:0.88rem;line-height:1.65;margin:0;">If your parent can't confirm by SMS — no mobile phone, dementia, or they simply won't use text — that's fine. Confirm you're helping on their behalf and start building immediately. No waiting on a text reply.</p>
+      </div>
+      <div style="padding:24px;border:1px solid rgba(142,95,70,0.14);border-radius:20px;background:rgba(255,255,255,0.55);">
+        <h3 style="font-family:var(--serif);font-size:1.2rem;font-weight:500;margin:0 0 8px;color:#2f241f;">3. Switch between plans</h3>
+        <p style="color:#594b43;font-size:0.88rem;line-height:1.65;margin:0;">Use the <strong>Viewing</strong> menu at the top of the app to flip between <em>My plan</em> and <em>Mom's plan</em> (or Dad's). You pay for each planning account separately if you keep both on Guide Plan.</p>
+      </div>
+    </div>
+
+    <div style="padding:22px 24px;border-radius:18px;border:1px solid rgba(197,123,87,0.22);background:rgba(255,250,244,0.85);margin-bottom:24px;">
+      <p style="margin:0 0 10px;font-size:0.82rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:#7a5341;">What we don't require</p>
+      <ul style="margin:0;padding:0;list-style:none;display:grid;gap:8px;">
+        <li style="display:flex;gap:10px;align-items:flex-start;font-size:0.9rem;color:#594b43;line-height:1.55;"><span style="flex-shrink:0;margin-top:6px;width:7px;height:7px;border-radius:50%;background:#b76545;"></span>Your parent does not need their own login or email</li>
+        <li style="display:flex;gap:10px;align-items:flex-start;font-size:0.9rem;color:#594b43;line-height:1.55;"><span style="flex-shrink:0;margin-top:6px;width:7px;height:7px;border-radius:50%;background:#b76545;"></span>SMS confirmation is optional — not a blocker</li>
+        <li style="display:flex;gap:10px;align-items:flex-start;font-size:0.9rem;color:#594b43;line-height:1.55;"><span style="flex-shrink:0;margin-top:6px;width:7px;height:7px;border-radius:50%;background:#b76545;"></span>Your parent never has to touch billing unless you want them to</li>
+        <li style="display:flex;gap:10px;align-items:flex-start;font-size:0.9rem;color:#594b43;line-height:1.55;"><span style="flex-shrink:0;margin-top:6px;width:7px;height:7px;border-radius:50%;background:#b76545;"></span>When the time comes, your family still unlocks everything at no cost if the plan was active</li>
+      </ul>
+    </div>
+
+    <div style="display:flex;flex-wrap:wrap;gap:14px;align-items:center;">
+      <a class="coded-button primary" href="/onboarding?path=planning&amp;new=1">Set up a plan for a parent</a>
+      <a class="coded-button secondary" href="/help">Read common questions</a>
+    </div>
+  </section>
+
   <section style="margin-top:52px;">
     <p style="font-size:0.75rem;font-weight:800;letter-spacing:0.14em;text-transform:uppercase;color:#c86d49;margin:0 0 10px;">Who we are</p>
     <h2 style="font-family:var(--serif);font-size:clamp(1.8rem,2.8vw,2.4rem);font-weight:500;margin:0 0 28px;">Your guide. On your side.</h2>
@@ -125,8 +161,8 @@ const MAIN = `
     <h2 style="font-family:var(--serif);font-size:clamp(1.8rem,2.8vw,2.6rem);font-weight:500;margin:0 0 12px;">Start where you are.</h2>
     <p style="color:#594b43;line-height:1.72;max-width:50ch;margin:0 auto 28px;">Planning ahead is free for 14 days — no credit card. And if someone just died, the grief path is free right now and always will be.</p>
     <div style="display:flex;flex-wrap:wrap;justify-content:center;gap:16px;">
-      <a class="coded-button primary" href="/onboarding/planning-signup.html">Start planning — free trial</a>
-      <a class="coded-button secondary" href="/onboarding/grief-signup.html">I need help after a loss</a>
+      <a class="coded-button primary" href="/onboarding?path=planning">Start planning — free trial</a>
+      <a class="coded-button secondary" href="/onboarding?path=grief">I need help after a loss</a>
     </div>
   </section>
 `;

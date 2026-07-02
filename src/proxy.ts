@@ -27,6 +27,7 @@ const isPublicRoute = createRouteMatcher([
   '/remember(.*)',
   '/portal',
   '/portal/(.*)',       // public memorial pages
+  '/invite/(.*)',      // family collaborator invite accept
   '/activate/(.*)',    // legacy contact activation flow
   '/api/activate/(.*)', // activation + cancel endpoints (token-authenticated)
   '/api/cron/(.*)',    // cron jobs (CRON_SECRET-authenticated)

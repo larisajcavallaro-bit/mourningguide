@@ -7,6 +7,8 @@ import * as billingSchema from './schema/billing';
 import * as activationSchema from './schema/activation';
 import * as adminSchema from './schema/admin';
 import * as marketingSchema from './schema/marketing';
+import * as membershipSchema from './schema/memberships';
+import * as collaboratorSchema from './schema/collaborators';
 
 const sql = neon(process.env.DATABASE_URL!);
 
@@ -19,6 +21,8 @@ export const db = drizzle(sql, {
     ...activationSchema,
     ...adminSchema,
     ...marketingSchema,
+    ...membershipSchema,
+    ...collaboratorSchema,
   },
 });
 
@@ -29,3 +33,5 @@ export * from './schema/billing';
 export * from './schema/activation';
 export * from './schema/admin';
 export * from './schema/marketing';
+export * from './schema/memberships';
+export * from './schema/collaborators';

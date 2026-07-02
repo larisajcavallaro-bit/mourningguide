@@ -149,6 +149,27 @@ function welcomeGriefHtml(firstName: string) {
   `, 'You don\'t have to do this alone.');
 }
 
+// ── Account collaborator invitation ───────────────────────────────────────────
+
+function collaboratorInvitationHtml(
+  inviteeName: string,
+  subjectName: string,
+  inviterName: string,
+  acceptUrl: string,
+) {
+  const first = subjectName.split(' ')[0];
+  return layout(`
+    ${greeting(`Dear ${inviteeName},`)}
+    ${body(`<strong style="color:#2f241f;">${inviterName}</strong> has invited you to help manage <strong style="color:#2f241f;">${subjectName}</strong>'s Mourning Guide plan — the private vault where the family is organizing accounts, wishes, and letters for when they're needed.`)}
+    ${pullQuote(`You'll be able to help build and update ${first}'s plan. You won't see anyone else's personal plans — only this shared family plan.`)}
+    ${body(`Accept the invitation with the email address this was sent to. Once you're in, use the <strong>Viewing</strong> menu at the top of the app to switch to ${first}'s plan anytime.`)}
+    ${cta(acceptUrl, `Accept invitation →`)}
+    ${divider()}
+    ${body(`If you weren't expecting this, you can ignore this email. If you have questions, reply here — we're happy to help.`)}
+    ${sign()}
+  `, `Help ${first}'s family get organized — together.`);
+}
+
 // ── Legacy contact invitation ─────────────────────────────────────────────────
 
 function legacyInvitationHtml(contactName: string, ownerName: string) {
@@ -509,6 +530,23 @@ export async function sendWelcomeEmail({
     html: path === 'planning'
       ? welcomePlanningHtml(firstName)
       : welcomeGriefHtml(firstName),
+  });
+}
+
+export async function sendCollaboratorInvitation({
+  to, inviteeName, subjectName, inviterName, acceptUrl,
+}: {
+  to: string;
+  inviteeName: string;
+  subjectName: string;
+  inviterName: string;
+  acceptUrl: string;
+}) {
+  return resend.emails.send({
+    from: FROM,
+    to,
+    subject: `${inviterName} invited you to help with ${subjectName}'s plan`,
+    html: collaboratorInvitationHtml(inviteeName, subjectName, inviterName, acceptUrl),
   });
 }
 

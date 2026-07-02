@@ -1,25 +1,25 @@
-import { auth } from '@clerk/nextjs/server';
 import { NextResponse } from 'next/server';
 import { db } from '@/db';
 import { accounts } from '@/db/schema/accounts';
 import { obituary } from '@/db/schema/vault';
 import { eq } from 'drizzle-orm';
+import { authAccount } from '@/lib/account';
 import { randomBytes } from 'crypto';
 
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? 'https://mourninguide.com';
 
-async function getAccount(userId: string) {
-  const rows = await db.select({ id: accounts.id, portalToken: accounts.portalToken })
-    .from(accounts).where(eq(accounts.clerkUserId, userId)).limit(1);
-  return rows[0] ?? null;
-}
-
 // GET — current publish state + public URL
 export async function GET() {
-  const { userId } = await auth();
-  if (!userId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-  const account = await getAccount(userId);
-  if (!account) return NextResponse.json({ error: 'No account' }, { status: 400 });
+  const authResult = await authAccount();
+  if (!authResult.ok) {
+    return NextResponse.json({ error: authResult.error }, { status: authResult.status });
+  }
+  const { accountId } = authResult;
+  const account = { id: accountId, portalToken: null as string | null };
+  {
+    const acctRows = await db.select({ portalToken: accounts.portalToken }).from(accounts).where(eq(accounts.id, accountId)).limit(1);
+    if (acctRows[0]) account.portalToken = acctRows[0].portalToken;
+  }
 
   const [obit] = await db.select({ published: obituary.published })
     .from(obituary).where(eq(obituary.accountId, account.id)).limit(1);
@@ -32,10 +32,16 @@ export async function GET() {
 
 // POST { publish: boolean } — toggle the public memorial page on/off
 export async function POST(req: Request) {
-  const { userId } = await auth();
-  if (!userId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-  const account = await getAccount(userId);
-  if (!account) return NextResponse.json({ error: 'No account' }, { status: 400 });
+  const authResult = await authAccount();
+  if (!authResult.ok) {
+    return NextResponse.json({ error: authResult.error }, { status: authResult.status });
+  }
+  const { accountId } = authResult;
+  const account = { id: accountId, portalToken: null as string | null };
+  {
+    const acctRows = await db.select({ portalToken: accounts.portalToken }).from(accounts).where(eq(accounts.id, accountId)).limit(1);
+    if (acctRows[0]) account.portalToken = acctRows[0].portalToken;
+  }
 
   const { publish } = await req.json();
 

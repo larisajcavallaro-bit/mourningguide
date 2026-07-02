@@ -5,6 +5,13 @@ import { accounts, griefProfiles } from '@/db/schema/accounts';
 import { accountBilling } from '@/db/schema/billing';
 import { eq } from 'drizzle-orm';
 import { sendWelcomeEmail } from '@/lib/emails';
+import {
+  createAccountMembership,
+  getUserMemberships,
+  setActiveAccountCookie,
+} from '@/lib/account';
+
+type ProxyConsentPath = 'can_text' | 'cannot_text';
 
 export async function POST(req: Request) {
   try {
@@ -13,7 +20,29 @@ export async function POST(req: Request) {
     const user = await currentUser();
 
     const body = await req.json();
-    const { path, subjectName, usState, relationship } = body;
+    const {
+      path,
+      subjectName,
+      usState,
+      relationship,
+      planFor,
+      createNew,
+      proxyRelationship,
+      consentPath,
+      familyAttestation,
+      subjectPhone,
+    } = body as {
+      path?: string;
+      subjectName?: string;
+      usState?: string;
+      relationship?: string;
+      planFor?: string;
+      createNew?: boolean;
+      proxyRelationship?: string;
+      consentPath?: ProxyConsentPath;
+      familyAttestation?: boolean;
+      subjectPhone?: string;
+    };
 
     if (!path || !['planning', 'grief'].includes(path)) {
       return NextResponse.json({ error: 'Invalid path' }, { status: 400 });
@@ -22,29 +51,68 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Name required' }, { status: 400 });
     }
 
-    // Idempotent: return existing account if already created
-    const existing = await db.select().from(accounts).where(eq(accounts.clerkUserId, userId)).limit(1);
-    if (existing.length) {
-      return NextResponse.json({ account: existing[0] });
+    const existingMemberships = await getUserMemberships(userId);
+    if (existingMemberships.length && !createNew) {
+      const active = existingMemberships[0];
+      const [account] = await db.select().from(accounts).where(eq(accounts.id, active.accountId)).limit(1);
+      return NextResponse.json({ account, alreadyExists: true });
     }
+
+    const resolvedPlanFor =
+      path === 'planning' && planFor === 'other' ? 'other' : 'self';
+
+    if (resolvedPlanFor === 'other') {
+      if (!proxyRelationship?.trim()) {
+        return NextResponse.json({ error: 'Please tell us your relationship to this person.' }, { status: 400 });
+      }
+      if (!consentPath || !['can_text', 'cannot_text'].includes(consentPath)) {
+        return NextResponse.json({ error: 'Please choose how we should handle consent.' }, { status: 400 });
+      }
+      if (consentPath === 'cannot_text' && !familyAttestation) {
+        return NextResponse.json({
+          error: 'Please confirm you have permission to set up this plan on their behalf.',
+        }, { status: 400 });
+      }
+    }
+
+    const proxyConsentMethod =
+      resolvedPlanFor === 'other'
+        ? consentPath === 'cannot_text'
+          ? 'family_attestation'
+          : 'sms_pending'
+        : 'not_required';
+
+    const proxyConsentedAt =
+      resolvedPlanFor === 'other' ? new Date() : null;
+
+    const ownerEmail = user?.emailAddresses?.[0]?.emailAddress?.toLowerCase() ?? null;
+
+    const resolvedPath = path as 'planning' | 'grief';
 
     const [account] = await db.insert(accounts).values({
       clerkUserId: userId,
-      ownerEmail: user?.emailAddresses?.[0]?.emailAddress?.toLowerCase() ?? null,
-      path,
+      ownerEmail,
+      path: resolvedPath,
+      planFor: resolvedPlanFor,
       subjectName: subjectName.trim(),
       usState: usState ?? null,
+      proxyRelationship: resolvedPlanFor === 'other' ? proxyRelationship!.trim() : null,
+      proxyConsentMethod,
+      proxySubjectPhone:
+        resolvedPlanFor === 'other' && subjectPhone?.trim() ? subjectPhone.trim() : null,
+      proxyConsentedAt,
     }).returning();
 
-    if (path === 'grief' && relationship) {
+    await createAccountMembership(userId, account.id, 'owner');
+
+    if (resolvedPath === 'grief' && relationship) {
       await db.insert(griefProfiles).values({
         accountId: account.id,
         relationshipToDeceased: relationship,
       });
     }
 
-    // Create billing row — planning gets 14-day trial, grief is always free
-    const trialEndsAt = path === 'planning'
+    const trialEndsAt = resolvedPath === 'planning'
       ? new Date(Date.now() + 14 * 24 * 60 * 60 * 1000)
       : null;
 
@@ -54,11 +122,12 @@ export async function POST(req: Request) {
       trialEndsAt,
     });
 
-    // Send welcome email — fire and forget, don't block the response
+    await setActiveAccountCookie(account.id);
+
     const email = user?.emailAddresses?.[0]?.emailAddress;
     const firstName = user?.firstName ?? subjectName.trim().split(' ')[0];
     if (email) {
-      sendWelcomeEmail({ to: email, firstName, path }).catch(() => {});
+      sendWelcomeEmail({ to: email, firstName, path: resolvedPath }).catch(() => {});
     }
 
     return NextResponse.json({ account });

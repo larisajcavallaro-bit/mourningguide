@@ -16,7 +16,9 @@ export default async function UpgradePage() {
 
   if (!account) redirect('/onboarding');
 
-  const { accounts: acct, account_billing: billing } = account;
+  const { accounts: acct, account_billing: billing, membership } = account;
+
+  if (membership.role === 'admin') redirect('/dashboard');
 
   // If they've already paid, send them back to the dashboard
   if (billing?.planTier === 'guide') redirect('/dashboard');
@@ -93,8 +95,12 @@ export default async function UpgradePage() {
               textDecoration: 'none', textAlign: 'center',
               fontFamily: 'var(--serif)', boxSizing: 'border-box', boxShadow: '0 12px 26px rgba(197,123,87,0.28)',
             }}>
-              Continue for $89 / year →
+              Subscribe to Guide Plan — $89/year →
             </a>
+
+            <p style={{ margin: '14px 0 0', fontSize: '0.8rem', color: '#9a7a6a', textAlign: 'center', lineHeight: 1.6 }}>
+              This is your paid planning subscription. The grief path is a separate, always-free option — not what you&apos;re subscribing to here.
+            </p>
 
             <p style={{ margin: '20px 0 0', fontSize: '0.82rem', color: '#9a7a6a', textAlign: 'center', lineHeight: 1.7 }}>
               Questions? Reply to any email from us or write to{' '}

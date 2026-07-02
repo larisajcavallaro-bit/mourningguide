@@ -21,6 +21,30 @@ const faqs = [
     body: 'Store the practical map your family will need: institution names, who to contact, document locations, final wishes, letters, and trusted people. Do not store passwords, Social Security numbers, full account numbers, or credentials.',
   },
   {
+    title: 'Can I set up Mourning Guide for a parent?',
+    body: 'Yes. Choose "A parent or loved one" when creating a plan, or add another plan from Settings. You can keep your own plan on the same email and switch between them from the header. You build and pay; the plan is for them.',
+  },
+  {
+    title: 'What if my parent can\'t confirm by text?',
+    body: 'That\'s fine. At signup, choose "No — they can\'t use text" and confirm you\'re helping on their behalf. You can start building immediately. SMS confirmation is optional, not required.',
+  },
+  {
+    title: 'Can one email have more than one plan?',
+    body: 'Yes. You might have a plan for yourself and a separate plan for a parent. Go to Settings → "+ Add another plan", or use the Viewing menu at the top of the app. Each plan you own has its own 14-day trial and its own $89/year subscription after that.',
+  },
+  {
+    title: 'How do I add a plan for a parent if I already have my own?',
+    body: 'Sign in, then go to Settings and tap "+ Add another plan" (or open the Viewing menu at the top and choose the same option). Choose "A parent or loved one," enter their name, and complete setup. You\'ll switch between plans from the header anytime.',
+  },
+  {
+    title: 'Who pays when I have multiple plans?',
+    body: 'You pay separately for each plan you own — your personal plan and a parent\'s plan are two subscriptions if you upgrade both. Relatives you invite to help manage a parent\'s plan are never billed; only the plan owner handles payment.',
+  },
+  {
+    title: 'Can a sibling help manage a parent\'s plan?',
+    body: 'Yes. On a plan you manage for a parent or loved one, go to Settings and tap "+ Add a relative to help." They\'ll get an email invite. Once they accept, your parent\'s plan appears in their account switcher — but they only see that shared plan, not your personal plan or anyone else\'s.',
+  },
+  {
     title: 'How do legacy contacts work?',
     body: 'A legacy contact is a trusted person who can activate your guide when the time comes. They receive a private activation link and see the information you prepared after activation.',
   },

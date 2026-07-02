@@ -1,13 +1,22 @@
 import { auth } from '@clerk/nextjs/server';
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { stripe } from '@/lib/stripe';
-import { getAccount } from '@/lib/account';
+import { authAccountOwner, authOwnedAccount, getAccountById } from '@/lib/account';
 
-export async function GET() {
+export async function GET(req: NextRequest) {
   const { userId } = await auth();
   if (!userId) return NextResponse.redirect('/sign-in');
 
-  const account = await getAccount(userId);
+  const accountIdParam = req.nextUrl.searchParams.get('accountId');
+  const authResult = accountIdParam
+    ? await authOwnedAccount(accountIdParam)
+    : await authAccountOwner();
+
+  if (!authResult.ok) {
+    return NextResponse.redirect('/settings');
+  }
+
+  const account = await getAccountById(userId, authResult.accountId);
   const customerId = account?.account_billing?.stripeCustomerId;
   if (!customerId) return NextResponse.redirect('/settings');
 

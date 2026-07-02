@@ -1,27 +1,23 @@
-import { auth, currentUser } from '@clerk/nextjs/server';
+import { currentUser } from '@clerk/nextjs/server';
 import { NextResponse } from 'next/server';
 import { db } from '@/db';
 import { accounts } from '@/db/schema/accounts';
 import { legacyContacts } from '@/db/schema/people';
 import { eq, and } from 'drizzle-orm';
+import { authAccount } from '@/lib/account';
 import { sendLegacyContactInvitation } from '@/lib/emails';
 
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? 'https://mourninguide.com';
-
-async function getAccountId(userId: string) {
-  const rows = await db.select({ id: accounts.id })
-    .from(accounts).where(eq(accounts.clerkUserId, userId)).limit(1);
-  return rows[0]?.id ?? null;
-}
 
 // PUT — edit a legacy contact. Re-sends the invitation only if the email is
 // new or has changed (the activation token is preserved either way, so any
 // previously-sent link keeps working).
 export async function PUT(req: Request, { params }: { params: Promise<{ id: string }> }) {
-  const { userId } = await auth();
-  if (!userId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-  const accountId = await getAccountId(userId);
-  if (!accountId) return NextResponse.json({ error: 'No account' }, { status: 400 });
+  const authResult = await authAccount();
+  if (!authResult.ok) {
+    return NextResponse.json({ error: authResult.error }, { status: authResult.status });
+  }
+  const { accountId } = authResult;
 
   const { id } = await params;
   const { name, email, phone } = await req.json();
@@ -44,9 +40,17 @@ export async function PUT(req: Request, { params }: { params: Promise<{ id: stri
 
   if (newEmail && emailChanged) {
     const user = await currentUser();
-    const ownerName = user?.firstName
-      ? `${user.firstName}${user.lastName ? ' ' + user.lastName : ''}`
-      : 'Someone';
+    const [acct] = await db
+      .select({ subjectName: accounts.subjectName, planFor: accounts.planFor })
+      .from(accounts)
+      .where(eq(accounts.id, accountId))
+      .limit(1);
+    const ownerName =
+      acct?.planFor === 'other' && acct.subjectName?.trim()
+        ? acct.subjectName.trim()
+        : user?.firstName
+          ? `${user.firstName}${user.lastName ? ` ${user.lastName}` : ''}`
+          : 'Someone';
     sendLegacyContactInvitation({
       to: newEmail,
       contactName: row.name,
@@ -61,10 +65,11 @@ export async function PUT(req: Request, { params }: { params: Promise<{ id: stri
 }
 
 export async function DELETE(_req: Request, { params }: { params: Promise<{ id: string }> }) {
-  const { userId } = await auth();
-  if (!userId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-  const accountId = await getAccountId(userId);
-  if (!accountId) return NextResponse.json({ error: 'No account' }, { status: 400 });
+  const authResult = await authAccount();
+  if (!authResult.ok) {
+    return NextResponse.json({ error: authResult.error }, { status: authResult.status });
+  }
+  const { accountId } = authResult;
 
   const { id } = await params;
   await db.delete(legacyContacts)

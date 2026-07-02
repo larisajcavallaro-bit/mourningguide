@@ -1,29 +1,25 @@
-import { auth, currentUser } from '@clerk/nextjs/server';
+import { currentUser } from '@clerk/nextjs/server';
 import { NextResponse } from 'next/server';
 import { db } from '@/db';
 import { accounts } from '@/db/schema/accounts';
 import { legacyContacts } from '@/db/schema/people';
 import { eq } from 'drizzle-orm';
+import { authAccount } from '@/lib/account';
 import { sendLegacyContactInvitation } from '@/lib/emails';
 import { randomBytes } from 'crypto';
 
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? 'https://mourninguide.com';
 const MAX_LEGACY_CONTACTS = 3;
 
-async function getAccountId(userId: string) {
-  const rows = await db.select({ id: accounts.id })
-    .from(accounts).where(eq(accounts.clerkUserId, userId)).limit(1);
-  return rows[0]?.id ?? null;
-}
-
 // GET — list all legacy contacts for the account (up to 3). Any one of them
 // can independently activate the guide — this is intentional redundancy, in
 // case a contact is unreachable, has moved, or has passed away themselves.
 export async function GET() {
-  const { userId } = await auth();
-  if (!userId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-  const accountId = await getAccountId(userId);
-  if (!accountId) return NextResponse.json({ error: 'No account' }, { status: 400 });
+  const authResult = await authAccount();
+  if (!authResult.ok) {
+    return NextResponse.json({ error: authResult.error }, { status: authResult.status });
+  }
+  const { accountId } = authResult;
 
   const rows = await db.select().from(legacyContacts)
     .where(eq(legacyContacts.accountId, accountId))
@@ -33,10 +29,11 @@ export async function GET() {
 
 // POST — add a new legacy contact (max 3 per account)
 export async function POST(req: Request) {
-  const { userId } = await auth();
-  if (!userId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-  const accountId = await getAccountId(userId);
-  if (!accountId) return NextResponse.json({ error: 'No account' }, { status: 400 });
+  const authResult = await authAccount();
+  if (!authResult.ok) {
+    return NextResponse.json({ error: authResult.error }, { status: authResult.status });
+  }
+  const { accountId } = authResult;
 
   const existing = await db.select({ id: legacyContacts.id })
     .from(legacyContacts).where(eq(legacyContacts.accountId, accountId));
@@ -61,9 +58,17 @@ export async function POST(req: Request) {
 
   if (newEmail) {
     const user = await currentUser();
-    const ownerName = user?.firstName
-      ? `${user.firstName}${user.lastName ? ' ' + user.lastName : ''}`
-      : 'Someone';
+    const [acct] = await db
+      .select({ subjectName: accounts.subjectName, planFor: accounts.planFor })
+      .from(accounts)
+      .where(eq(accounts.id, accountId))
+      .limit(1);
+    const ownerName =
+      acct?.planFor === 'other' && acct.subjectName?.trim()
+        ? acct.subjectName.trim()
+        : user?.firstName
+          ? `${user.firstName}${user.lastName ? ` ${user.lastName}` : ''}`
+          : 'Someone';
     sendLegacyContactInvitation({
       to: newEmail,
       contactName: row.name,

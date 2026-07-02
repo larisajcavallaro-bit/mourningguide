@@ -1,13 +1,17 @@
-import { auth, currentUser } from '@clerk/nextjs/server';
+import { currentUser } from '@clerk/nextjs/server';
 import { NextResponse } from 'next/server';
 import { db } from '@/db';
 import { accounts } from '@/db/schema/accounts';
 import { eq } from 'drizzle-orm';
+import { authAccount } from '@/lib/account';
 import { syncMarketingSubscriberFromAccount } from '@/lib/marketing';
 
 export async function PATCH(req: Request) {
-  const { userId } = await auth();
-  if (!userId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  const authResult = await authAccount();
+  if (!authResult.ok) {
+    return NextResponse.json({ error: authResult.error }, { status: authResult.status });
+  }
+  const { accountId } = authResult;
 
   const body = await req.json();
   if (typeof body.marketingOptIn !== 'boolean') {
@@ -20,7 +24,7 @@ export async function PATCH(req: Request) {
   const [account] = await db
     .update(accounts)
     .set({ marketingOptIn: body.marketingOptIn, updatedAt: new Date() })
-    .where(eq(accounts.clerkUserId, userId))
+    .where(eq(accounts.id, accountId))
     .returning({ marketingOptIn: accounts.marketingOptIn, ownerEmail: accounts.ownerEmail });
 
   if (!account) return NextResponse.json({ error: 'Account not found' }, { status: 404 });

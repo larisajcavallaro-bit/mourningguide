@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, Suspense } from 'react';
+import { useState, Suspense, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 
@@ -16,6 +16,18 @@ const US_STATES = [
 ];
 
 type Path = 'planning' | 'grief';
+type PlanFor = 'self' | 'other';
+type ConsentPath = 'can_text' | 'cannot_text';
+
+const PROXY_RELATIONSHIPS = [
+  'Child',
+  'Spouse / Partner',
+  'Sibling',
+  'Grandchild',
+  'Friend',
+  'Professional caregiver',
+  'Other family member',
+];
 
 const PAGE_BG = 'radial-gradient(circle at 72% 8%,rgba(203,183,162,0.18),transparent 28%),linear-gradient(180deg,#fffaf4,#f5eadf)';
 const serif = "var(--serif)";
@@ -60,9 +72,15 @@ function OnboardingForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const queryPath = searchParams.get('path');
+  const createNew = searchParams.get('new') === '1';
   const initialPath: Path | null = queryPath === 'planning' || queryPath === 'grief' ? queryPath : null;
   const [step, setStep] = useState<'path' | 'details'>(initialPath ? 'details' : 'path');
   const [path, setPath] = useState<Path | null>(initialPath);
+  const [planFor, setPlanFor] = useState<PlanFor>('self');
+  const [proxyRelationship, setProxyRelationship] = useState('');
+  const [consentPath, setConsentPath] = useState<ConsentPath>('cannot_text');
+  const [familyAttestation, setFamilyAttestation] = useState(false);
+  const [subjectPhone, setSubjectPhone] = useState('');
   const [name, setName] = useState('');
   const [usState, setUsState] = useState('');
   const [relationship, setRelationship] = useState('');
@@ -71,14 +89,36 @@ function OnboardingForm() {
 
   function choosePath(p: Path) { setPath(p); setStep('details'); }
 
+  useEffect(() => {
+    if (createNew) return;
+    fetch('/api/account/list')
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data) => {
+        if (data?.memberships?.length) router.replace('/dashboard');
+      })
+      .catch(() => {});
+  }, [createNew, router]);
+
   async function submit(e: React.FormEvent) {
     e.preventDefault();
     if (!path) return;
     setLoading(true);
     setError('');
     const body = path === 'planning'
-      ? { path, subjectName: name, usState }
-      : { path, subjectName: name, relationship };
+      ? {
+          path,
+          subjectName: name,
+          usState,
+          planFor,
+          createNew: createNew || undefined,
+          ...(planFor === 'other' ? {
+            proxyRelationship,
+            consentPath,
+            familyAttestation: consentPath === 'cannot_text' ? familyAttestation : true,
+            subjectPhone: consentPath === 'can_text' ? subjectPhone : undefined,
+          } : {}),
+        }
+      : { path, subjectName: name, relationship, createNew: createNew || undefined };
     const res = await fetch('/api/onboarding', {
       method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body),
     });
@@ -155,25 +195,136 @@ function OnboardingForm() {
           {planning ? 'Planning path' : 'Grief path'}
         </p>
         <h1 style={{ fontFamily: serif, fontSize: 'clamp(2rem,4vw,2.8rem)', fontWeight: 500, lineHeight: 1.02, letterSpacing: '-0.02em', margin: '0 0 12px', color: '#2f241f' }}>
-          {planning ? 'Give your family a map, not a mystery.' : "We're here with you."}
+          {planning
+            ? (createNew ? 'Add another plan' : 'Give your family a map, not a mystery.')
+            : "We're here with you."}
         </h1>
         <p style={{ fontSize: '1rem', color: '#594b43', lineHeight: 1.7, margin: '0 0 28px' }}>
           {planning
-            ? 'The first 14 days are full access — no credit card. Build at your own pace. Nothing is urgent.'
+            ? (createNew
+              ? 'Set up a separate plan — for yourself or a parent. You can switch between plans anytime from the header.'
+              : 'The first 14 days are full access — no credit card. Build at your own pace. Nothing is urgent.')
             : 'Tell us a little about who you lost. One step at a time, always free.'}
         </p>
 
         <form onSubmit={submit}
           style={{ padding: 32, border: '1px solid rgba(142,95,70,0.2)', borderRadius: 26, background: 'linear-gradient(145deg,rgba(255,255,255,0.72),rgba(255,250,244,0.94))', boxShadow: '0 20px 46px rgba(67,46,33,0.1)' }}>
+          {planning && (
+            <div style={{ marginBottom: 18 }}>
+              <label style={labelStyle}>Who is this plan for?</label>
+              <select
+                value={planFor}
+                onChange={e => setPlanFor(e.target.value as PlanFor)}
+                style={inputStyle}
+              >
+                <option value="self">Myself</option>
+                <option value="other">A parent or loved one</option>
+              </select>
+              <p style={hint}>
+                {planFor === 'other'
+                  ? 'You can build and pay for their plan. Switch between your plan and theirs anytime.'
+                  : 'This plan documents your own wishes and accounts.'}
+              </p>
+            </div>
+          )}
+
+          {planning && planFor === 'other' && (
+            <>
+              <div style={{ marginBottom: 18 }}>
+                <label style={labelStyle}>Your relationship to them</label>
+                <select
+                  value={proxyRelationship}
+                  onChange={e => setProxyRelationship(e.target.value)}
+                  required
+                  style={inputStyle}
+                >
+                  <option value="">Select…</option>
+                  {PROXY_RELATIONSHIPS.map(r => <option key={r} value={r}>{r}</option>)}
+                </select>
+              </div>
+
+              <div style={{ marginBottom: 18 }}>
+                <label style={labelStyle}>Can they confirm by text message?</label>
+                <div style={{ display: 'grid', gap: 10 }}>
+                  <label style={{ display: 'flex', gap: 10, alignItems: 'flex-start', cursor: 'pointer', fontSize: '0.9rem', color: '#594b43', lineHeight: 1.55 }}>
+                    <input
+                      type="radio"
+                      name="consentPath"
+                      checked={consentPath === 'cannot_text'}
+                      onChange={() => setConsentPath('cannot_text')}
+                      style={{ marginTop: 4 }}
+                    />
+                    <span>
+                      <strong style={{ color: '#2f241f' }}>No — they can&apos;t use text</strong>
+                      <br />
+                      Common if they don&apos;t have a mobile phone, have dementia, or aren&apos;t comfortable with texts. You can start building right away.
+                    </span>
+                  </label>
+                  <label style={{ display: 'flex', gap: 10, alignItems: 'flex-start', cursor: 'pointer', fontSize: '0.9rem', color: '#594b43', lineHeight: 1.55 }}>
+                    <input
+                      type="radio"
+                      name="consentPath"
+                      checked={consentPath === 'can_text'}
+                      onChange={() => setConsentPath('can_text')}
+                      style={{ marginTop: 4 }}
+                    />
+                    <span>
+                      <strong style={{ color: '#2f241f' }}>Yes — we can text them later</strong>
+                      <br />
+                      Optional. You can build the plan now; we&apos;ll send a confirmation text when that&apos;s available.
+                    </span>
+                  </label>
+                </div>
+              </div>
+
+              {consentPath === 'cannot_text' && (
+                <div style={{ marginBottom: 18, padding: '14px 16px', borderRadius: 12, border: '1px solid rgba(145,104,82,0.2)', background: 'rgba(255,255,255,0.6)' }}>
+                  <label style={{ display: 'flex', gap: 10, alignItems: 'flex-start', cursor: 'pointer', fontSize: '0.88rem', color: '#594b43', lineHeight: 1.6 }}>
+                    <input
+                      type="checkbox"
+                      checked={familyAttestation}
+                      onChange={e => setFamilyAttestation(e.target.checked)}
+                      required
+                      style={{ marginTop: 4, flexShrink: 0 }}
+                    />
+                    <span>
+                      I confirm that I have this person&apos;s permission to set up Mourning Guide on their behalf, or I am an authorized family member helping organize their affairs.
+                    </span>
+                  </label>
+                </div>
+              )}
+
+              {consentPath === 'can_text' && (
+                <div style={{ marginBottom: 18 }}>
+                  <label style={labelStyle}>Their mobile number <span style={{ color: '#9a7a6a', fontWeight: 400 }}>(optional)</span></label>
+                  <input
+                    value={subjectPhone}
+                    onChange={e => setSubjectPhone(e.target.value)}
+                    type="tel"
+                    placeholder="(555) 000-0000"
+                    style={inputStyle}
+                  />
+                  <p style={hint}>We&apos;ll only use this for a one-time confirmation text, if and when they&apos;re ready. You can start building the plan now.</p>
+                </div>
+              )}
+            </>
+          )}
+
           <div style={{ marginBottom: 18 }}>
-            <label style={labelStyle}>{planning ? 'Your full name' : "Your loved one's name"}</label>
+            <label style={labelStyle}>
+              {planning
+                ? (planFor === 'other' ? "Your loved one's full name" : 'Your full name')
+                : "Your loved one's name"}
+            </label>
             <input value={name} onChange={e => setName(e.target.value)} required
-              placeholder={planning ? 'e.g. Margaret Chen' : 'e.g. Robert Miller'} style={inputStyle} />
+              placeholder={planning ? (planFor === 'other' ? 'e.g. Margaret Chen' : 'e.g. James Miller') : 'e.g. Robert Miller'} style={inputStyle} />
           </div>
 
           {planning ? (
             <div style={{ marginBottom: 24 }}>
-              <label style={labelStyle}>US state of residence</label>
+              <label style={labelStyle}>
+                {planFor === 'other' ? "Their US state of residence" : 'US state of residence'}
+              </label>
               <select value={usState} onChange={e => setUsState(e.target.value)} required style={inputStyle}>
                 <option value="">Select your state…</option>
                 {US_STATES.map(s => <option key={s} value={s}>{s}</option>)}
