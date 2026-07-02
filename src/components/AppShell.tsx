@@ -40,7 +40,7 @@ export default function AppShell({ children, title, active, meta }: AppShellProp
           <span className="app-header-meta">{meta}</span>
         </header>
 
-        <nav className="top-nav" aria-label="App">
+        <nav className="top-nav" aria-label="App" data-walkthrough="walkthrough-top-nav">
           {NAV.map(n => (
             <Link key={n.key} href={n.href} className={active === n.key ? 'is-active' : undefined}>
               <span className="nav-icon" style={{ color: active === n.key ? '#c57b57' : '#9a7a6a' }}>{n.icon}</span>

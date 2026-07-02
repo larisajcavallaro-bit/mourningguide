@@ -13,6 +13,7 @@ import AppShell from '@/components/AppShell';
 import DeleteAccountButton from './DeleteAccountButton';
 import MarketingOptInToggle from './MarketingOptInToggle';
 import CollaboratorsClient from './CollaboratorsClient';
+import WalkthroughReplayButton from './WalkthroughReplayButton';
 
 export const metadata = { title: 'Settings — Mourning Guide' };
 
@@ -38,6 +39,7 @@ export default async function SettingsPage() {
   const showAdmin = isAdminEmail(email);
   const isOwner = membership.role === 'owner';
   const isSharedAdmin = membership.role === 'admin';
+  const nowMs = new Date().getTime();
 
   const collaborators = isOwner && acct.planFor === 'other'
     ? await db
@@ -171,7 +173,7 @@ export default async function SettingsPage() {
                 plan.planTier === 'guide' ? 'Guide Plan ($89/year)' :
                 plan.planTier === 'lapsed' ? 'Lapsed' : 'Free trial';
               const isActive = plan.accountId === acct.id;
-              const trialEnded = plan.trialEndsAt && new Date(plan.trialEndsAt).getTime() < Date.now();
+              const trialEnded = plan.trialEndsAt && new Date(plan.trialEndsAt).getTime() < nowMs;
               const canSubscribe = plan.path === 'planning' && plan.planTier !== 'guide';
               const isLast = i === ownedPlans.length - 1;
 
@@ -222,6 +224,7 @@ export default async function SettingsPage() {
 
       <p className="section-label-lg">Account actions</p>
       <div className="entry-card">
+        <WalkthroughReplayButton />
         <SignOutButton>
           <button style={{ background: 'none', border: 'none', color: '#c57b57', fontSize: '0.88rem', fontWeight: 600, cursor: 'pointer', padding: 0 }}>
             Sign out

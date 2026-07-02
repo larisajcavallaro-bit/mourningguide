@@ -67,6 +67,17 @@ const primaryBtn: React.CSSProperties = {
   fontFamily: serif, fontSize: '1.02rem', fontWeight: 500, boxShadow: '0 12px 26px rgba(197,123,87,0.28)',
 };
 const hint: React.CSSProperties = { margin: '6px 0 0', fontSize: '0.82rem', color: '#7a5341' };
+const infoBox: React.CSSProperties = {
+  padding: '16px 18px', borderRadius: 14, marginBottom: 20,
+  border: '1px solid rgba(145,104,82,0.2)', background: 'rgba(255,255,255,0.65)',
+  fontSize: '0.9rem', color: '#594b43', lineHeight: 1.65,
+};
+const choiceCard = (selected: boolean): React.CSSProperties => ({
+  display: 'block', width: '100%', textAlign: 'left', padding: '18px 20px', marginBottom: 12,
+  border: selected ? '2px solid rgba(197,123,87,0.55)' : '2px solid rgba(142,95,70,0.2)',
+  borderRadius: 16, background: selected ? 'rgba(197,123,87,0.08)' : 'rgba(255,255,255,0.55)',
+  cursor: 'pointer', font: 'inherit',
+});
 
 function OnboardingForm() {
   const router = useRouter();
@@ -140,9 +151,12 @@ function OnboardingForm() {
           <h1 style={{ fontFamily: serif, fontSize: 'clamp(2.2rem,4vw,3rem)', fontWeight: 500, lineHeight: 1.1, textAlign: 'center', margin: '0 0 10px', color: '#2f241f' }}>
             Where are you right now?
           </h1>
-          <p style={{ textAlign: 'center', color: '#594b43', fontSize: '1rem', lineHeight: 1.65, margin: '0 0 36px' }}>
-            No employer code. No waitlist. Start immediately.
+          <p style={{ textAlign: 'center', color: '#594b43', fontSize: '1rem', lineHeight: 1.65, margin: '0 0 20px' }}>
+            Choose the situation that fits you. These are <strong>different kinds of accounts</strong> — not upgrades of each other.
           </p>
+          <div style={{ ...infoBox, marginBottom: 28 }}>
+            <strong style={{ color: '#2f241f' }}>Not sure?</strong> Planning ahead = documenting before a death ($89/year after a free trial). Grief path = help right after someone died (always free, no card).
+          </div>
           <div style={{ display: 'grid', gap: 16 }}>
             <button onClick={() => choosePath('planning')} style={cardStyle}
               onMouseOver={e => { e.currentTarget.style.borderColor = 'rgba(197,123,87,0.55)'; e.currentTarget.style.transform = 'translateY(-2px)'; }}
@@ -156,7 +170,13 @@ function OnboardingForm() {
                   <p style={{ color: '#594b43', fontSize: '0.94rem', lineHeight: 1.55, margin: 0 }}>I want to document my accounts, wishes, and letters — so my family has a map, not a mystery.</p>
                 </div>
               </div>
-              <p style={{ color: '#7a5341', fontSize: '0.82rem', margin: '0 0 0 68px' }}>14-day free trial · No credit card required · $89/year after</p>
+              <p style={{ color: '#7a5341', fontSize: '0.82rem', margin: '0 0 0 68px', lineHeight: 1.55 }}>
+                14-day free trial · No credit card · $89/year after if you subscribe to Guide Plan
+              </p>
+              <ul style={{ margin: '8px 0 0 68px', padding: '0 0 0 16px', color: '#594b43', fontSize: '0.84rem', lineHeight: 1.6 }}>
+                <li>For yourself, or for a parent you help manage</li>
+                <li>Vault, letters, legacy contacts, family portal</li>
+              </ul>
             </button>
 
             <button onClick={() => choosePath('grief')} style={cardStyle}
@@ -171,7 +191,13 @@ function OnboardingForm() {
                   <p style={{ color: '#594b43', fontSize: '0.94rem', lineHeight: 1.55, margin: 0 }}>I need to know what to do right now. One step at a time — only what can&apos;t wait.</p>
                 </div>
               </div>
-              <p style={{ color: '#7a5341', fontSize: '0.82rem', margin: '0 0 0 68px' }}>Always free · No credit card · No time limit</p>
+              <p style={{ color: '#7a5341', fontSize: '0.82rem', margin: '0 0 0 68px', lineHeight: 1.55 }}>
+                Always free · No credit card · No time limit · Not a paid upgrade
+              </p>
+              <ul style={{ margin: '8px 0 0 68px', padding: '0 0 0 16px', color: '#594b43', fontSize: '0.84rem', lineHeight: 1.6 }}>
+                <li>Step-by-step tasks when someone just died</li>
+                <li>Separate from planning ahead — choose this only if you need help now</li>
+              </ul>
             </button>
           </div>
           <p style={{ textAlign: 'center', color: '#7a5341', fontSize: '0.88rem', margin: '28px 0 0' }}>
@@ -199,32 +225,45 @@ function OnboardingForm() {
             ? (createNew ? 'Add another plan' : 'Give your family a map, not a mystery.')
             : "We're here with you."}
         </h1>
-        <p style={{ fontSize: '1rem', color: '#594b43', lineHeight: 1.7, margin: '0 0 28px' }}>
+        <p style={{ fontSize: '1rem', color: '#594b43', lineHeight: 1.7, margin: '0 0 20px' }}>
           {planning
             ? (createNew
-              ? 'Set up a separate plan — for yourself or a parent. You can switch between plans anytime from the header.'
+              ? 'Set up a separate plan — for yourself or a parent. You can switch between plans anytime from the Viewing menu at the top of the app.'
               : 'The first 14 days are full access — no credit card. Build at your own pace. Nothing is urgent.')
-            : 'Tell us a little about who you lost. One step at a time, always free.'}
+            : 'You chose the grief path — free support after a loss. This is not a subscription and not related to Guide Plan pricing.'}
         </p>
+
+        {planning && (
+          <div style={infoBox}>
+            <strong style={{ color: '#2f241f' }}>You are signing up for planning ahead.</strong> Guide Plan ($89/year) is optional after your trial. It is <em>not</em> the grief path and not an upgrade to grief support.
+          </div>
+        )}
+
+        {!planning && (
+          <div style={{ ...infoBox, borderColor: 'rgba(46,107,66,0.25)', background: 'rgba(46,107,66,0.06)' }}>
+            <strong style={{ color: '#2e6b42' }}>Grief path = always free.</strong> No billing, no trial, no Guide Plan. If you meant to plan ahead for yourself or a parent, go back and choose planning instead.
+          </div>
+        )}
 
         <form onSubmit={submit}
           style={{ padding: 32, border: '1px solid rgba(142,95,70,0.2)', borderRadius: 26, background: 'linear-gradient(145deg,rgba(255,255,255,0.72),rgba(255,250,244,0.94))', boxShadow: '0 20px 46px rgba(67,46,33,0.1)' }}>
           {planning && (
-            <div style={{ marginBottom: 18 }}>
-              <label style={labelStyle}>Who is this plan for?</label>
-              <select
-                value={planFor}
-                onChange={e => setPlanFor(e.target.value as PlanFor)}
-                style={inputStyle}
-              >
-                <option value="self">Myself</option>
-                <option value="other">A parent or loved one</option>
-              </select>
-              <p style={hint}>
-                {planFor === 'other'
-                  ? 'You can build and pay for their plan. Switch between your plan and theirs anytime.'
-                  : 'This plan documents your own wishes and accounts.'}
-              </p>
+            <div style={{ marginBottom: 22 }}>
+              <label style={{ ...labelStyle, marginBottom: 12 }}>Who is this plan for?</label>
+
+              <button type="button" onClick={() => setPlanFor('self')} style={choiceCard(planFor === 'self')}>
+                <strong style={{ display: 'block', fontFamily: serif, fontSize: '1.05rem', color: '#2f241f', marginBottom: 6 }}>Myself</strong>
+                <span style={{ fontSize: '0.88rem', color: '#594b43', lineHeight: 1.55 }}>
+                  I am documenting my own accounts, wishes, and letters. I will be the owner and may subscribe to Guide Plan after the free trial.
+                </span>
+              </button>
+
+              <button type="button" onClick={() => setPlanFor('other')} style={choiceCard(planFor === 'other')}>
+                <strong style={{ display: 'block', fontFamily: serif, fontSize: '1.05rem', color: '#2f241f', marginBottom: 6 }}>A parent or loved one</strong>
+                <span style={{ fontSize: '0.88rem', color: '#594b43', lineHeight: 1.55 }}>
+                  I am building this plan for someone else (for example, Mom or Dad). They do not need their own login. I handle setup and billing. I can invite a sibling to help later.
+                </span>
+              </button>
             </div>
           )}
 
@@ -342,11 +381,26 @@ function OnboardingForm() {
           )}
 
           {error && <p style={{ color: '#b0402e', fontSize: '0.85rem', margin: '0 0 12px' }}>{error}</p>}
+
+          {planning && name.trim() && (
+            <div style={{ ...infoBox, marginBottom: 18, borderColor: 'rgba(197,123,87,0.28)' }}>
+              <p style={{ margin: '0 0 6px', fontSize: '0.75rem', fontWeight: 800, letterSpacing: '0.08em', textTransform: 'uppercase', color: '#c86d49' }}>You are creating</p>
+              <p style={{ margin: 0, fontSize: '0.92rem', color: '#2f241f', lineHeight: 1.55 }}>
+                {planFor === 'other'
+                  ? <>A <strong>planning plan for {name.trim()}</strong>, managed by you. 14-day free trial, then $89/year if you subscribe.</>
+                  : <>A <strong>planning plan for yourself</strong> ({name.trim()}). 14-day free trial, then $89/year if you subscribe.</>}
+              </p>
+            </div>
+          )}
+
           <button type="submit" disabled={loading} style={{ ...primaryBtn, opacity: loading ? 0.7 : 1 }}>
             {loading ? 'Setting up…' : planning ? 'Start my free trial →' : "Get started — it's free →"}
           </button>
           {planning && (
-            <p style={{ ...hint, textAlign: 'center', marginTop: 12 }}>14-day free trial · No credit card · $89/year after</p>
+            <p style={{ ...hint, textAlign: 'center', marginTop: 12 }}>14-day free trial · No credit card · Guide Plan is $89/year after, if you choose to subscribe</p>
+          )}
+          {!planning && (
+            <p style={{ ...hint, textAlign: 'center', marginTop: 12 }}>Grief path · Always free · No Guide Plan subscription</p>
           )}
         </form>
       </div>

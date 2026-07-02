@@ -79,7 +79,7 @@ export default async function DashboardPage({
   return (
     <AppShell active="home" meta={meta}>
       <p className="eyebrow" style={{ marginBottom: 4 }}>Welcome back{isPlanning ? '' : ''}</p>
-      <h1 style={{ fontFamily: 'var(--serif)', fontSize: '1.9rem', fontWeight: 500, color: '#2f241f', margin: '0 0 20px' }}>
+      <h1 className="page-heading" data-walkthrough="walkthrough-dashboard-heading">
         {isPlanning ? `Your family's guide, ${firstName}` : `Here for you, ${firstName}`}
       </h1>
 
@@ -142,7 +142,7 @@ export default async function DashboardPage({
           </div>
 
           {/* Quick actions */}
-          <p className="section-label-lg">Quick actions</p>
+          <p className="section-label-lg" data-walkthrough="walkthrough-quick-actions">Quick actions</p>
           <div className="quick-grid">
             {PLANNING_TILES.map(t => {
               const inner = (
@@ -187,7 +187,7 @@ export default async function DashboardPage({
         </>
       )}
 
-      <p style={{ textAlign: 'center', marginTop: 24 }}>
+      <p style={{ textAlign: 'center', marginTop: 24 }} data-walkthrough="walkthrough-settings-link">
         <Link href="/settings" style={{ fontSize: '0.8rem', color: '#9a7a6a', textDecoration: 'none' }}>Settings</Link>
       </p>
     </AppShell>

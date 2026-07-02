@@ -151,7 +151,7 @@ export default function PeopleClient({
 
   return (
     <>
-      <h1 className="page-heading">People</h1>
+      <h1 className="page-heading" data-walkthrough="walkthrough-people-heading">People</h1>
       <p className="page-sub">Choose who activates your guide and who gets notified. Two distinct roles — each with a clear job.</p>
 
       <p className="section-label-lg">The two roles</p>

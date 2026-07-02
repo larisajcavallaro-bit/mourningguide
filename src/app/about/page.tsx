@@ -20,6 +20,68 @@ const MAIN = `
     </div>
   </section>
 
+  <section style="margin-top:0;padding:48px 0;border-bottom:1px solid rgba(142,95,70,0.14);">
+    <p style="font-size:0.75rem;font-weight:800;letter-spacing:0.14em;text-transform:uppercase;color:#c86d49;margin:0 0 10px;">Understand account types</p>
+    <h2 style="font-family:var(--serif);font-size:clamp(2rem,3.2vw,2.8rem);font-weight:500;margin:0 0 14px;max-width:22ch;">Five ways people use Mourning Guide</h2>
+    <p style="color:#594b43;font-size:1.02rem;line-height:1.72;margin:0 0 32px;max-width:62ch;">These are <strong>not upgrades</strong> of each other. They are different kinds of accounts. Pick the one that matches your situation — you can add more later on the same email.</p>
+
+    <div style="display:grid;gap:16px;margin-bottom:28px;">
+      <div style="padding:28px;border:2px solid rgba(197,123,87,0.35);border-radius:22px;background:linear-gradient(145deg,rgba(255,255,255,0.8),rgba(255,250,244,0.95));">
+        <div style="display:flex;flex-wrap:wrap;gap:10px;align-items:baseline;margin-bottom:10px;">
+          <h3 style="font-family:var(--serif);font-size:1.35rem;font-weight:500;margin:0;color:#2f241f;">1. Planning for yourself</h3>
+          <span style="font-size:0.75rem;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:#c57b57;background:rgba(197,123,87,0.12);padding:4px 10px;border-radius:999px;">Most common</span>
+        </div>
+        <p style="color:#594b43;font-size:0.94rem;line-height:1.7;margin:0 0 14px;">You document <strong>your own</strong> accounts, wishes, letters, and documents so your family has a map when the time comes.</p>
+        <ul style="margin:0;padding:0 0 0 18px;color:#594b43;font-size:0.88rem;line-height:1.85;">
+          <li><strong>Who logs in:</strong> You, with your email</li>
+          <li><strong>Who pays:</strong> You — 14-day free trial, then $89/year if you keep Guide Plan</li>
+          <li><strong>Not the same as:</strong> The grief path (see below) — this is planning <em>ahead</em></li>
+        </ul>
+      </div>
+
+      <div style="padding:28px;border:1px solid rgba(142,95,70,0.18);border-radius:22px;background:rgba(255,255,255,0.6);">
+        <h3 style="font-family:var(--serif);font-size:1.35rem;font-weight:500;margin:0 0 10px;color:#2f241f;">2. Planning for a parent or loved one (you manage)</h3>
+        <p style="color:#594b43;font-size:0.94rem;line-height:1.7;margin:0 0 14px;">An adult child (or relative) builds the plan <strong>for Mom, Dad, or someone else</strong>. The person the plan is for does not need their own login or email.</p>
+        <ul style="margin:0;padding:0 0 0 18px;color:#594b43;font-size:0.88rem;line-height:1.85;">
+          <li><strong>Who logs in:</strong> You — you are the plan owner</li>
+          <li><strong>Who pays:</strong> You — separate subscription if you also keep your own plan</li>
+          <li><strong>Switch plans:</strong> Use <em>Viewing</em> at the top of the app</li>
+        </ul>
+      </div>
+
+      <div style="padding:28px;border:1px solid rgba(142,95,70,0.18);border-radius:22px;background:rgba(255,255,255,0.6);">
+        <h3 style="font-family:var(--serif);font-size:1.35rem;font-weight:500;margin:0 0 10px;color:#2f241f;">3. Helping manage someone else's plan (invited relative)</h3>
+        <p style="color:#594b43;font-size:0.94rem;line-height:1.7;margin:0 0 14px;">A sibling or relative invited you to help build a parent's plan. You can edit the vault, but you are <strong>not</strong> the owner.</p>
+        <ul style="margin:0;padding:0 0 0 18px;color:#594b43;font-size:0.88rem;line-height:1.85;">
+          <li><strong>Who logs in:</strong> You, with your own email (from the invitation)</li>
+          <li><strong>Who pays:</strong> Never you — the person who set up the plan handles billing</li>
+          <li><strong>What you see:</strong> Only the shared family plan — not the inviter's personal plan</li>
+        </ul>
+      </div>
+
+      <div style="padding:28px;border:1px solid rgba(46,107,66,0.25);border-radius:22px;background:rgba(46,107,66,0.06);">
+        <div style="display:flex;flex-wrap:wrap;gap:10px;align-items:baseline;margin-bottom:10px;">
+          <h3 style="font-family:var(--serif);font-size:1.35rem;font-weight:500;margin:0;color:#2f241f;">4. Grief path — someone just died</h3>
+          <span style="font-size:0.75rem;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:#2e6b42;background:rgba(46,107,66,0.12);padding:4px 10px;border-radius:999px;">Always free</span>
+        </div>
+        <p style="color:#594b43;font-size:0.94rem;line-height:1.7;margin:0 0 14px;">Step-by-step help right after a loss. This is <strong>not</strong> a paid subscription and <strong>not</strong> an upgrade from planning. It is a separate, free path for families in the first days and weeks.</p>
+        <ul style="margin:0;padding:0 0 0 18px;color:#594b43;font-size:0.88rem;line-height:1.85;">
+          <li><strong>Cost:</strong> $0 — always, with no credit card</li>
+          <li><strong>Best for:</strong> "I need to know what to do right now"</li>
+        </ul>
+      </div>
+
+      <div style="padding:28px;border:1px solid rgba(142,95,70,0.18);border-radius:22px;background:rgba(255,255,255,0.6);">
+        <h3 style="font-family:var(--serif);font-size:1.35rem;font-weight:500;margin:0 0 10px;color:#2f241f;">5. More than one plan on the same email</h3>
+        <p style="color:#594b43;font-size:0.94rem;line-height:1.7;margin:0;">Many families keep <em>My plan</em> and <em>Mom's plan</em> under one login. Each planning plan has its own trial and its own $89/year subscription. Add another anytime from Settings.</p>
+      </div>
+    </div>
+
+    <div style="padding:20px 24px;border-radius:16px;border:1px solid rgba(197,123,87,0.22);background:rgba(255,250,244,0.9);">
+      <p style="margin:0;font-size:0.92rem;color:#594b43;line-height:1.65;"><strong>Plain language:</strong> <em>Guide Plan</em> ($89/year) is the paid subscription for <em>planning ahead</em>. The <em>grief path</em> is free support after a death. They are different products for different moments — not steps on the same ladder.</p>
+    </div>
+  </section>
+
   <section style="padding:52px 0 0;">
     <p style="font-size:0.75rem;font-weight:800;letter-spacing:0.14em;text-transform:uppercase;color:#c86d49;margin:0 0 10px;">Why we built this</p>
     <h2 style="font-family:var(--serif);font-size:clamp(2rem,3vw,2.8rem);font-weight:500;margin:0 0 28px;max-width:28ch;">Because no one should have to guess when they're already in pain.</h2>

@@ -27,9 +27,9 @@ export default async function VaultOverviewPage() {
   await requirePlanningAccount();
   return (
     <AppShell title="Personal" active="vault">
-      <h1 className="page-heading">Your planning areas</h1>
+      <h1 className="page-heading" data-walkthrough="walkthrough-vault-heading">Your planning areas</h1>
       <p className="page-sub">Tap any area to add your details. Work in any order. Everything is optional, and you can come back anytime.</p>
-      <div className="areas-grid">
+      <div className="areas-grid" data-walkthrough="walkthrough-vault-grid">
         {AREAS.map(([name, desc, href]) => (
           <Link key={name} href={href} className="area-tile">
             <div className="tile-icon">+</div>

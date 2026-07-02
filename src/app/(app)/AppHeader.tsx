@@ -1,5 +1,4 @@
 import { auth } from '@clerk/nextjs/server';
-import { redirect } from 'next/navigation';
 import Link from 'next/link';
 import { getUserMemberships, resolveActiveAccountId } from '@/lib/account';
 import AccountSwitcher from '@/components/AccountSwitcher';
@@ -33,7 +32,9 @@ export default async function AppHeader() {
       >
         Settings
       </Link>
-      <AccountSwitcher activeAccountId={activeAccountId} />
+      <div data-walkthrough="walkthrough-account-switcher">
+        <AccountSwitcher activeAccountId={activeAccountId} />
+      </div>
     </div>
   );
 }

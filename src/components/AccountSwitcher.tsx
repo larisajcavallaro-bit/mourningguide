@@ -1,7 +1,7 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import { useCallback, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 
 type Membership = {
   accountId: string;
@@ -17,16 +17,20 @@ export default function AccountSwitcher({ activeAccountId }: { activeAccountId: 
   const [switching, setSwitching] = useState(false);
   const [open, setOpen] = useState(false);
 
-  const load = useCallback(async () => {
-    const res = await fetch('/api/account/list');
-    if (!res.ok) return;
-    const data = await res.json();
-    setMemberships(data.memberships ?? []);
-  }, []);
-
   useEffect(() => {
-    load();
-  }, [load]);
+    let cancelled = false;
+
+    fetch('/api/account/list')
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data) => {
+        if (!cancelled && data) setMemberships(data.memberships ?? []);
+      })
+      .catch(() => {});
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   if (memberships.length === 0) return null;
 

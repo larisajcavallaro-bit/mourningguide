@@ -202,7 +202,7 @@ export default function PortalClient() {
 
   return (
     <>
-      <h1 className="page-heading">Memorial portal</h1>
+      <h1 className="page-heading" data-walkthrough="walkthrough-portal-heading">Memorial portal</h1>
       <p className="page-sub">Design what your family and friends will see after you pass. It goes live only when your passing is confirmed.</p>
 
       <p className="section-label-lg">Preview</p>

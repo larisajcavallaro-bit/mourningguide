@@ -2,6 +2,7 @@ import { auth } from '@clerk/nextjs/server';
 import { redirect } from 'next/navigation';
 import { getAccount, getUserMemberships } from '@/lib/account';
 import AppHeader from './AppHeader';
+import WalkthroughHost from '@/components/WalkthroughHost';
 
 function isTrialExpired(trialEndsAt: Date | string | null | undefined): boolean {
   if (!trialEndsAt) return false;
@@ -34,6 +35,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
   return (
     <>
       <AppHeader />
+      <WalkthroughHost accountPath={acct.path} />
       {children}
     </>
   );
