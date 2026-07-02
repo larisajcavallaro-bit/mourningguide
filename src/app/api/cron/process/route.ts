@@ -64,7 +64,7 @@ async function run(req: Request) {
       .from(accounts).where(eq(accounts.id, l.accountId)).limit(1);
     const senderName = acct[0]?.subjectName ?? 'Your loved one';
     try {
-      await sendLetterDelivery({ to: l.recipientEmail, recipientName: l.recipientName, senderName, letterBody: l.body });
+      await sendLetterDelivery({ to: l.recipientEmail, recipientName: l.recipientName, senderName, letterBody: l.body, letterSubject: l.subject });
       await db.update(letters).set({ deliveryStatus: 'sent', releasedAt: now }).where(eq(letters.id, l.id));
       summary.lettersSent++;
     } catch {
@@ -125,8 +125,17 @@ async function completeActivation(activationId: string, accountId: string, trigg
       lettersScheduled++;
       continue;
     }
+    if (l.releaseTiming === 'date') {
+      if (l.scheduledReleaseAt && l.scheduledReleaseAt.getTime() > now.getTime()) {
+        await db.update(letters)
+          .set({ deliveryStatus: 'scheduled' })
+          .where(eq(letters.id, l.id));
+        lettersScheduled++;
+        continue;
+      }
+    }
     try {
-      await sendLetterDelivery({ to: l.recipientEmail, recipientName: l.recipientName, senderName, letterBody: l.body });
+      await sendLetterDelivery({ to: l.recipientEmail, recipientName: l.recipientName, senderName, letterBody: l.body, letterSubject: l.subject });
       await db.update(letters).set({ deliveryStatus: 'sent', releasedAt: now }).where(eq(letters.id, l.id));
       await db.insert(notificationLogs).values({ activationId, channel: 'email', type: 'letter', status: 'sent' });
       lettersSent++;

@@ -22,8 +22,9 @@ export const letters = pgTable('letters', {
   accountId: uuid('account_id').notNull().references(() => accounts.id, { onDelete: 'cascade' }),
   recipientName: text('recipient_name').notNull(),
   recipientEmail: text('recipient_email'),
+  subject: text('subject'),
   body: text('body').notNull(), // encrypted at application layer before storage
-  releaseTiming: text('release_timing').default('immediate'), // immediate | delayed
+  releaseTiming: text('release_timing').default('immediate'), // immediate | delayed | date
   deliveryStatus: text('delivery_status').default('pending'), // pending | scheduled | sent | skipped | failed
   scheduledReleaseAt: timestamp('scheduled_release_at'), // when a delayed/held letter should be sent
   releasedAt: timestamp('released_at'),

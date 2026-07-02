@@ -27,18 +27,25 @@ export async function POST(req: Request) {
   const { accountId } = authResult;
 
   const body = await req.json();
-  const { recipientName, recipientEmail, body: letterBody, releaseTiming } = body;
+  const { recipientName, recipientEmail, subject, body: letterBody, releaseTiming, scheduledReleaseAt } = body;
 
   if (!recipientName?.trim() || !letterBody?.trim()) {
     return NextResponse.json({ error: 'recipientName and body required' }, { status: 400 });
   }
 
+  const normalizedTiming = releaseTiming === 'date' ? 'date' : releaseTiming === 'delayed' ? 'delayed' : 'immediate';
+  const normalizedScheduledAt = normalizedTiming === 'date' && scheduledReleaseAt
+    ? new Date(scheduledReleaseAt)
+    : null;
+
   const [row] = await db.insert(letters).values({
     accountId,
     recipientName: recipientName.trim(),
     recipientEmail: recipientEmail?.trim() || null,
+    subject: subject?.trim() || null,
     body: letterBody.trim(),
-    releaseTiming: releaseTiming ?? 'immediate',
+    releaseTiming: normalizedTiming,
+    scheduledReleaseAt: normalizedScheduledAt,
   }).returning();
 
   return NextResponse.json({ item: row }, { status: 201 });

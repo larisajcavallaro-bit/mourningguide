@@ -20,6 +20,7 @@ type AreaMeta = {
   desc: string;
   icon: string;
   formTitle: string;
+  addAnotherLabel?: string;
   institutionLabel: string;
   institutionPlaceholder: string;
   accountTypeLabel?: string;
@@ -35,6 +36,7 @@ const AREA_META: Record<string, AreaMeta> = {
     desc: 'Help your family find and close your bank accounts.',
     icon: 'bank',
     formTitle: 'Add a bank or savings account',
+    addAnotherLabel: '+ Add another account',
     institutionLabel: 'Bank or institution name',
     institutionPlaceholder: 'Search for your bank or type its name...',
     accountTypes: ['Checking account', 'Savings account', 'Money market account', 'Certificate of deposit (CD)', 'Health savings account (HSA)', 'Individual retirement account (IRA)', 'Joint account', 'Business account', 'Other'],
@@ -47,6 +49,7 @@ const AREA_META: Record<string, AreaMeta> = {
     desc: 'Document credit cards, personal loans, and lines of credit.',
     icon: 'card',
     formTitle: 'Add a credit card or loan',
+    addAnotherLabel: '+ Add another account',
     institutionLabel: 'Card issuer or lender name',
     institutionPlaceholder: 'e.g. Chase, American Express, Capital One...',
     accountTypes: ['Credit card', 'Personal loan', 'Home equity line of credit (HELOC)', 'Auto loan', 'Student loan', 'Business credit card', 'Store card', 'Other'],
@@ -58,6 +61,7 @@ const AREA_META: Record<string, AreaMeta> = {
     desc: 'List subscriptions, streaming, memberships, and recurring services to cancel.',
     icon: 'pin',
     formTitle: 'Add a subscription or service',
+    addAnotherLabel: '+ Add another account',
     institutionLabel: 'Service name',
     institutionPlaceholder: 'e.g. Netflix, Spotify, Amazon Prime...',
     accountTypes: ['Streaming TV', 'Streaming music', 'News / magazine', 'Software / app', 'Gym / fitness', 'Delivery service', 'Phone plan', 'Internet / broadband', 'Cloud storage', 'Other'],
@@ -69,6 +73,7 @@ const AREA_META: Record<string, AreaMeta> = {
     desc: 'Electricity, gas, water, internet, and home services.',
     icon: 'home',
     formTitle: 'Add a utility or home service',
+    addAnotherLabel: '+ Add another account',
     institutionLabel: 'Provider name',
     institutionPlaceholder: 'e.g. PG&E, Comcast, AT&T...',
     accountTypes: ['Electricity', 'Gas', 'Water', 'Internet / broadband', 'Cable TV', 'Home phone', 'Security system', 'Waste / recycling', 'Other'],
@@ -80,6 +85,7 @@ const AREA_META: Record<string, AreaMeta> = {
     desc: 'Email, social media, Apple ID, Google, and other digital accounts.',
     icon: 'screen',
     formTitle: 'Add a digital account',
+    addAnotherLabel: '+ Add another account',
     institutionLabel: 'Platform or service name',
     institutionPlaceholder: 'e.g. Apple ID, Gmail, Facebook, LinkedIn...',
     accountTypes: ['Email', 'Social media', 'Cloud storage / photos', 'Password manager', 'Online shopping', 'Gaming', 'Financial / crypto', 'Other'],
@@ -91,6 +97,7 @@ const AREA_META: Record<string, AreaMeta> = {
     desc: 'Life, health, home, auto, and other insurance policies.',
     icon: 'shield',
     formTitle: 'Add an insurance policy',
+    addAnotherLabel: '+ Add another account',
     institutionLabel: 'Insurance company name',
     institutionPlaceholder: 'e.g. MetLife, State Farm, Prudential...',
     accountTypes: ['Life insurance', 'Health insurance', 'Homeowner insurance', 'Renter insurance', 'Auto insurance', 'Long-term care', 'Disability insurance', 'Umbrella policy', 'Other'],
@@ -102,6 +109,7 @@ const AREA_META: Record<string, AreaMeta> = {
     desc: 'Brokerage accounts, IRAs, 401(k)s, and retirement savings.',
     icon: 'chart',
     formTitle: 'Add an investment or retirement account',
+    addAnotherLabel: '+ Add another account',
     institutionLabel: 'Institution or platform name',
     institutionPlaceholder: 'e.g. Fidelity, Vanguard, Charles Schwab...',
     accountTypes: ['401(k) / 403(b)', 'Traditional IRA', 'Roth IRA', 'Brokerage / investment account', 'Pension', 'Annuity', '529 education savings', 'Other'],
@@ -113,6 +121,7 @@ const AREA_META: Record<string, AreaMeta> = {
     desc: 'Homes, land, rental properties, and mortgages.',
     icon: 'home',
     formTitle: 'Add a property or mortgage',
+    addAnotherLabel: '+ Add another account',
     institutionLabel: 'Property address or lender name',
     institutionPlaceholder: 'e.g. 123 Main St, or Wells Fargo Mortgage...',
     accountTypes: ['Primary home', 'Vacation / second home', 'Rental property', 'Land / plot', 'Mortgage', 'Reverse mortgage', 'Other'],
@@ -124,6 +133,7 @@ const AREA_META: Record<string, AreaMeta> = {
     desc: 'Cars, motorcycles, boats, RVs, and other vehicles.',
     icon: 'car',
     formTitle: 'Add a vehicle',
+    addAnotherLabel: '+ Add another vehicle',
     institutionLabel: 'Vehicle make and model',
     institutionPlaceholder: 'e.g. 2018 Toyota Camry, 2020 Honda CRV...',
     accountTypeLabel: 'Type of vehicle',
@@ -136,6 +146,7 @@ const AREA_META: Record<string, AreaMeta> = {
     desc: 'Businesses you own, partnerships, or shares in a company.',
     icon: 'briefcase',
     formTitle: 'Add a business interest',
+    addAnotherLabel: '+ Add another business',
     institutionLabel: 'Business or entity name',
     institutionPlaceholder: 'e.g. Smith Plumbing LLC, ABC Partnership...',
     accountTypes: ['Sole proprietorship', 'LLC', 'S-Corporation', 'C-Corporation', 'Partnership', 'Shares in private company', 'Franchise', 'Other'],
@@ -147,6 +158,7 @@ const AREA_META: Record<string, AreaMeta> = {
     desc: 'Social Security survivor benefits, VA benefits, pensions, and union benefits.',
     icon: 'columns',
     formTitle: 'Add a government or benefits account',
+    addAnotherLabel: '+ Add another account',
     institutionLabel: 'Agency, employer, or benefit name',
     institutionPlaceholder: 'e.g. Social Security Administration, VA Benefits...',
     accountTypes: ['Social Security survivor benefit', 'Social Security lump-sum death benefit', 'VA survivor benefits', 'VA pension', 'Employer pension', 'Union pension / benefit', 'Railroad Retirement Board', 'Federal employee', 'State government pension', 'Other'],
@@ -159,6 +171,7 @@ const AREA_META: Record<string, AreaMeta> = {
     desc: 'Your preferences for your funeral, burial, or memorial service.',
     icon: 'pin',
     formTitle: 'Add a funeral preference or arrangement',
+    addAnotherLabel: '+ Add another item',
     institutionLabel: 'Funeral home or preference type',
     institutionPlaceholder: "e.g. Rose Hill Funeral Home, or 'Burial preference'...",
     accountTypes: ['Burial preference', 'Cremation preference', 'Funeral home', 'Pre-paid funeral plan', 'Cemetery / burial site', 'Religious or cultural wishes', 'Memorial service wishes', 'Other'],
@@ -170,6 +183,7 @@ const AREA_META: Record<string, AreaMeta> = {
     desc: 'Your pets and who should care for them.',
     icon: 'heart',
     formTitle: 'Add a pet',
+    addAnotherLabel: '+ Add another pet',
     institutionLabel: "Pet's name and type",
     institutionPlaceholder: 'e.g. Max (Golden Retriever), Bella (Tabby cat)...',
     accountTypeLabel: 'Type of pet',
@@ -182,6 +196,7 @@ const AREA_META: Record<string, AreaMeta> = {
     desc: 'Sentimental items, heirlooms, art, and collections.',
     icon: 'star',
     formTitle: 'Add a special item',
+    addAnotherLabel: '+ Add another item',
     institutionLabel: 'Item name or description',
     institutionPlaceholder: "e.g. Grandmother's pearl necklace, vintage Gibson guitar...",
     accountTypeLabel: 'Type of item',
@@ -194,6 +209,7 @@ const AREA_META: Record<string, AreaMeta> = {
     desc: 'Anything else your family may need to find or understand.',
     icon: 'folder',
     formTitle: 'Add an item',
+    addAnotherLabel: '+ Add another item',
     institutionLabel: 'Name',
     institutionPlaceholder: 'Type a name...',
     accountTypes: ['Other'],
@@ -451,7 +467,9 @@ export default function FinancesClient({ initial, initialCategory }: { initial: 
           {saveError && <p className="field-error">{saveError}</p>}
 
           <button type="submit" disabled={saving} className="save-btn">{saving ? 'Saving...' : editing ? 'Save changes' : 'Save entry'}</button>
-          {editing && <button type="button" className="add-another-btn" onClick={clearForm}>Cancel edit</button>}
+          <button type="button" className="add-another-btn" onClick={clearForm}>
+            {editing ? 'Cancel edit' : area.addAnotherLabel ?? '+ Add another account'}
+          </button>
         </form>
 
         <aside className="saved-section designed-saved-section">

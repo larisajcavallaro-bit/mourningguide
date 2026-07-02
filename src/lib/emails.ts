@@ -575,12 +575,12 @@ export async function sendActivationNotification({
 }
 
 export async function sendLetterDelivery({
-  to, recipientName, senderName, letterBody,
-}: { to: string; recipientName: string; senderName: string; letterBody: string }) {
+  to, recipientName, senderName, letterBody, letterSubject,
+}: { to: string; recipientName: string; senderName: string; letterBody: string; letterSubject?: string | null }) {
   return resend.emails.send({
     from: FROM,
     to,
-    subject: `A letter for you from ${senderName}`,
+    subject: letterSubject?.trim() || `A letter for you from ${senderName}`,
     html: letterDeliveryHtml(recipientName, senderName, letterBody),
   });
 }

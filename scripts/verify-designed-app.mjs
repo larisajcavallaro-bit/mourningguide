@@ -75,6 +75,75 @@ const checks = [
       'gift-card designed',
     ],
   },
+  {
+    file: 'src/app/(app)/vault/letters/LettersClient.tsx',
+    name: 'Letters page',
+    require: [
+      'Letters to loved ones',
+      "Subject <span className=\"opt\">(optional)</span>",
+      'When should this be delivered?',
+      'On a specific date',
+      'Saved letters',
+    ],
+    forbid: [
+      'sheet-overlay',
+      'Letter to</div>',
+    ],
+  },
+  {
+    file: 'src/app/(app)/vault/finances/FinancesClient.tsx',
+    name: 'Finances detail',
+    require: [
+      'planning-detail-grid',
+      'instructions-box',
+      'security-note',
+      'designed-saved-section',
+      'Add another account',
+    ],
+  },
+  {
+    file: 'src/app/(app)/vault/documents/DocumentsClient.tsx',
+    name: 'Documents page',
+    require: [
+      'Back to Personal',
+      'Documents',
+      'Store your will, trust, IDs, and other important papers.',
+      '+ Add document',
+      'entry-card',
+    ],
+  },
+  {
+    file: 'src/app/(app)/vault/wishes/WishesClient.tsx',
+    name: 'Final wishes page',
+    require: [
+      'Final wishes',
+      'Include a reception',
+      'Save wishes',
+      'Additional notes for your family',
+    ],
+  },
+  {
+    file: 'src/app/(app)/remember/RememberSetupClient.tsx',
+    name: 'Remember detail template',
+    require: [
+      'Back to Remember',
+      'portal-page-header',
+      'remember-upload',
+      'designed-saved-section remember-saved',
+      'addAnotherLabel',
+    ],
+  },
+  {
+    file: 'src/app/(app)/remember/rememberSetups.ts',
+    name: 'Remember setup definitions',
+    require: [
+      "title: 'Photos & memories'",
+      "title: 'Voice & video messages'",
+      "title: 'Music for your service'",
+      "title: 'Speakers & readings'",
+      "title: 'Obituary & eulogy'",
+    ],
+  },
 ];
 
 const sharedForbid = [

@@ -14,12 +14,22 @@ export async function PUT(req: Request, { params }: { params: Promise<{ id: stri
 
   const { id } = await params;
   const body = await req.json();
+  const normalizedTiming = body.releaseTiming === 'date'
+    ? 'date'
+    : body.releaseTiming === 'delayed'
+      ? 'delayed'
+      : 'immediate';
+  const normalizedScheduledAt = normalizedTiming === 'date' && body.scheduledReleaseAt
+    ? new Date(body.scheduledReleaseAt)
+    : null;
 
   const [row] = await db.update(letters).set({
     recipientName: body.recipientName?.trim(),
     recipientEmail: body.recipientEmail?.trim() || null,
+    subject: body.subject?.trim() || null,
     body: body.body?.trim(),
-    releaseTiming: body.releaseTiming ?? 'immediate',
+    releaseTiming: normalizedTiming,
+    scheduledReleaseAt: normalizedScheduledAt,
   })
   .where(and(eq(letters.id, id), eq(letters.accountId, accountId)))
   .returning();
