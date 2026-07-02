@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 
 type ServiceDetails = {
   type: string; date: string; time: string; venue: string; address: string;
@@ -17,31 +17,33 @@ const BLANK: ServiceDetails = {
   livestreamUrl: '', notes: '',
 };
 
-export default function WishesClient() {
-  const [form, setForm] = useState<ServiceDetails>(BLANK);
+type InitialServiceDetails = { [K in keyof ServiceDetails]?: ServiceDetails[K] | null } | null;
+
+function initialForm(initial: InitialServiceDetails): ServiceDetails {
+  if (!initial) return BLANK;
+  return {
+    type: initial.type ?? '',
+    date: initial.date ?? '',
+    time: initial.time ?? '',
+    venue: initial.venue ?? '',
+    address: initial.address ?? '',
+    parking: initial.parking ?? '',
+    dresscode: initial.dresscode ?? '',
+    officiant: initial.officiant ?? '',
+    reception: initial.reception ?? false,
+    receptionVenue: initial.receptionVenue ?? '',
+    receptionAddress: initial.receptionAddress ?? '',
+    receptionTime: initial.receptionTime ?? '',
+    livestreamUrl: initial.livestreamUrl ?? '',
+    notes: initial.notes ?? '',
+  };
+}
+
+export default function WishesClient({ initial }: { initial: InitialServiceDetails }) {
+  const [form, setForm] = useState<ServiceDetails>(() => initialForm(initial));
   const [saved, setSaved] = useState(false);
   const [saving, setSaving] = useState(false);
   const [saveError, setSaveError] = useState('');
-  const [loading, setLoading] = useState(true);
-  const [loadError, setLoadError] = useState(false);
-
-  useEffect(() => {
-    fetch('/api/vault/wishes')
-      .then(r => r.ok ? r.json() : Promise.reject())
-      .then(({ item }) => {
-        if (item) setForm({
-          type: item.type ?? '', date: item.date ?? '', time: item.time ?? '',
-          venue: item.venue ?? '', address: item.address ?? '', parking: item.parking ?? '',
-          dresscode: item.dresscode ?? '', officiant: item.officiant ?? '',
-          reception: item.reception ?? false,
-          receptionVenue: item.receptionVenue ?? '', receptionAddress: item.receptionAddress ?? '',
-          receptionTime: item.receptionTime ?? '', livestreamUrl: item.livestreamUrl ?? '',
-          notes: item.notes ?? '',
-        });
-        setLoading(false);
-      })
-      .catch(() => { setLoadError(true); setLoading(false); });
-  }, []);
 
   async function save(e: React.FormEvent) {
     e.preventDefault();
@@ -60,9 +62,6 @@ export default function WishesClient() {
     return (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) =>
       setForm(prev => ({ ...prev, [key]: e.target.value }));
   }
-
-  if (loading) return <p style={{ color: '#9a7a6a', fontSize: '0.9rem' }}>Loading...</p>;
-  if (loadError) return <p className="field-error">Couldn&apos;t load your wishes. Please refresh and try again.</p>;
 
   return (
     <div className="designed-subpage">
