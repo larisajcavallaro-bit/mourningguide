@@ -1,6 +1,7 @@
 import { requirePlanningAccount } from '@/lib/account';
 import AppShell from '@/components/AppShell';
-import RememberSetupClient, { SETUPS } from '../RememberSetupClient';
+import RememberSetupClient from '../RememberSetupClient';
+import { SETUPS } from '../rememberSetups';
 
 export const metadata = { title: 'Music for your service — Mourning Guide' };
 
