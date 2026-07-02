@@ -82,58 +82,79 @@ export default function DocumentsClient({ initial }: { initial: Doc[] }) {
   }
 
   return (
-    <div className="designed-subpage">
-      <Link href="/vault" className="back-link">Back to Personal</Link>
-      <div className="portal-page-header">
-        <div className="portal-page-header-icon">{documentIcon()}</div>
+    <div className="planning-detail">
+      <Link href="/vault" className="back-link">
+        <span aria-hidden>←</span> Back to all planning areas
+      </Link>
+
+      <div className="area-header">
+        <div className="area-header-icon">{documentIcon()}</div>
         <div>
-          <h1>Documents</h1>
-          <p>Store your will, trust, IDs, and other important papers. These stay private and are never shown on your public memorial page.</p>
+          <h1 className="area-header-title">Legal &amp; important papers</h1>
+          <p className="area-header-desc">Wills, trusts, power of attorney, and other key documents.</p>
         </div>
       </div>
 
-      <div className="portal-pad">
-        <input ref={fileInputRef} type="file" accept="application/pdf,image/*" multiple onChange={onPickFiles} style={{ display: 'none' }} />
-        <button onClick={() => fileInputRef.current?.click()} disabled={uploading} className="add-btn" style={{ opacity: uploading ? 0.6 : 1 }}>
-          {uploading ? 'Uploading...' : '+ Add document'}
-        </button>
-        {uploadError && <p className="field-error">{uploadError}</p>}
-
-        {docs.length === 0 ? (
-          <div className="empty-state compact">
-            <div className="emoji">+</div>
-            <p>No documents yet. Add your will, trust, IDs, or other important papers so your family knows where to find them.</p>
-          </div>
-        ) : (
-          docs.map(doc => (
-            <div key={doc.id} className="entry-card">
-              <div className="entry-card-row">
-                <div style={{ flex: 1 }}>
-                  <div className="entry-title">{doc.fileName}</div>
-                  <div className="field" style={{ marginTop: 10, marginBottom: 8 }}>
-                    <select value={doc.category ?? ''} onChange={e => saveMeta(doc.id, { category: e.target.value })}>
-                      <option value="">Uncategorized</option>
-                      {CATEGORIES.map(c => <option key={c.value} value={c.value}>{c.label}</option>)}
-                    </select>
-                  </div>
-                  <input
-                    defaultValue={doc.notes ?? ''}
-                    onBlur={e => saveMeta(doc.id, { notes: e.target.value })}
-                    placeholder="Add a note (e.g. where the original is kept)..."
-                    style={{ width: '100%', border: '1px solid rgba(145,104,82,0.2)', borderRadius: 9, padding: '8px 10px', fontSize: '0.82rem', color: '#2f241f', boxSizing: 'border-box' }}
-                  />
-                </div>
-                <div className="entry-actions" style={{ flexDirection: 'column', gap: 6 }}>
-                  <button onClick={() => download(doc)} disabled={downloadingId === doc.id} className="entry-link-btn">
-                    {downloadingId === doc.id ? '...' : 'Download'}
-                  </button>
-                  <button onClick={() => remove(doc.id)} className="entry-link-btn danger">Delete</button>
-                </div>
-              </div>
-            </div>
-          ))
-        )}
+      <div className="security-note">
+        {documentIcon()}
+        <p><strong>Safe to save here:</strong> document names, categories, and where originals are stored. <strong>Never save:</strong> passwords, Social Security numbers, or private account credentials.</p>
       </div>
+
+      <section className="planning-detail-grid">
+        <div className="planning-detail-form">
+          <h2>Add a legal document</h2>
+          <div className="field">
+            <label>Upload document</label>
+            <input ref={fileInputRef} type="file" accept="application/pdf,image/*" multiple onChange={onPickFiles} style={{ display: 'none' }} />
+            <button type="button" onClick={() => fileInputRef.current?.click()} disabled={uploading} className="save-btn" style={{ opacity: uploading ? 0.6 : 1 }}>
+              {uploading ? 'Uploading...' : '+ Add document'}
+            </button>
+            <p className="field-hint">Upload wills, trusts, IDs, deeds, and other important papers so your family knows where to find them.</p>
+          </div>
+          {uploadError && <p className="field-error">{uploadError}</p>}
+        </div>
+
+        <aside className="saved-section designed-saved-section">
+          <h3>Saved to your plan</h3>
+          {docs.length === 0 ? (
+            <div className="empty-state compact">
+              <div className="emoji">+</div>
+              <p>No documents yet. Add your will, trust, IDs, or other important papers so your family knows where to find them.</p>
+            </div>
+          ) : (
+            <div className="entries-list">
+              {docs.map(doc => (
+                <div key={doc.id} className="saved-pill">
+                  <div className="pill-icon">{miniDocIcon()}</div>
+                  <div className="pill-main" style={{ flex: 1 }}>
+                    <div className="pill-name">{doc.fileName}</div>
+                    <div className="field" style={{ marginTop: 10, marginBottom: 8 }}>
+                      <select value={doc.category ?? ''} onChange={e => saveMeta(doc.id, { category: e.target.value })}>
+                        <option value="">Uncategorized</option>
+                        {CATEGORIES.map(c => <option key={c.value} value={c.value}>{c.label}</option>)}
+                      </select>
+                    </div>
+                    <input
+                      defaultValue={doc.notes ?? ''}
+                      onBlur={e => saveMeta(doc.id, { notes: e.target.value })}
+                      placeholder="Add a note (e.g. where the original is kept)..."
+                      style={{ width: '100%', border: '1px solid rgba(145,104,82,0.2)', borderRadius: 9, padding: '8px 10px', fontSize: '0.82rem', color: '#2f241f', boxSizing: 'border-box' }}
+                    />
+                  </div>
+                  <div className="pill-actions">
+                    <button type="button" onClick={() => download(doc)} disabled={downloadingId === doc.id}>
+                      {downloadingId === doc.id ? '...' : 'Download'}
+                    </button>
+                    <button type="button" onClick={() => remove(doc.id)}>Delete</button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </aside>
+      </section>
+
+      <Link href="/vault" className="back-to-plan">← Back to all planning areas</Link>
     </div>
   );
 }
@@ -144,6 +165,15 @@ function documentIcon() {
       <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
       <path d="M14 2v6h6" />
       <path d="M8 13h8M8 17h5" />
+    </svg>
+  );
+}
+
+function miniDocIcon() {
+  return (
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#c57b57" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+      <path d="M14 2v6h6" />
     </svg>
   );
 }

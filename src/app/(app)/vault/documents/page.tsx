@@ -5,7 +5,7 @@ import AppShell from '@/components/AppShell';
 import DocumentsClient from './DocumentsClient';
 import { requirePlanningAccount } from '@/lib/account';
 
-export const metadata = { title: 'Documents — Mourning Guide' };
+export const metadata = { title: 'Legal & important papers — Mourning Guide' };
 
 export default async function DocumentsPage() {
   const { accountId } = await requirePlanningAccount();
@@ -15,7 +15,7 @@ export default async function DocumentsPage() {
     .orderBy(documents.createdAt);
 
   return (
-    <AppShell title="Documents" active="vault">
+    <AppShell title="Legal & important papers" active="vault">
       <DocumentsClient initial={items} />
     </AppShell>
   );

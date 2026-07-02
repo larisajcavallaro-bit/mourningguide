@@ -5,7 +5,7 @@ import { requirePlanningAccount } from '@/lib/account';
 import AppShell from '@/components/AppShell';
 import WishesClient from './WishesClient';
 
-export const metadata = { title: 'Final wishes — Mourning Guide' };
+export const metadata = { title: 'Funeral & final wishes — Mourning Guide' };
 
 export default async function WishesPage() {
   const { accountId } = await requirePlanningAccount();
@@ -15,7 +15,7 @@ export default async function WishesPage() {
     .limit(1);
 
   return (
-    <AppShell title="Final wishes" active="vault">
+    <AppShell title="Funeral & final wishes" active="vault">
       <WishesClient initial={item ?? null} />
     </AppShell>
   );
