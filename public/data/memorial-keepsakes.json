@@ -1,0 +1,468 @@
+{
+  "meta": {
+    "version": "1.1.0",
+    "purpose": "Curated memorial gift vendors for portal keepsakes — USA vendors only; no affiliate links, no paid placement",
+    "disclaimer": "USA vendors only. Mourning Guide does not sell these products or endorse any vendor. Prices are approximate — confirm on each website. Read recent reviews before purchasing.",
+    "country": "US",
+    "lastVerified": "2026-06",
+    "sources": [
+      "Official vendor websites",
+      "Customer reviews",
+      "BBB where available"
+    ]
+  },
+  "categories": {
+    "Memory bears": [
+      {
+        "rank": 1,
+        "name": "The Patchwork Bear",
+        "url": "https://thepatchworkbear.com",
+        "region": "US nationwide (Pennington, NJ studio)",
+        "priceRange": "$75–$200+",
+        "description": "Handmade memory and bereavement bears crafted from a loved one's clothing — one of the original US memory bear studios since 2003.",
+        "process": "Order online; mail clothing per kit instructions; team confirms receipt and sends updates; optional scraps returned.",
+        "turnaround": "Several weeks depending on product; check current lead times at checkout",
+        "phone": "Contact via website",
+        "tip": "Bereavement Bear product line is designed for loss; Oprah's Favorite Things alum with 1,000+ reviews.",
+        "guideLevel": "curated"
+      },
+      {
+        "rank": 2,
+        "name": "ReMinkie Memory Bears",
+        "url": "https://reminkiebears.com",
+        "region": "US nationwide (Longboat Key, FL)",
+        "priceRange": "$100–$350+",
+        "description": "Jointed memory bears from clothing, fur coats, neckties, and fabrics — also pillows, throws, and keepsake quilts.",
+        "process": "Call or email after sending fabric; Rita Glosser and team consult on design; monogram personalization available.",
+        "turnaround": "Varies by project — confirm timeline when ordering",
+        "phone": "Contact via website",
+        "tip": "Strong option for fur, ties, or heirloom fabrics; bears are fully lined with movable arms and legs.",
+        "guideLevel": "curated"
+      },
+      {
+        "rank": 3,
+        "name": "Vicki's Memory Bears",
+        "url": "https://www.vickismemorybears.com",
+        "region": "US nationwide (Hartville, OH)",
+        "priceRange": "From $75 (18\" standard)",
+        "description": "One-of-a-kind bears from shirts, dresses, uniforms, and linens — bereavement and heirloom commissions since 2002.",
+        "process": "Email vicki@vickismemorybears.com with clothing description and wishes; ship items to PO Box in Hartville, OH.",
+        "turnaround": "About 2 weeks for standard bear",
+        "email": "vicki@vickismemorybears.com",
+        "tip": "Can preserve fabric scent if not laundered; also offers custom pencil portraits from photos.",
+        "guideLevel": "curated"
+      },
+      {
+        "rank": 4,
+        "name": "The Unlimited Stitch",
+        "url": "https://theunlimitedstitch.com",
+        "region": "US nationwide (Morton, IL)",
+        "priceRange": "$75–$120+ (14\" or 18\" sizes)",
+        "description": "Handcrafted memory bears from shirts, pajamas, uniforms, and baby clothes — bereavement and sympathy gifts.",
+        "process": "Order online; download instruction sheet; mail clothing to Morton, IL studio with waterproof packaging.",
+        "turnaround": "3–4 weeks standard; 6–8 weeks during holidays",
+        "tip": "Contact them if time-sensitive for a memorial service — they may accommodate when possible.",
+        "guideLevel": "curated"
+      },
+      {
+        "rank": 5,
+        "name": "Sew Much Love Memory Bears",
+        "url": "https://www.sewmuchlove.net",
+        "region": "US nationwide",
+        "priceRange": "$70–$180",
+        "description": "Custom bereavement and memory bears from clothing — shirts, sweaters, baby outfits, and military uniforms.",
+        "process": "Complete order form; mail clothing with order number; maker contacts you if fabric needs clarification.",
+        "turnaround": "Usually 6–10 weeks",
+        "tip": "Ask about rush options if you need bears before a memorial service.",
+        "guideLevel": "curated"
+      },
+      {
+        "rank": 6,
+        "name": "TammyBears",
+        "url": "https://tammybears.com",
+        "region": "US nationwide",
+        "priceRange": "$100–$250+",
+        "description": "Heirloom-quality jointed memory bears from wedding dresses, uniforms, shirts, and sentimental fabrics since 1999.",
+        "process": "Email or contact form with garment details; collaborate on design; ship clothing per instructions.",
+        "turnaround": "Several weeks — confirm current wait list",
+        "tip": "Fully jointed head, arms, and legs — bears sit well for display on a bed or chair.",
+        "guideLevel": "curated"
+      }
+    ],
+    "Ashes jewelry": [
+      {
+        "rank": 1,
+        "name": "Spirit Pieces",
+        "url": "https://www.spiritpieces.com",
+        "region": "US nationwide (Austin, TX)",
+        "priceRange": "$69–$450 (many $100–$175)",
+        "description": "Handmade glass and resin cremation jewelry infused with a small portion of ashes — pendants, rings, and orbs.",
+        "process": "Order online; free ash collection kit shipped; return kit via USPS Priority Express (cremains regulations); artist crafts piece.",
+        "turnaround": "About 6 weeks after kit is received",
+        "phone": "512-886-2029",
+        "email": "hello@spiritpieces.com",
+        "tip": "Uses only a pinch of ashes — rest stays with family; family discounts on multiple pieces.",
+        "guideLevel": "curated"
+      },
+      {
+        "rank": 2,
+        "name": "Close By Me Jewelry",
+        "url": "https://closebymejewelry.com",
+        "region": "US nationwide (Huntington Beach, CA)",
+        "priceRange": "$200–$800+",
+        "description": "Sterling silver and 14k gold memorial jewelry with ashes solidified into a custom center stone — modern, wearable designs.",
+        "process": "Order online; ash kit provided; ashes bonded into jewelry in CA studio using patented process.",
+        "turnaround": "Several weeks after ashes received",
+        "tip": "Premium option — ashes become the stone itself, not a hollow compartment.",
+        "guideLevel": "curated"
+      },
+      {
+        "rank": 3,
+        "name": "Sugarberry Memorials",
+        "url": "https://sugarberrymemorials.com",
+        "region": "US nationwide",
+        "priceRange": "$150–$1,500+",
+        "description": "Custom cremation rings and necklaces with lab-created gemstones infused with ashes, hair, fabric, or flower petals.",
+        "process": "Browse designs; consultation for custom work; ash kit shipped; handcrafted to order.",
+        "turnaround": "Varies by design — confirm at order",
+        "tip": "Also accepts fabric, hair, soil, and petals — not ashes only.",
+        "guideLevel": "curated"
+      },
+      {
+        "rank": 4,
+        "name": "Eternally Connected",
+        "url": "https://www.eternallyconnected.com",
+        "region": "US nationwide",
+        "priceRange": "$80–$250",
+        "description": "Affordable cremation ash pendants and keepsake jewelry — entry-level option for families on a budget.",
+        "process": "Order online; kit for small ash portion; fill pendant at home or send to vendor per product type.",
+        "turnaround": "1–4 weeks for many styles",
+        "tip": "Lower price point than custom glass art — good for multiple family members.",
+        "guideLevel": "curated"
+      },
+      {
+        "rank": 5,
+        "name": "Urns.com — Cremation Jewelry",
+        "url": "https://www.urns.com/collections/cremation-jewelry",
+        "region": "US nationwide (since 1998)",
+        "priceRange": "$40–$500",
+        "description": "Large selection of urn pendants, rings, and bracelets with secure ash chambers — fill at home with included kit.",
+        "process": "Choose style; order ships with filling tools and instructions; place ashes in chamber yourself.",
+        "turnaround": "Ships quickly; many in-stock designs",
+        "tip": "Hollow-compartment style (not fused glass) — wide style range including masculine designs.",
+        "guideLevel": "curated"
+      },
+      {
+        "rank": 6,
+        "name": "LifeGem",
+        "url": "https://www.lifegem.com",
+        "region": "US nationwide (Chicago, IL lab)",
+        "priceRange": "$2,500–$20,000+",
+        "description": "Memorial diamonds grown from cremation ashes or hair — the only US-based memorial diamond production lab.",
+        "process": "Call 866-543-3436 for free shipping kit; send ashes or hair via US Priority Mail to Illinois lab; diamond created and set in chosen jewelry.",
+        "turnaround": "Several months",
+        "phone": "866-543-3436",
+        "tip": "Premium heirloom option — lab tours available in Chicago; verify process details before committing.",
+        "guideLevel": "research"
+      }
+    ],
+    "Memorial candles": [
+      {
+        "rank": 1,
+        "name": "Afterlights",
+        "url": "https://afterlights.co",
+        "region": "US nationwide",
+        "priceRange": "$30–$60",
+        "description": "Personalized memorial candles with name, dates, photo, or message — soy wax with custom label designs.",
+        "process": "Choose label layout (photo, text, or date); personalize online; shipped ready to light.",
+        "turnaround": "Usually 1–2 weeks",
+        "tip": "Strong sympathy-gift option — photo label fills entire front of candle.",
+        "guideLevel": "curated"
+      },
+      {
+        "rank": 2,
+        "name": "Remember Me Gifts",
+        "url": "https://remembermegiftsonline.com/remembrance-candles",
+        "region": "US nationwide",
+        "priceRange": "$25–$45",
+        "description": "Personalized LED and wax memorial candles with names, dates, and verses — hurricane holders and pillar styles.",
+        "process": "Select design; enter name and dates; ships with LED or wax candle inside holder.",
+        "turnaround": "1–2 weeks standard shipping",
+        "tip": "LED options safe for hospitals, nursing homes, and long display at services.",
+        "guideLevel": "curated"
+      },
+      {
+        "rank": 3,
+        "name": "The Funeral Program Site",
+        "url": "https://www.funeralprogram-site.com/collections/memorial-candles",
+        "region": "US nationwide",
+        "priceRange": "$20–$50",
+        "description": "Memorial candles in wax, LED, and glass — personalized with photo, name, dates, and messages for services or home.",
+        "process": "Choose candle type; customize online; rush shipping available for services.",
+        "turnaround": "Fast shipping options for funeral timelines",
+        "tip": "Same vendor as funeral programs — convenient if family already uses them for service stationery.",
+        "guideLevel": "curated"
+      },
+      {
+        "rank": 4,
+        "name": "Memorialine",
+        "url": "https://store.memorialine.com/products/personalized-memorial-candle-5",
+        "region": "US nationwide",
+        "priceRange": "$35–$55",
+        "description": "Soy scented memorial candles with name, dates, or message — includes complimentary digital memorial page via QR code.",
+        "process": "Personalize text online; candle ships with QR-linked virtual tribute page.",
+        "turnaround": "1–2 weeks",
+        "tip": "Digital memorial page lets visitors share photos and stories — pairs physical and online tribute.",
+        "guideLevel": "curated"
+      },
+      {
+        "rank": 5,
+        "name": "Personalization Mall",
+        "url": "https://www.personalizationmall.com",
+        "region": "US nationwide",
+        "priceRange": "$25–$40",
+        "description": "In-memory candle gifts with engraved or printed names and dates — widely available mainstream option.",
+        "process": "Search \"memorial candle\"; personalize; standard e-commerce checkout.",
+        "turnaround": "Often ships within a week",
+        "tip": "Good last-minute option when funeral is soon — verify delivery date at checkout.",
+        "guideLevel": "research"
+      },
+      {
+        "rank": 6,
+        "name": "Laurelbox",
+        "url": "https://www.laurelbox.com/collections/memorial-candles",
+        "region": "US nationwide (Ohio)",
+        "priceRange": "$35–$55",
+        "description": "Hand-poured soy memorial candles with engraved or printed names — sympathy-focused US gift company.",
+        "process": "Choose candle; add loved one's name for engraving or label; ships in signature gift packaging.",
+        "turnaround": "3–5 business days for engraved orders; standard shipping 4–8 business days",
+        "tip": "Sympathy-gift specialist — eco-friendly soy wax, no dyes; popular for bereavement care packages.",
+        "guideLevel": "curated"
+      }
+    ],
+    "Memorial garden stones": [
+      {
+        "rank": 1,
+        "name": "Engraved Garden Stones",
+        "url": "https://engravedgardenstones.com",
+        "region": "US nationwide (San Diego, CA)",
+        "priceRange": "$45–$120+",
+        "description": "Natural river rock, bluestone, and granite memorial stones — sandblasted engraving with digital proof approval.",
+        "process": "Choose stone size; enter text; approve digital proof; free US shipping; stone arrives ready to place.",
+        "turnaround": "About 2–3 weeks after proof approval",
+        "tip": "Proof-before-engrave workflow — nothing cut until you approve layout.",
+        "guideLevel": "curated"
+      },
+      {
+        "rank": 2,
+        "name": "Memorial Rocks",
+        "url": "https://memorial-rocks.com",
+        "region": "US nationwide",
+        "priceRange": "$40–$100",
+        "description": "Natural river rock memorial stones for people and pets — deep engraving on one-of-a-kind stones since 2012.",
+        "process": "Select product; customize text; artisan selects matching river rock; free US shipping.",
+        "turnaround": "2–4 weeks",
+        "tip": "Each stone is unique natural rock — size and color vary slightly.",
+        "guideLevel": "curated"
+      },
+      {
+        "rank": 3,
+        "name": "Adirondack Stone Works",
+        "url": "https://www.engravedstone.net",
+        "region": "US nationwide (NY)",
+        "priceRange": "$60–$150",
+        "description": "Large bluestone stepping stones and garden memorials — up to four lines of text on 13–14 inch stones.",
+        "process": "Design online; engraved natural bluestone shipped with free shipping.",
+        "turnaround": "Often 1–2 weeks",
+        "tip": "Popular for garden paths and memorial stepping stones at home.",
+        "guideLevel": "curated"
+      },
+      {
+        "rank": 4,
+        "name": "Design-a-Stone",
+        "url": "https://designastone.com",
+        "region": "US nationwide (Made in USA)",
+        "priceRange": "$70–$200",
+        "description": "Cast concrete engraved memorial and address stones — weatherproof monument-grade finish with ground stake.",
+        "process": "Design your own text layout; ships within about 4 business days for standard designs.",
+        "turnaround": "4–10 business days for many designs",
+        "tip": "Concrete cast stones — uniform shape vs natural river rock; good for formal garden beds.",
+        "guideLevel": "curated"
+      },
+      {
+        "rank": 5,
+        "name": "Urn Garden",
+        "url": "https://www.urngarden.com/memorial-stones",
+        "region": "US nationwide (Made in USA)",
+        "priceRange": "$35–$90",
+        "description": "Cast-stone memorial stepping stones, plaques, and garden markers — weatherproof and customizable with names and dates.",
+        "process": "Choose design; add personalization; ships as plaque or stepping stone.",
+        "turnaround": "1–3 weeks",
+        "tip": "American-made cast stone — indoor or outdoor display.",
+        "guideLevel": "curated"
+      },
+      {
+        "rank": 6,
+        "name": "Memorials.com — Garden Stones",
+        "url": "https://www.memorials.com",
+        "region": "US nationwide",
+        "priceRange": "$30–$100",
+        "description": "Memorial garden stones, benches, and plaques with engraved names, dates, and verses.",
+        "process": "Browse garden memorial section; customize online; standard shipping.",
+        "turnaround": "1–2 weeks for many items",
+        "tip": "Wide catalog — compare stone material (cast vs natural) before ordering.",
+        "guideLevel": "research"
+      }
+    ],
+    "Custom portrait": [
+      {
+        "rank": 1,
+        "name": "1st Art Gallery",
+        "url": "https://www.1st-art-gallery.com/custom-portraits",
+        "region": "US nationwide (Fort Lauderdale, FL)",
+        "priceRange": "$200–$600+",
+        "description": "Hand-painted custom oil and charcoal portraits from photos — free proofs and unlimited revisions.",
+        "process": "Upload photo; choose medium and size; receive proof before shipping; 365-day satisfaction guarantee.",
+        "turnaround": "Several weeks for hand-painted oil",
+        "tip": "Can combine multiple photos into one memorial portrait — request in order notes.",
+        "guideLevel": "curated"
+      },
+      {
+        "rank": 2,
+        "name": "Paintru",
+        "url": "https://paintru.com/pages/memorial-portrait-paintings",
+        "region": "US nationwide",
+        "priceRange": "$200–$600+",
+        "description": "Museum-quality hand-painted memorial oil portraits from photos — combine multiple people from separate photos.",
+        "process": "Select portrait type; upload photos; matched with artist; proof and revision process.",
+        "turnaround": "Several weeks for oil painting",
+        "tip": "Concierge can help combine family photos with deceased loved one — chat before ordering.",
+        "guideLevel": "curated"
+      },
+      {
+        "rank": 3,
+        "name": "Snappy Canvas",
+        "url": "https://www.snappycanvas.com/remembrance-gifts/175-memorial-portrait-painting.html",
+        "region": "US nationwide",
+        "priceRange": "$90–$300",
+        "description": "Hand-painted and digitally brushed memorial portrait paintings on canvas — oil-finish and watercolor styles.",
+        "process": "Upload photo; choose size and style; artist creates; e-proof for approval before shipping.",
+        "turnaround": "2–4 weeks typical",
+        "tip": "Can order before photo is ready — email image later to support.",
+        "guideLevel": "curated"
+      },
+      {
+        "rank": 4,
+        "name": "Welham & Co",
+        "url": "https://welhamandco.com/products/custom-memorial-portrait",
+        "region": "US nationwide (Made in USA print)",
+        "priceRange": "$100–$250",
+        "description": "Custom memorial portraits printed and framed in the US — pay after approving digital proof.",
+        "process": "Upload photo; free proof in 1–3 days; unlimited edits; pay only when satisfied; framed print shipped.",
+        "turnaround": "Proof in 1–3 days; print 1–2 weeks after approval",
+        "tip": "$0 upfront model — cancel during review if not satisfied.",
+        "guideLevel": "curated"
+      },
+      {
+        "rank": 5,
+        "name": "Picture It On Canvas",
+        "url": "https://www.pictureitoncanvas.com",
+        "region": "US nationwide (Eden Prairie, MN)",
+        "priceRange": "$50–$200",
+        "description": "Custom canvas prints and photo portraits from digital files — US print lab with memorial and sympathy options.",
+        "process": "Upload photo; choose canvas size and finish; printed and shipped from Minnesota.",
+        "turnaround": "Often 1–2 weeks",
+        "tip": "Budget-friendly printed option vs hand-painted — good for multiple family copies.",
+        "guideLevel": "curated"
+      },
+      {
+        "rank": 6,
+        "name": "CanvasPeople",
+        "url": "https://www.canvaspeople.com",
+        "region": "US nationwide (Maple Grove, MN)",
+        "priceRange": "$40–$150",
+        "description": "Photo-to-canvas memorial prints — US-based print studio with frequent promotions.",
+        "process": "Upload photo; select canvas dimensions; ships from US facility.",
+        "turnaround": "1–2 weeks typical",
+        "tip": "Check sales — useful when several siblings each want the same portrait.",
+        "guideLevel": "research"
+      }
+    ],
+    "Fingerprint jewelry": [
+      {
+        "rank": 1,
+        "name": "Legacy Touch",
+        "url": "https://legacytouch.com",
+        "region": "US nationwide (Kansas City, MO)",
+        "priceRange": "$50–$350+",
+        "description": "Fingerprint pendants, rings, charms, and cremation-fingerprint jewelry — widely used by funeral homes.",
+        "process": "Upload fingerprint image or use Print PIN from funeral home; customize metal and chain; handcrafted engraving.",
+        "turnaround": "1–2 weeks; 24-hour express available on many items",
+        "tip": "Ask funeral director if they have Legacy Touch fingerprint kit — saves re-capturing print.",
+        "guideLevel": "curated"
+      },
+      {
+        "rank": 2,
+        "name": "Thumbies",
+        "url": "https://thumbies.com",
+        "region": "US nationwide (Woodstock, IL)",
+        "priceRange": "$75–$300+",
+        "description": "Original fingerprint keepsake jewelry since 1998 — lost-wax casting preserves fine print detail; sold via funeral home partners.",
+        "process": "Often ordered through funeral home that captured print; families can also order direct with print on file.",
+        "turnaround": "5–7 days typical; FastTouch 24-hour rush available",
+        "phone": "877-848-6243",
+        "tip": "If funeral home is a partner, print stays on file for future anniversary orders.",
+        "guideLevel": "curated"
+      },
+      {
+        "rank": 3,
+        "name": "Thumbprint Keepsakes",
+        "url": "https://www.thumbprintkeepsakes.com",
+        "region": "US nationwide",
+        "priceRange": "$40–$150",
+        "description": "Fingerprint pendants, keychains, and memorial jewelry — direct-to-family alternative to funeral home programs.",
+        "process": "Order fingerprint kit or upload ink print; select jewelry style; shipped engraved.",
+        "turnaround": "2–3 weeks",
+        "tip": "Budget-friendly alternative if Legacy Touch or Thumbies styles don't fit.",
+        "guideLevel": "curated"
+      },
+      {
+        "rank": 4,
+        "name": "Jewelry Keepsakes",
+        "url": "https://www.jewelrykeepsakes.com",
+        "region": "US nationwide",
+        "priceRange": "$50–$200",
+        "description": "Memorial thumbprint pendants and fingerprint jewelry — free ink kit shipped; upload print photo online.",
+        "process": "Order online; receive fingerprint kit; upload image or email sales@jewelrykeepsakes.com; ships in 24–48 hours after processing.",
+        "turnaround": "1–3 business days shipping after print received",
+        "phone": "1-877-723-7229",
+        "tip": "Fast turnaround — good when funeral is soon and you already have a clear print.",
+        "guideLevel": "curated"
+      },
+      {
+        "rank": 5,
+        "name": "EvrMemories",
+        "url": "https://www.evrmemories.com/fingerprint-jewelry/popular",
+        "region": "US nationwide (Made in USA)",
+        "priceRange": "$60–$250",
+        "description": "Made-to-order fingerprint pendants and rings — popular styles for men and women; hand-polished after engraving.",
+        "process": "Choose style; upload fingerprint image or request kit; made to order in USA.",
+        "turnaround": "1–2 business days after print received (rings ~5 days)",
+        "tip": "Popular styles page helps when family is overwhelmed by choices.",
+        "guideLevel": "curated"
+      },
+      {
+        "rank": 6,
+        "name": "Memory Forge Jewelry",
+        "url": "https://www.memoryforge.com",
+        "region": "US nationwide",
+        "priceRange": "$60–$250",
+        "description": "Custom fingerprint and handwriting memorial jewelry in sterling silver and gold — rings, pendants, and cuffs.",
+        "process": "Capture print via kit or high-res photo; approve digital mockup; handcrafted and shipped from US.",
+        "turnaround": "3–5 weeks",
+        "tip": "Handwriting memorial options available on the same order.",
+        "guideLevel": "curated"
+      }
+    ]
+  }
+}
