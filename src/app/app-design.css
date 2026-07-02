@@ -291,6 +291,33 @@
 .planning-detail-grid { display: grid; grid-template-columns: minmax(0, 1.06fr) minmax(300px, 0.94fr); gap: 20px; align-items: start; }
 .planning-detail-form, .designed-saved-section { background: rgba(255,255,255,0.72); border: 1px solid rgba(145,104,82,0.14); border-radius: 18px; padding: 22px; }
 .planning-detail-form h2 { font-size: 1.05rem; font-weight: 700; color: #2f241f; margin: 0 0 16px; }
+.institution-wrap { position: relative; }
+.institution-wrap input { padding-left: 40px; }
+.institution-search-icon { position: absolute; left: 13px; top: 50%; transform: translateY(-50%); pointer-events: none; }
+.inst-dropdown {
+  position: absolute; top: calc(100% + 6px); left: 0; right: 0;
+  background: #fffaf4; border: 1px solid rgba(145,104,82,0.2);
+  border-radius: 16px; z-index: 200; max-height: 260px; overflow-y: auto;
+  box-shadow: 0 12px 32px rgba(67,46,33,0.14); display: none;
+}
+.inst-dropdown.open { display: block; }
+.inst-option {
+  width: 100%;
+  padding: 11px 16px;
+  cursor: pointer;
+  border: none;
+  border-bottom: 1px solid rgba(145,104,82,0.08);
+  transition: background 0.1s;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: transparent;
+  text-align: left;
+}
+.inst-option:last-child { border-bottom: none; }
+.inst-option:hover, .inst-option.focused { background: rgba(200,109,73,0.07); }
+.inst-name { font-weight: 500; font-size: 0.9rem; color: #2f241f; }
+.inst-badge { font-size: 0.7rem; font-weight: 700; padding: 2px 8px; border-radius: 20px; background: rgba(200,109,73,0.1); color: #c86945; white-space: nowrap; }
 .field-hint.danger { color: #a83030; font-weight: 600; }
 .add-another-btn {
   width: 100%; min-height: 44px; border-radius: 14px;

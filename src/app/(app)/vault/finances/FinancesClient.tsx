@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 
 export type FinancialAccount = {
   id: string;
@@ -243,6 +243,84 @@ const INSTRUCTIONS: Record<string, { subtitle: string; steps: string[]; docs: st
   },
 };
 
+const INSTITUTIONS: Record<string, string[]> = {
+  bank: [
+    'JPMorgan Chase', 'Bank of America', 'Wells Fargo', 'Citibank', 'US Bank',
+    'Truist Bank', 'PNC Bank', 'Capital One', 'TD Bank', 'Citizens Bank',
+    'Regions Bank', 'Fifth Third Bank', 'Huntington Bank', 'KeyBank', 'Ally Bank',
+    'Discover Bank', 'Goldman Sachs (Marcus)', 'Comerica', 'M&T Bank', 'First Citizens Bank',
+    'Santander Bank', 'BMO Harris Bank', 'HSBC USA', 'American Express Bank', 'Navy Federal Credit Union',
+    'USAA Bank', 'Charles Schwab Bank', 'SoFi Bank', 'Flagstar Bank', 'Synovus Bank',
+    'Western Alliance Bank', 'East West Bank', 'Pacific Premier Bank', 'South State Bank', 'Glacier Bank',
+    'Independent Bank Group', 'First Midwest Bancorp', 'Renasant Bank', 'Pinnacle Financial Partners', 'Heartland Financial',
+    'QCR Holdings', 'Triumph Financial', 'Columbia Banking System', 'Berkshire Hills Bancorp', 'Sandy Spring Bancorp',
+    'Shore Bankshares', 'S&T Bancorp', 'Lakeland Bancorp', 'Provident Financial Services', 'NBT Bancorp',
+    'First Keystone Financial', 'Northwest Bank', 'Orrstown Financial', 'WesBanco', 'Old National Bank',
+    'Wintrust Financial', 'Bremer Bank', 'Bell Bank', 'Valley National Bancorp', 'United Bankshares',
+    'TowneBank', 'Texas Capital Bancshares', 'Southside Bancshares', 'Summit Financial Group', 'Simmons First National',
+    'Silvergate Bank', 'Seacoast Banking', 'Riverview Financial', 'Premier Financial', 'Pathfinder Bancorp',
+    'Origin Bancorp', 'National Western Financial', 'Midland States Bancorp', 'Investors Bancorp', 'Independent Bank',
+    'Glacier Hills Bancorp', 'CrossFirst Bankshares', 'Columbia Bank NJ', 'Carter Bankshares', 'Brookline Bancorp',
+    'Territorial Savings Bank', 'Stock Yards Financial', 'State Bank Financial', 'Silvergate Capital', 'Severn Bancorp',
+    'ServisFirst Bancshares', 'Renasant Corporation', 'Ponce Financial Group', 'Plumas Bank', 'Northwest Bancshares',
+    'National Penn Bancshares', 'National Bank Holdings', 'Midland States', 'MainStreet Bankshares', 'Mackinac Savings Bank',
+    'Luther Burbank', 'Lakeland Bancorp', 'John Marshall Bank', 'Investors Community Bank', 'Hanover Bancorp',
+    'Glacier Bancorp', 'First Western Financial', 'First Savings Financial', 'First National Corporation', 'Enterprise Financial',
+    'Capitol Federal Financial', 'Centerstate Banks', 'Amalgamated Financial', 'Other (type name)',
+  ],
+  credit_card: [
+    'American Express', 'Chase', 'Bank of America', 'Citibank', 'Capital One', 'Discover',
+    'Wells Fargo', 'US Bank', 'Barclays', 'Synchrony Bank', 'TD Bank', 'USAA',
+    'Navy Federal Credit Union', 'Goldman Sachs (Apple Card)', 'SoFi', 'Penfed Credit Union',
+    'Ally Bank', 'Lightstream', 'Marcus by Goldman Sachs', 'Avant', 'LendingClub',
+    'Prosper', 'Best Egg', 'Upgrade', 'Upstart', 'OneMain Financial', 'Other (type name)',
+  ],
+  subscription: [
+    'Netflix', 'Disney+', 'Hulu', 'HBO Max / Max', 'Amazon Prime', 'Apple TV+',
+    'Peacock', 'Paramount+', 'Spotify', 'Apple Music', 'YouTube Premium', 'Tidal',
+    'Pandora', 'SiriusXM', 'Amazon Music', 'New York Times', 'Washington Post',
+    'Wall Street Journal', 'The Atlantic', 'Audible', 'Kindle Unlimited',
+    'Microsoft 365', 'Adobe Creative Cloud', 'Dropbox', 'Google One', 'iCloud+',
+    'LinkedIn Premium', 'Zoom', 'Slack', 'Planet Fitness', 'Peloton',
+    'HelloFresh', 'DoorDash DashPass', 'Amazon Fresh', 'Instacart+', 'Other (type name)',
+  ],
+  utility: [
+    'PG&E', 'Southern California Edison', 'ConEdison', 'Duke Energy', 'Dominion Energy',
+    'Xcel Energy', 'Evergy', 'APS (Arizona Public Service)', 'CenterPoint Energy',
+    'Entergy', 'NV Energy', 'PSEG', 'ComEd', 'Georgia Power', 'Ameren',
+    'Comcast / Xfinity', 'Charter / Spectrum', 'Cox Communications', 'AT&T', 'Verizon Fios',
+    'CenturyLink / Lumen', 'Frontier Communications', 'Sparklight', 'Google Fiber',
+    'Republic Services', 'Waste Management', 'American Water', 'Other (type name)',
+  ],
+  digital: [
+    'Apple ID / iCloud', 'Google / Gmail', 'Microsoft / Outlook', 'Facebook / Meta',
+    'Instagram', 'Twitter / X', 'LinkedIn', 'TikTok', 'YouTube', 'Pinterest',
+    'Snapchat', 'Reddit', 'Amazon', 'eBay', 'PayPal', 'Venmo', 'Zelle',
+    'Coinbase', 'Robinhood', '1Password', 'LastPass', 'Bitwarden', 'Dropbox', 'Other (type name)',
+  ],
+  insurance: [
+    'MetLife', 'Prudential', 'New York Life', 'Northwestern Mutual', 'State Farm',
+    'Allstate', 'Lincoln Financial', 'John Hancock', 'Transamerica', 'AIG Life',
+    'Nationwide', 'Pacific Life', 'Mass Mutual', 'Principal Financial', 'Guardian Life',
+    'Unum', 'Sun Life', 'Securian', 'Protective Life', 'Mutual of Omaha',
+    'USAA', 'TIAA', 'Aetna', 'Cigna', 'UnitedHealth', 'Blue Cross Blue Shield',
+    'Humana', 'Anthem', 'Kaiser Permanente', 'Other (type name)',
+  ],
+  investment: [
+    'Fidelity Investments', 'Vanguard', 'Charles Schwab', 'Merrill Lynch', 'Morgan Stanley',
+    'Edward Jones', 'TD Ameritrade (now Schwab)', 'Robinhood', 'E*TRADE', 'Interactive Brokers',
+    'Raymond James', 'Ameriprise Financial', 'T. Rowe Price', 'BlackRock', 'TIAA',
+    'Transamerica', 'Principal Financial', 'John Hancock', 'Nationwide', 'Empower Retirement',
+    'Betterment', 'Wealthfront', 'SoFi Invest', 'Fidelity NetBenefits (401k)', 'Other (type name)',
+  ],
+  property: [
+    'Wells Fargo Home Mortgage', 'Rocket Mortgage / Quicken Loans', 'Chase Mortgage',
+    'Bank of America Mortgage', 'US Bank Home Mortgage', 'PNC Mortgage', 'Truist Mortgage',
+    'Caliber Home Loans', 'loanDepot', 'Freedom Mortgage', 'Pennymac', 'Mr. Cooper (Nationstar)',
+    'Guild Mortgage', 'Fairway Independent Mortgage', 'NewRez', 'Carrington Mortgage', 'Other (type name)',
+  ],
+};
+
 const BLANK = {
   category: '',
   institutionName: '',
@@ -285,9 +363,35 @@ export default function FinancesClient({ initial, initialCategory }: { initial: 
   const [saved, setSaved] = useState(false);
   const [instructionsOpen, setInstructionsOpen] = useState(false);
   const [deleting, setDeleting] = useState<string | null>(null);
+  const [institutionFocused, setInstitutionFocused] = useState(false);
+  const [focusedInstitutionIndex, setFocusedInstitutionIndex] = useState(-1);
+  const institutionWrapRef = useRef<HTMLDivElement | null>(null);
 
   const visibleItems = useMemo(() => items.filter((item) => item.category === activeCategory), [items, activeCategory]);
   const instructions = INSTRUCTIONS[activeCategory];
+  const institutionOptions = useMemo(() => {
+    const source = INSTITUTIONS[activeCategory] ?? [];
+    const query = form.institutionName.trim().toLowerCase();
+    if (!query) return source.slice(0, 12);
+    return source.filter((name) => name.toLowerCase().includes(query)).slice(0, 12);
+  }, [activeCategory, form.institutionName]);
+  const showInstitutionDropdown = institutionFocused && institutionOptions.length > 0;
+
+  useEffect(() => {
+    setFocusedInstitutionIndex(-1);
+  }, [activeCategory, form.institutionName]);
+
+  useEffect(() => {
+    function onPointerDown(event: MouseEvent) {
+      if (!institutionWrapRef.current?.contains(event.target as Node)) {
+        setInstitutionFocused(false);
+        setFocusedInstitutionIndex(-1);
+      }
+    }
+
+    document.addEventListener('mousedown', onPointerDown);
+    return () => document.removeEventListener('mousedown', onPointerDown);
+  }, []);
 
   function edit(item: FinancialAccount) {
     setEditing(item);
@@ -399,12 +503,58 @@ export default function FinancesClient({ initial, initialCategory }: { initial: 
 
           <div className="field">
             <label>{area.institutionLabel}</label>
-            <input
-              value={form.institutionName}
-              onChange={(e) => setForm((f) => ({ ...f, institutionName: e.target.value }))}
-              placeholder={area.institutionPlaceholder}
-              required
-            />
+            <div className="institution-wrap" ref={institutionWrapRef}>
+              <svg className="institution-search-icon" width="16" height="16" fill="none" viewBox="0 0 24 24">
+                <circle cx="11" cy="11" r="7" stroke="#9a7a6a" strokeWidth="2" />
+                <path d="m20 20-3.5-3.5" stroke="#9a7a6a" strokeWidth="2" strokeLinecap="round" />
+              </svg>
+              <input
+                value={form.institutionName}
+                onChange={(e) => setForm((f) => ({ ...f, institutionName: e.target.value }))}
+                onFocus={() => setInstitutionFocused(true)}
+                onKeyDown={(e) => {
+                  if (!institutionOptions.length) return;
+                  if (e.key === 'ArrowDown') {
+                    e.preventDefault();
+                    setInstitutionFocused(true);
+                    setFocusedInstitutionIndex((current) => (current + 1) % institutionOptions.length);
+                  } else if (e.key === 'ArrowUp') {
+                    e.preventDefault();
+                    setInstitutionFocused(true);
+                    setFocusedInstitutionIndex((current) => (current <= 0 ? institutionOptions.length - 1 : current - 1));
+                  } else if (e.key === 'Enter' && focusedInstitutionIndex >= 0 && institutionOptions[focusedInstitutionIndex]) {
+                    e.preventDefault();
+                    setForm((f) => ({ ...f, institutionName: institutionOptions[focusedInstitutionIndex] }));
+                    setInstitutionFocused(false);
+                    setFocusedInstitutionIndex(-1);
+                  } else if (e.key === 'Escape') {
+                    setInstitutionFocused(false);
+                    setFocusedInstitutionIndex(-1);
+                  }
+                }}
+                placeholder={area.institutionPlaceholder}
+                required
+                autoComplete="off"
+              />
+              <div className={`inst-dropdown ${showInstitutionDropdown ? 'open' : ''}`}>
+                {institutionOptions.map((name, index) => (
+                  <button
+                    key={name}
+                    type="button"
+                    className={`inst-option ${focusedInstitutionIndex === index ? 'focused' : ''}`}
+                    onMouseDown={(e) => e.preventDefault()}
+                    onClick={() => {
+                      setForm((f) => ({ ...f, institutionName: name === 'Other (type name)' ? '' : name }));
+                      setInstitutionFocused(false);
+                      setFocusedInstitutionIndex(-1);
+                    }}
+                  >
+                    <span className="inst-name">{name}</span>
+                    {name === 'Other (type name)' && <span className="inst-badge">Custom</span>}
+                  </button>
+                ))}
+              </div>
+            </div>
           </div>
 
           <div className="field">

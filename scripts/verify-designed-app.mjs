@@ -116,6 +116,21 @@ const checks = [
       'security-note',
       'designed-saved-section',
       'Add another account',
+      'institution-wrap',
+      'institution-search-icon',
+      'inst-dropdown',
+      'Other (type name)',
+    ],
+  },
+  {
+    file: 'src/app/app-design.css',
+    name: 'Institution dropdown styling',
+    require: [
+      '.institution-wrap',
+      '.institution-search-icon',
+      '.inst-dropdown',
+      '.inst-option',
+      '.inst-badge',
     ],
   },
   {
