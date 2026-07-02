@@ -1,11 +1,20 @@
 import { db } from '@/db';
 import { accounts } from '@/db/schema/accounts';
-import { obituary, serviceDetails, photos, rememberEntries } from '@/db/schema/vault';
+import { obituary, serviceDetails, photos, rememberEntries, portalSettings } from '@/db/schema/vault';
 import { eq, and, desc } from 'drizzle-orm';
 import { notFound } from 'next/navigation';
 import type { Metadata } from 'next';
 
 export const dynamic = 'force-dynamic';
+
+const GIFT_LABELS: Record<string, string> = {
+  bears: 'Memory bears',
+  ashes: 'Ashes jewelry',
+  candles: 'Memorial candles',
+  stones: 'Memorial garden stones',
+  portrait: 'Custom portrait',
+  fingerprint: 'Fingerprint jewelry',
+};
 
 async function load(token: string) {
   const [acct] = await db.select({ id: accounts.id })
@@ -27,7 +36,10 @@ async function load(token: string) {
     .where(and(eq(rememberEntries.accountId, acct.id), eq(rememberEntries.kind, 'photos')))
     .orderBy(desc(rememberEntries.createdAt));
 
-  return { obit, service: service ?? null, photos: photoRows, rememberPhotos: rememberPhotoRows };
+  const [settings] = await db.select().from(portalSettings)
+    .where(eq(portalSettings.accountId, acct.id)).limit(1);
+
+  return { obit, service: service ?? null, photos: photoRows, rememberPhotos: rememberPhotoRows, settings: settings ?? null };
 }
 
 export async function generateMetadata(
@@ -48,12 +60,32 @@ export default async function PublicMemorialPage(
   const { token } = await params;
   const data = await load(token);
   if (!data) notFound();
-  const { obit, service, photos: gallery, rememberPhotos } = data;
+  const { obit, service, photos: gallery, rememberPhotos, settings } = data;
 
   const dateLine = [obit.born, obit.died].filter(Boolean).join(' — ');
   const showService = service && (service.date || service.venue);
   const portrait = gallery[0] ?? null;
   const rest = rememberPhotos.filter((item) => item.storageKey);
+  const theme = settings?.theme as { theme?: string[]; crop?: 'circle' | 'square'; accent?: string } | null;
+  const gallerySettings = settings?.gallery as { layout?: 'grid' | 'masonry' | 'slideshow'; captions?: boolean } | null;
+  const waysToHelp = Object.entries((settings?.waysToHelp as Record<string, { on?: boolean; url?: string; label?: string }> | null) ?? {})
+    .filter(([, value]) => value?.on && value?.url)
+    .map(([key, value]) => ({ id: key, label: value.label || key, url: value.url! }));
+  const giftSettings = Object.entries((settings?.gifts as Record<string, { on?: boolean; url?: string; supplier?: string; supplierChoice?: string; method?: string; orderByDate?: string; familyEmail?: string; familyContact?: string }> | null) ?? {})
+    .filter(([, value]) => value?.on)
+    .map(([key, value]) => ({
+      id: key,
+      title: GIFT_LABELS[key] ?? key,
+      url: value.url || value.supplierChoice || '',
+      supplier: value.supplier || '',
+      method: value.method || '',
+      orderByDate: value.orderByDate || '',
+      familyEmail: value.familyEmail || '',
+      familyContact: value.familyContact || '',
+    }));
+  const accent = theme?.accent || '#c57b57';
+  const heroBackground = Array.isArray(theme?.theme) ? theme.theme[1] : 'linear-gradient(160deg,#6b7c6e 0%,#4a5c4d 100%)';
+  const portraitRadius = theme?.crop === 'square' ? '22px' : '50%';
 
   return (
     <div style={{ minHeight: '100vh', background: '#f5ede6' }}>
@@ -62,7 +94,7 @@ export default async function PublicMemorialPage(
         {/* Hero */}
         <div style={{
           minHeight: portrait ? 340 : 220,
-          background: 'linear-gradient(160deg,#6b7c6e 0%,#4a5c4d 100%)',
+          background: heroBackground,
           display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'flex-end',
           padding: '32px 24px 28px', textAlign: 'center', position: 'relative', overflow: 'hidden',
         }}>
@@ -75,7 +107,7 @@ export default async function PublicMemorialPage(
           <div style={{ position: 'relative', zIndex: 1 }}>
             {portrait ? (
               <div style={{
-                width: 180, height: 180, borderRadius: '50%', border: '5px solid rgba(255,255,255,0.7)',
+                width: 180, height: 180, borderRadius: portraitRadius, border: '5px solid rgba(255,255,255,0.7)',
                 overflow: 'hidden', margin: '0 auto 18px', boxShadow: '0 6px 32px rgba(0,0,0,0.3)',
               }}>
                 {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -83,7 +115,7 @@ export default async function PublicMemorialPage(
               </div>
             ) : (
               <div style={{
-                width: 100, height: 100, borderRadius: '50%', border: '5px solid rgba(255,255,255,0.7)',
+                width: 100, height: 100, borderRadius: portraitRadius, border: '5px solid rgba(255,255,255,0.7)',
                 background: 'rgba(255,255,255,0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center',
                 margin: '0 auto 18px', fontSize: '2.4rem',
               }}>🌿</div>
@@ -125,7 +157,7 @@ export default async function PublicMemorialPage(
               {service!.address && <p style={svcMuted}>{service!.address}</p>}
               {service!.livestreamUrl && (
                 <p style={{ marginTop: 12 }}>
-                  <a href={service!.livestreamUrl} style={{ color: '#c57b57', textDecoration: 'none', fontWeight: 600 }} target="_blank" rel="noreferrer">
+                  <a href={service!.livestreamUrl} style={{ color: accent, textDecoration: 'none', fontWeight: 600 }} target="_blank" rel="noreferrer">
                     Join the livestream →
                   </a>
                 </p>
@@ -144,11 +176,72 @@ export default async function PublicMemorialPage(
           {rest.length > 0 && (
             <div style={block}>
               <h2 style={blockHead}>Photos</h2>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 3, borderRadius: 10, overflow: 'hidden' }}>
+              <div style={{
+                display: 'grid',
+                gridTemplateColumns: gallerySettings?.layout === 'masonry' ? 'repeat(2,1fr)' : gallerySettings?.layout === 'slideshow' ? '1fr' : 'repeat(3,1fr)',
+                gap: 3,
+                borderRadius: 10,
+                overflow: 'hidden',
+              }}>
                 {rest.map(p => (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img key={p.id} src={p.storageKey!} alt={p.title ?? ''}
-                    style={{ aspectRatio: '1', width: '100%', objectFit: 'cover', filter: 'sepia(0.12) contrast(1.03)' }} />
+                  <div key={p.id}>
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img src={p.storageKey!} alt={p.title ?? ''}
+                      style={{
+                        aspectRatio: gallerySettings?.layout === 'slideshow' ? '16 / 10' : '1',
+                        width: '100%',
+                        objectFit: 'cover',
+                        filter: 'sepia(0.12) contrast(1.03)',
+                      }} />
+                    {gallerySettings?.captions !== false && p.title && (
+                      <p style={{ margin: '8px 0 0', fontSize: '0.8rem', color: '#7a5341', lineHeight: 1.45 }}>{p.title}</p>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {waysToHelp.length > 0 && (
+            <div style={block}>
+              <h2 style={blockHead}>Ways to help</h2>
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 10 }}>
+                {waysToHelp.map((item) => (
+                  <a
+                    key={item.id}
+                    href={item.url}
+                    target="_blank"
+                    rel="noreferrer"
+                    style={{
+                      border: '1px solid rgba(145,104,82,0.14)',
+                      borderRadius: 999,
+                      padding: '10px 14px',
+                      textDecoration: 'none',
+                      color: '#594b43',
+                      fontWeight: 700,
+                      background: '#fffaf4',
+                    }}
+                  >
+                    {item.label}
+                  </a>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {giftSettings.length > 0 && (
+            <div style={block}>
+              <h2 style={blockHead}>Memorial keepsakes</h2>
+              <div style={{ display: 'grid', gap: 12 }}>
+                {giftSettings.map((gift) => (
+                  <div key={gift.id} style={{ border: '1px solid rgba(145,104,82,0.12)', borderRadius: 12, padding: '14px 15px', background: '#fffaf4' }}>
+                    <p style={{ margin: '0 0 4px', fontWeight: 700, color: '#2f241f' }}>{gift.title}</p>
+                    {gift.orderByDate && <p style={{ margin: '0 0 6px', fontSize: '0.8rem', color: '#9a7a6a' }}>Order by {gift.orderByDate}</p>}
+                    {gift.supplier && <p style={{ margin: '0 0 6px', fontSize: '0.85rem', color: '#594b43' }}>{gift.supplier}</p>}
+                    {gift.url && <p style={{ margin: '0 0 6px' }}><a href={gift.url} target="_blank" rel="noreferrer" style={{ color: accent, textDecoration: 'none', fontWeight: 600 }}>View ordering details →</a></p>}
+                    {gift.familyEmail && <p style={{ margin: '0 0 4px', fontSize: '0.8rem', color: '#7a5341' }}>Coordinate with: {gift.familyEmail}</p>}
+                    {gift.familyContact && <p style={{ margin: 0, fontSize: '0.8rem', color: '#7a5341' }}>{gift.familyContact}</p>}
+                  </div>
                 ))}
               </div>
             </div>
