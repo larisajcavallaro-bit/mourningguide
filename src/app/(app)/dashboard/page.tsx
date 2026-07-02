@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import type { ReactNode } from 'react';
 import { auth, currentUser } from '@clerk/nextjs/server';
 import { redirect } from 'next/navigation';
 import Link from 'next/link';
@@ -11,7 +12,7 @@ import AppShell from '@/components/AppShell';
 
 export const metadata: Metadata = { title: 'Dashboard — Mourning Guide' };
 
-function icon(path: React.ReactNode) {
+function icon(path: ReactNode) {
   return (
     <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#c57b57" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">{path}</svg>
   );
@@ -19,11 +20,9 @@ function icon(path: React.ReactNode) {
 
 const PLANNING_TILES = [
   { href: '/vault', label: 'Add to your plan', sub: '16 areas to fill in', icon: icon(<><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M8 9h8M8 13h6M8 17h4"/></>) },
-  { href: '/remember', label: 'Remember', sub: 'Letters, photos, service details', icon: icon(<path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/>) },
-  { href: '/portal/service-details', label: 'Final wishes', sub: 'Funeral & service details', icon: icon(<><path d="M12 2l2.5 6.5L21 9l-5 4 1.5 7L12 16l-5.5 4L8 13 3 9l6.5-.5z"/></>) },
-  { href: '/people', label: 'Legacy contacts', sub: 'Who gets access', icon: icon(<><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></>) },
+  { href: '/vault/letters', label: 'Write a letter', sub: 'To a loved one', icon: icon(<path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/>) },
+  { href: '/people/successors', label: 'Set up legacy contacts', sub: 'Who gets access', icon: icon(<><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></>) },
   { href: '/portal', label: 'Customize portal', sub: 'What your family sees', icon: icon(<><path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"/></>) },
-  { href: '/vault/documents', label: 'Documents', sub: 'Will, trusts, IDs', icon: icon(<><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6"/></>) },
 ];
 
 function trialDaysLeft(trialEndsAt: Date | string | null): number | null {
@@ -135,10 +134,16 @@ export default async function DashboardPage({
               </svg>
             </div>
             <div className="progress-text" style={{ flex: 1 }}>
-              <h2>Start anywhere</h2>
-              <p>All areas are optional and none are urgent. Add one thing today and your family already has more than they did yesterday.</p>
-              <div className="progress-bar-bg"><div className="progress-bar-fill" style={{ width: '4%' }} /></div>
+              <h2>Nothing added yet</h2>
+              <p>Start anywhere — all 16 areas are optional and none are urgent. Add one thing today and your family already has more than they did yesterday.</p>
+              <div className="progress-bar-bg"><div className="progress-bar-fill" style={{ width: '0%' }} /></div>
             </div>
+          </div>
+
+          <div className="start-nudge-card">
+            <p className="start-nudge-eyebrow">Where to start</p>
+            <p className="start-nudge-copy">Most people add their legacy contacts first — they&apos;re the people who&apos;ll activate your plan when the time comes.</p>
+            <Link href="/people/successors" className="start-nudge-link">Add legacy contacts →</Link>
           </div>
 
           {/* Quick actions */}
@@ -157,17 +162,19 @@ export default async function DashboardPage({
             })}
           </div>
 
-          {/* What happens when the time comes */}
-          <p className="section-label-lg">What happens when the time comes</p>
+          {/* Status */}
+          <p className="section-label-lg">Status</p>
           <div className="status-card">
             {[
-              ['You name a legacy contact', 'In People, choose the one person you trust to activate your guide. We email them now so they understand their role.'],
-              ['They activate your guide', 'When you pass, they open their private link and confirm. They see everything right away; we wait 24 hours before contacting anyone.'],
-              ['Your wishes are carried out', 'Your letters reach the people you wrote them for, and your contacts are notified — gently, in the order you set.'],
+              ['Planning areas', '0 of 16 complete'],
+              ['Legacy contacts', 'No one added yet'],
+              ['Memorial portal', 'Not published'],
+              ['Letters to loved ones', 'None written yet'],
             ].map(([t, d], i) => (
               <div className="status-row" key={i}>
                 <div className="status-dot pending" />
                 <div className="status-row-text">{t}<div className="status-row-sub">{d}</div></div>
+                <span className="status-chip chip-open">not started</span>
               </div>
             ))}
           </div>

@@ -1,5 +1,6 @@
 'use client';
 
+import Link from 'next/link';
 import { useState, useEffect } from 'react';
 
 type ServiceDetails = {
@@ -60,15 +61,21 @@ export default function WishesClient() {
       setForm(prev => ({ ...prev, [key]: e.target.value }));
   }
 
-  if (loading) return <p style={{ color: '#9a7a6a', fontSize: '0.9rem' }}>Loading…</p>;
+  if (loading) return <p style={{ color: '#9a7a6a', fontSize: '0.9rem' }}>Loading...</p>;
   if (loadError) return <p className="field-error">Couldn&apos;t load your wishes. Please refresh and try again.</p>;
 
   return (
-    <>
-      <h1 className="page-heading">Final wishes</h1>
-      <p className="page-sub">Leave instructions for your service so your family doesn&apos;t have to guess. Only fill in what you know.</p>
+    <div className="designed-subpage">
+      <Link href="/vault" className="back-link">Back to Personal</Link>
+      <div className="portal-page-header">
+        <div className="portal-page-header-icon">{wishesIcon()}</div>
+        <div>
+          <h1>Final wishes</h1>
+          <p>Leave instructions for your service so your family does not have to guess. Only fill in what you know.</p>
+        </div>
+      </div>
 
-      <form onSubmit={save}>
+      <form onSubmit={save} className="portal-pad">
         <div className="field">
           <label>Service type</label>
           <select value={form.type} onChange={f('type')}>
@@ -135,14 +142,22 @@ export default function WishesClient() {
         <div className="field">
           <label>Additional notes for your family <span className="opt">(optional)</span></label>
           <textarea value={form.notes} onChange={f('notes')} rows={4}
-            placeholder="Anything else you'd like them to know — music, readings, flowers, charity donations in lieu of flowers…" />
+            placeholder="Anything else you'd like them to know - music, readings, flowers, charity donations in lieu of flowers..." />
         </div>
 
         {saveError && <p className="field-error">{saveError}</p>}
         <button type="submit" disabled={saving} className="save-btn">
-          {saving ? 'Saving…' : saved ? '✓ Saved' : 'Save wishes'}
+          {saving ? 'Saving...' : saved ? 'Saved' : 'Save wishes'}
         </button>
       </form>
-    </>
+    </div>
+  );
+}
+
+function wishesIcon() {
+  return (
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#c57b57" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8z" />
+    </svg>
   );
 }

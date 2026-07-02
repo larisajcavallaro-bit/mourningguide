@@ -1,5 +1,6 @@
 'use client';
 
+import Link from 'next/link';
 import { useState } from 'react';
 
 export type LegacyContact = {
@@ -25,8 +26,8 @@ const LEGACY_BLANK = { name: '', email: '', phone: '' };
 const CONTACT_BLANK = { name: '', email: '', phone: '', relationship: '', notifyPhase: 'manual' };
 
 export default function PeopleClient({
-  initialLegacy, initialContacts,
-}: { initialLegacy: LegacyContact[]; initialContacts: NotificationContact[] }) {
+  initialLegacy, initialContacts, mode = 'all',
+}: { initialLegacy: LegacyContact[]; initialContacts: NotificationContact[]; mode?: 'all' | 'legacy' | 'notify' }) {
   const [legacyList, setLegacyList] = useState<LegacyContact[]>(initialLegacy);
   const [showLegacyForm, setShowLegacyForm] = useState(false);
   const [editingLegacy, setEditingLegacy] = useState<LegacyContact | null>(null);
@@ -148,135 +149,172 @@ export default function PeopleClient({
   }
 
   const atLimit = legacyList.length >= MAX_LEGACY;
+  const showOverview = mode === 'all';
+  const showLegacy = mode === 'all' || mode === 'legacy';
+  const showNotify = mode === 'all' || mode === 'notify';
 
   return (
     <>
-      <h1 className="page-heading" data-walkthrough="walkthrough-people-heading">People</h1>
-      <p className="page-sub">Choose who activates your guide and who gets notified. Two distinct roles — each with a clear job.</p>
+      {showOverview ? (
+        <>
+          <h1 className="page-heading" data-walkthrough="walkthrough-people-heading">People</h1>
+          <p className="page-sub">Choose who gets access after you pass, who coordinates everything, and who gets notified. Two distinct roles — each with a clear job.</p>
 
-      <p className="section-label-lg">The two roles</p>
-      <div className="role-grid">
-        <div className="role-card">
-          <div className="role-name">Legacy contacts</div>
-          <div className="role-desc">Up to 3 people you trust — any one of them can independently activate your guide. We recommend more than one, in case a single contact is unreachable when the time comes.</div>
-        </div>
-        <div className="role-card">
-          <div className="role-name">Notify list</div>
-          <div className="role-desc">Friends, family, or colleagues who receive a gentle notification once your guide is activated. No account needed.</div>
-        </div>
-      </div>
-
-      <p className="section-label-lg">How activation works</p>
-      <div className="how-card">
-        <div className="how-row">
-          <div className="how-num">1</div>
-          <div className="how-text"><strong>Any one legacy contact opens their private link</strong><span>When you pass, whichever legacy contact is reachable confirms using their own link. They can see everything you prepared right away.</span></div>
-        </div>
-        <div className="how-row">
-          <div className="how-num">2</div>
-          <div className="how-text"><strong>We wait 24 hours before contacting anyone</strong><span>This protects against mistakes. If it was activated in error, they can cancel — nothing will have been sent.</span></div>
-        </div>
-        <div className="how-row">
-          <div className="how-num">3</div>
-          <div className="how-text"><strong>Your letters and wishes are released</strong><span>Letters reach their recipients, and your memorial portal can go live.</span></div>
-        </div>
-        <div className="how-row">
-          <div className="how-num">4</div>
-          <div className="how-text"><strong>Your notify list is told, gently and in order</strong><span>Everyone you listed receives a caring note — phased so no one is overwhelmed at once.</span></div>
-        </div>
-      </div>
-
-      {/* Legacy contacts */}
-      <p className="section-label-lg">
-        Legacy contacts <span style={{ color: '#9a7a6a', fontWeight: 400, textTransform: 'none', letterSpacing: 0 }}>({legacyList.length} of {MAX_LEGACY})</span>
-      </p>
-
-      {legacyList.length === 0 && (
-        <p style={{ fontSize: '0.84rem', color: '#9a7a6a', marginBottom: 12 }}>
-          No legacy contacts yet. Add at least one person you trust to activate your guide.
-        </p>
-      )}
-
-      {legacyList.map(legacy => (
-        <div key={legacy.id} className="entry-card">
-          <div className="entry-card-row">
-            <div>
-              <div className="entry-title">{legacy.name}</div>
-              {legacy.email && <div className="entry-meta">{legacy.email}</div>}
-              {legacy.phone && <div className="entry-meta">{legacy.phone}</div>}
+          <p className="section-label-lg">The two roles</p>
+          <div className="role-grid designed-roles">
+            <div className="role-card">
+              <div className="role-icon">{peopleIcon()}</div>
+              <div className="role-name">Legacy contacts</div>
+              <span className="role-limit">Up to 3</span>
+              <div className="role-desc">People you trust to receive full access to your plan after your passing and coordinate the unlocking process.</div>
+              <Link className="role-add-btn" href="/people/successors">Add legacy contact</Link>
             </div>
-            <div className="entry-actions" style={{ flexDirection: 'column', gap: 6 }}>
-              <button onClick={() => openEditLegacy(legacy)} className="entry-link-btn">Edit</button>
-              {legacy.email && (
-                <button onClick={() => resendInvitation(legacy.id)} disabled={resendingId === legacy.id} className="entry-link-btn">
-                  {resendingId === legacy.id ? '…' : 'Resend invite'}
-                </button>
-              )}
-              <button onClick={() => removeLegacy(legacy.id)} disabled={deletingLegacy === legacy.id} className="entry-link-btn danger">
-                {deletingLegacy === legacy.id ? '…' : 'Remove'}
-              </button>
+            <div className="role-card">
+              <div className="role-icon">{mailIcon()}</div>
+              <div className="role-name">Notify list</div>
+              <span className="role-limit">Unlimited</span>
+              <div className="role-desc">Friends, family, colleagues, or professionals who should receive a notification when your portal goes live.</div>
+              <Link className="role-add-btn" href="/people/notify">Add contact</Link>
             </div>
           </div>
-          {!legacy.email && (
-            <div className="warn-note">
-              No email on file. Add one so we can send {legacy.name.split(' ')[0]} their activation link —
-              without it, they can&apos;t activate your guide when the time comes.
-            </div>
-          )}
-          {resendMsg?.id === legacy.id && (
-            <div style={{ marginTop: 10, fontSize: '0.8rem', color: resendMsg.text.startsWith('✓') ? '#2e6b42' : '#b0402e' }}>
-              {resendMsg.text}
-            </div>
-          )}
-        </div>
-      ))}
-
-      {atLimit ? (
-        <p style={{ fontSize: '0.8rem', color: '#9a7a6a', marginTop: 4 }}>
-          You&apos;ve added the maximum of {MAX_LEGACY} legacy contacts. Remove one to add another.
-        </p>
+        </>
       ) : (
-        <button onClick={openAddLegacy} className="add-btn" style={{ marginBottom: 0 }}>
-          + Add legacy contact {legacyList.length > 0 ? '(backup)' : ''}
-        </button>
-      )}
-
-      {/* Notify list */}
-      <p className="section-label-lg">People to notify</p>
-      <button onClick={() => { setEditingContact(null); setContactForm({ ...CONTACT_BLANK }); setContactError(''); setShowContactForm(true); }}
-        className="add-btn" style={{ marginBottom: contacts.length ? 16 : 0 }}>
-        + Add person
-      </button>
-
-      {contacts.length === 0 && (
-        <p style={{ fontSize: '0.84rem', color: '#9a7a6a', marginTop: 4 }}>
-          No contacts yet. Add the people your family will need to notify.
-        </p>
-      )}
-
-      {contacts.map(c => (
-        <div key={c.id} className="entry-card">
-          <div className="entry-card-row">
+        <div className="designed-subpage">
+          <Link href="/people" className="back-link">Back to People</Link>
+          <div className="portal-page-header">
+            <div className="portal-page-header-icon">{mode === 'legacy' ? peopleIcon() : mailIcon()}</div>
             <div>
-              <div className="entry-title">{c.name}</div>
-              {c.relationship && <div className="entry-sub">{c.relationship}</div>}
-              {c.email && <div className="entry-meta">{c.email}</div>}
-              {c.phone && <div className="entry-meta">{c.phone}</div>}
-              {c.notifyPhase && c.notifyPhase !== 'manual' && (
-                <div style={{ fontSize: '0.75rem', color: '#c57b57', marginTop: 5, fontWeight: 600 }}>
-                  {NOTIFY_PHASES.find(p => p.value === c.notifyPhase)?.label}
+              <h1>{mode === 'legacy' ? 'Legacy contacts' : 'People to notify'}</h1>
+              <p>{mode === 'legacy'
+                ? 'These people can activate your guide and receive full access after your passing. Add up to three trusted contacts.'
+                : 'Add friends, family, colleagues, or professionals who should receive a gentle notification when your portal goes live.'}</p>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {showOverview && (
+        <>
+          <p className="section-label-lg">How activation works</p>
+          <div className="how-card">
+            <div className="how-row">
+              <div className="how-num">1</div>
+              <div className="how-text"><strong>A legacy contact opens their private link</strong><span>When you pass, whichever legacy contact is reachable confirms using their own secure link.</span></div>
+            </div>
+            <div className="how-row">
+              <div className="how-num">2</div>
+              <div className="how-text"><strong>We wait before contacting anyone</strong><span>This protects against mistakes. If it was activated in error, it can be cancelled before notifications go out.</span></div>
+            </div>
+            <div className="how-row">
+              <div className="how-num">3</div>
+              <div className="how-text"><strong>Your letters and wishes are released</strong><span>Letters reach their recipients, your plan is available to legacy contacts, and your portal can go live.</span></div>
+            </div>
+            <div className="how-row">
+              <div className="how-num">4</div>
+              <div className="how-text"><strong>Your notify list is told, gently and in order</strong><span>Everyone you listed receives a caring note — phased so no one is overwhelmed at once.</span></div>
+            </div>
+          </div>
+        </>
+      )}
+
+      {/* Legacy contacts */}
+      {showLegacy && (
+        <section className={mode === 'legacy' ? 'portal-pad people-subpage-pad' : undefined}>
+          <p className="section-label-lg">
+            Legacy contacts <span style={{ color: '#9a7a6a', fontWeight: 400, textTransform: 'none', letterSpacing: 0 }}>({legacyList.length} of {MAX_LEGACY})</span>
+          </p>
+
+          {legacyList.length === 0 && (
+            <p style={{ fontSize: '0.84rem', color: '#9a7a6a', marginBottom: 12 }}>
+              No legacy contacts yet. Add at least one person you trust to activate your guide.
+            </p>
+          )}
+
+          {legacyList.map(legacy => (
+            <div key={legacy.id} className="entry-card">
+              <div className="entry-card-row">
+                <div>
+                  <div className="entry-title">{legacy.name}</div>
+                  {legacy.email && <div className="entry-meta">{legacy.email}</div>}
+                  {legacy.phone && <div className="entry-meta">{legacy.phone}</div>}
+                </div>
+                <div className="entry-actions" style={{ flexDirection: 'column', gap: 6 }}>
+                  <button onClick={() => openEditLegacy(legacy)} className="entry-link-btn">Edit</button>
+                  {legacy.email && (
+                    <button onClick={() => resendInvitation(legacy.id)} disabled={resendingId === legacy.id} className="entry-link-btn">
+                      {resendingId === legacy.id ? '...' : 'Resend invite'}
+                    </button>
+                  )}
+                  <button onClick={() => removeLegacy(legacy.id)} disabled={deletingLegacy === legacy.id} className="entry-link-btn danger">
+                    {deletingLegacy === legacy.id ? '...' : 'Remove'}
+                  </button>
+                </div>
+              </div>
+              {!legacy.email && (
+                <div className="warn-note">
+                  No email on file. Add one so we can send {legacy.name.split(' ')[0]} their activation link.
+                </div>
+              )}
+              {resendMsg?.id === legacy.id && (
+                <div style={{ marginTop: 10, fontSize: '0.8rem', color: resendMsg.text.startsWith('✓') ? '#2e6b42' : '#b0402e' }}>
+                  {resendMsg.text}
                 </div>
               )}
             </div>
-            <div className="entry-actions" style={{ flexDirection: 'column', gap: 6 }}>
-              <button onClick={() => openEditContact(c)} className="entry-link-btn">Edit</button>
-              <button onClick={() => removeContact(c.id)} disabled={deleting === c.id} className="entry-link-btn danger">
-                {deleting === c.id ? '…' : 'Remove'}
-              </button>
+          ))}
+
+          {atLimit ? (
+            <p style={{ fontSize: '0.8rem', color: '#9a7a6a', marginTop: 4 }}>
+              You&apos;ve added the maximum of {MAX_LEGACY} legacy contacts. Remove one to add another.
+            </p>
+          ) : (
+            <button onClick={openAddLegacy} className="add-btn" style={{ marginBottom: mode === 'legacy' ? 0 : 24 }}>
+              + Add legacy contact {legacyList.length > 0 ? '(backup)' : ''}
+            </button>
+          )}
+        </section>
+      )}
+
+      {/* Notify list */}
+      {showNotify && (
+        <section className={mode === 'notify' ? 'portal-pad people-subpage-pad' : undefined}>
+          <p className="section-label-lg">People to notify</p>
+          <button onClick={() => { setEditingContact(null); setContactForm({ ...CONTACT_BLANK }); setContactError(''); setShowContactForm(true); }}
+            className="add-btn" style={{ marginBottom: contacts.length ? 16 : 0 }}>
+            + Add person
+          </button>
+
+          {contacts.length === 0 && (
+            <p style={{ fontSize: '0.84rem', color: '#9a7a6a', marginTop: 4 }}>
+              No contacts yet. Add the people your family will need to notify.
+            </p>
+          )}
+
+          {contacts.map(c => (
+            <div key={c.id} className="entry-card">
+              <div className="entry-card-row">
+                <div>
+                  <div className="entry-title">{c.name}</div>
+                  {c.relationship && <div className="entry-sub">{c.relationship}</div>}
+                  {c.email && <div className="entry-meta">{c.email}</div>}
+                  {c.phone && <div className="entry-meta">{c.phone}</div>}
+                  {c.notifyPhase && c.notifyPhase !== 'manual' && (
+                    <div style={{ fontSize: '0.75rem', color: '#c57b57', marginTop: 5, fontWeight: 600 }}>
+                      {NOTIFY_PHASES.find(p => p.value === c.notifyPhase)?.label}
+                    </div>
+                  )}
+                </div>
+                <div className="entry-actions" style={{ flexDirection: 'column', gap: 6 }}>
+                  <button onClick={() => openEditContact(c)} className="entry-link-btn">Edit</button>
+                  <button onClick={() => removeContact(c.id)} disabled={deleting === c.id} className="entry-link-btn danger">
+                    {deleting === c.id ? '...' : 'Remove'}
+                  </button>
+                </div>
+              </div>
             </div>
-          </div>
-        </div>
-      ))}
+          ))}
+        </section>
+      )}
 
       {/* Legacy contact form */}
       {showLegacyForm && (
@@ -353,5 +391,24 @@ export default function PeopleClient({
         </div>
       )}
     </>
+  );
+}
+
+function peopleIcon() {
+  return (
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#c57b57" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+      <circle cx="9" cy="7" r="4" />
+      <path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" />
+    </svg>
+  );
+}
+
+function mailIcon() {
+  return (
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#c57b57" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
+      <path d="m22 6-10 7L2 6" />
+    </svg>
   );
 }

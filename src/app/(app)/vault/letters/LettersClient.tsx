@@ -1,5 +1,6 @@
 'use client';
 
+import Link from 'next/link';
 import { useState } from 'react';
 
 export type Letter = {
@@ -73,45 +74,55 @@ export default function LettersClient({ initial }: { initial: Letter[] }) {
 
   return (
     <>
-      <h1 className="page-heading">Letters</h1>
-      <p className="page-sub">Write letters to the people you love. They&apos;ll be delivered to your legacy contact after activation — as private messages, not public posts.</p>
-
-      <button onClick={openAdd} className="add-btn">+ Write a letter</button>
-
-      {items.length === 0 && (
-        <div className="empty-state">
-          <div className="emoji">✉️</div>
-          <p>No letters yet. Write messages to the people you love — to be delivered after you&apos;re gone. To your partner, your kids, a best friend.</p>
-        </div>
-      )}
-
-      {items.map(item => (
-        <div key={item.id} className="entry-card">
-          <div className="entry-card-row">
-            <div style={{ flex: 1 }}>
-              <div className="entry-title">To: {item.recipientName}</div>
-              {item.recipientEmail ? (
-                <div className="entry-meta">{item.recipientEmail}</div>
-              ) : (
-                <div className="warn-note" style={{ marginTop: 6 }}>
-                  No email — this letter can&apos;t be delivered automatically. Add one so we can send it.
-                </div>
-              )}
-              <div className="entry-sub">{item.body.length > 140 ? item.body.slice(0, 140) + '…' : item.body}</div>
-              <div className="entry-meta" style={{ marginTop: 6 }}>
-                {item.releaseTiming === 'immediate' ? '🔓 Released immediately' : '⏳ Delayed release'}
-              </div>
-            </div>
-            <div className="entry-actions" style={{ flexDirection: 'column', gap: 6 }}>
-              <button onClick={() => setPreview(item)} className="entry-link-btn">Read</button>
-              <button onClick={() => openEdit(item)} className="entry-link-btn">Edit</button>
-              <button onClick={() => remove(item.id)} disabled={deleting === item.id} className="entry-link-btn danger">
-                {deleting === item.id ? '…' : 'Delete'}
-              </button>
-            </div>
+      <div className="designed-subpage">
+        <Link href="/remember" className="back-link">Back to Remember</Link>
+        <div className="portal-page-header">
+          <div className="portal-page-header-icon">{letterIcon()}</div>
+          <div>
+            <h1>Letters to loved ones</h1>
+            <p>Write now — each letter will be delivered privately after you pass. Recipients only need a link, no account required.</p>
           </div>
         </div>
-      ))}
+
+        <div className="portal-pad">
+          <button onClick={openAdd} className="add-btn">+ Write a letter</button>
+
+          {items.length === 0 && (
+            <div className="empty-state compact">
+              <div className="emoji">+</div>
+              <p>No letters yet. Write messages to the people you love — to be delivered after you&apos;re gone.</p>
+            </div>
+          )}
+
+          {items.map(item => (
+            <div key={item.id} className="entry-card">
+              <div className="entry-card-row">
+                <div style={{ flex: 1 }}>
+                  <div className="entry-title">To: {item.recipientName}</div>
+                  {item.recipientEmail ? (
+                    <div className="entry-meta">{item.recipientEmail}</div>
+                  ) : (
+                    <div className="warn-note" style={{ marginTop: 6 }}>
+                      No email — this letter can&apos;t be delivered automatically. Add one so we can send it.
+                    </div>
+                  )}
+                  <div className="entry-sub">{item.body.length > 140 ? item.body.slice(0, 140) + '...' : item.body}</div>
+                  <div className="entry-meta" style={{ marginTop: 6 }}>
+                    {item.releaseTiming === 'immediate' ? 'Released immediately' : 'Delayed release'}
+                  </div>
+                </div>
+                <div className="entry-actions" style={{ flexDirection: 'column', gap: 6 }}>
+                  <button onClick={() => setPreview(item)} className="entry-link-btn">Read</button>
+                  <button onClick={() => openEdit(item)} className="entry-link-btn">Edit</button>
+                  <button onClick={() => remove(item.id)} disabled={deleting === item.id} className="entry-link-btn danger">
+                    {deleting === item.id ? '...' : 'Delete'}
+                  </button>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
 
       {showForm && (
         <div className="sheet-overlay" onClick={e => { if (e.target === e.currentTarget) setShowForm(false); }}>
@@ -192,5 +203,14 @@ export default function LettersClient({ initial }: { initial: Letter[] }) {
         </div>
       )}
     </>
+  );
+}
+
+function letterIcon() {
+  return (
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#c57b57" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
+      <path d="m22 6-10 7L2 6" />
+    </svg>
   );
 }

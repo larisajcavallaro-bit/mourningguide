@@ -1,5 +1,6 @@
 'use client';
 
+import Link from 'next/link';
 import { useState, useRef } from 'react';
 import { upload } from '@vercel/blob/client';
 
@@ -81,50 +82,68 @@ export default function DocumentsClient({ initial }: { initial: Doc[] }) {
   }
 
   return (
-    <>
-      <h1 className="page-heading">Documents</h1>
-      <p className="page-sub">Store your will, trust, IDs, and other important papers. These are kept private — never shown on your public memorial page.</p>
-
-      <input ref={fileInputRef} type="file" accept="application/pdf,image/*" multiple onChange={onPickFiles} style={{ display: 'none' }} />
-      <button onClick={() => fileInputRef.current?.click()} disabled={uploading} className="add-btn" style={{ opacity: uploading ? 0.6 : 1 }}>
-        {uploading ? 'Uploading…' : '+ Add document'}
-      </button>
-      {uploadError && <p className="field-error">{uploadError}</p>}
-
-      {docs.length === 0 ? (
-        <div className="empty-state">
-          <div className="emoji">📄</div>
-          <p>No documents yet. Add your will, trust, IDs, or other important papers so your family knows where to find them.</p>
+    <div className="designed-subpage">
+      <Link href="/vault" className="back-link">Back to Personal</Link>
+      <div className="portal-page-header">
+        <div className="portal-page-header-icon">{documentIcon()}</div>
+        <div>
+          <h1>Documents</h1>
+          <p>Store your will, trust, IDs, and other important papers. These stay private and are never shown on your public memorial page.</p>
         </div>
-      ) : (
-        docs.map(doc => (
-          <div key={doc.id} className="entry-card">
-            <div className="entry-card-row">
-              <div style={{ flex: 1 }}>
-                <div className="entry-title">📄 {doc.fileName}</div>
-                <div className="field" style={{ marginTop: 10, marginBottom: 8 }}>
-                  <select value={doc.category ?? ''} onChange={e => saveMeta(doc.id, { category: e.target.value })}>
-                    <option value="">Uncategorized</option>
-                    {CATEGORIES.map(c => <option key={c.value} value={c.value}>{c.label}</option>)}
-                  </select>
+      </div>
+
+      <div className="portal-pad">
+        <input ref={fileInputRef} type="file" accept="application/pdf,image/*" multiple onChange={onPickFiles} style={{ display: 'none' }} />
+        <button onClick={() => fileInputRef.current?.click()} disabled={uploading} className="add-btn" style={{ opacity: uploading ? 0.6 : 1 }}>
+          {uploading ? 'Uploading...' : '+ Add document'}
+        </button>
+        {uploadError && <p className="field-error">{uploadError}</p>}
+
+        {docs.length === 0 ? (
+          <div className="empty-state compact">
+            <div className="emoji">+</div>
+            <p>No documents yet. Add your will, trust, IDs, or other important papers so your family knows where to find them.</p>
+          </div>
+        ) : (
+          docs.map(doc => (
+            <div key={doc.id} className="entry-card">
+              <div className="entry-card-row">
+                <div style={{ flex: 1 }}>
+                  <div className="entry-title">{doc.fileName}</div>
+                  <div className="field" style={{ marginTop: 10, marginBottom: 8 }}>
+                    <select value={doc.category ?? ''} onChange={e => saveMeta(doc.id, { category: e.target.value })}>
+                      <option value="">Uncategorized</option>
+                      {CATEGORIES.map(c => <option key={c.value} value={c.value}>{c.label}</option>)}
+                    </select>
+                  </div>
+                  <input
+                    defaultValue={doc.notes ?? ''}
+                    onBlur={e => saveMeta(doc.id, { notes: e.target.value })}
+                    placeholder="Add a note (e.g. where the original is kept)..."
+                    style={{ width: '100%', border: '1px solid rgba(145,104,82,0.2)', borderRadius: 9, padding: '8px 10px', fontSize: '0.82rem', color: '#2f241f', boxSizing: 'border-box' }}
+                  />
                 </div>
-                <input
-                  defaultValue={doc.notes ?? ''}
-                  onBlur={e => saveMeta(doc.id, { notes: e.target.value })}
-                  placeholder="Add a note (e.g. where the original is kept)…"
-                  style={{ width: '100%', border: '1px solid rgba(145,104,82,0.2)', borderRadius: 9, padding: '8px 10px', fontSize: '0.82rem', color: '#2f241f', boxSizing: 'border-box' }}
-                />
-              </div>
-              <div className="entry-actions" style={{ flexDirection: 'column', gap: 6 }}>
-                <button onClick={() => download(doc)} disabled={downloadingId === doc.id} className="entry-link-btn">
-                  {downloadingId === doc.id ? '…' : 'Download'}
-                </button>
-                <button onClick={() => remove(doc.id)} className="entry-link-btn danger">Delete</button>
+                <div className="entry-actions" style={{ flexDirection: 'column', gap: 6 }}>
+                  <button onClick={() => download(doc)} disabled={downloadingId === doc.id} className="entry-link-btn">
+                    {downloadingId === doc.id ? '...' : 'Download'}
+                  </button>
+                  <button onClick={() => remove(doc.id)} className="entry-link-btn danger">Delete</button>
+                </div>
               </div>
             </div>
-          </div>
-        ))
-      )}
-    </>
+          ))
+        )}
+      </div>
+    </div>
+  );
+}
+
+function documentIcon() {
+  return (
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#c57b57" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+      <path d="M14 2v6h6" />
+      <path d="M8 13h8M8 17h5" />
+    </svg>
   );
 }
