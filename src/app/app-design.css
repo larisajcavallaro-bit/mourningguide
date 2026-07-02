@@ -11,7 +11,7 @@
 }
 
 .app-shell {
-  width: min(calc(100% - 32px), 700px);
+  width: min(calc(100% - 32px), 1120px);
   display: flex; flex-direction: column;
   border: 1px solid rgba(52,38,31,0.14);
   border-radius: 22px; overflow: hidden;
@@ -41,7 +41,7 @@
 .nav-icon { width: 32px; height: 32px; border-radius: 50%; background: rgba(52,38,31,0.07); display: flex; align-items: center; justify-content: center; }
 .top-nav a.is-active .nav-icon { background: rgba(197,123,87,0.14); }
 
-.app-content { flex: 1; padding: 24px 24px 32px; }
+.app-content { flex: 1; padding: 30px 34px 40px; }
 
 .progress-card { background: rgba(255,255,255,0.78); border: 1px solid rgba(145,104,82,0.14); border-radius: 18px; padding: 20px 22px; margin-bottom: 20px; display: flex; align-items: center; gap: 20px; }
 .ring-wrap { flex-shrink: 0; }
@@ -135,6 +135,17 @@
   .top-nav a { font-size: 0.66rem; }
 }
 
+@media (min-width: 900px) {
+  .app-outer { padding-inline: 24px; }
+  .app-header { padding-inline: 34px; }
+  .top-nav { padding-inline: 18px; }
+}
+
+@media (max-width: 760px) {
+  .app-shell { width: min(calc(100% - 24px), 700px); }
+  .app-content { padding: 24px 20px 32px; }
+}
+
 /* ── Vault / form pages (finances, letters, wishes, people) ──────────────────
    Ported from prototype vault-detail.html / remember/letters.html */
 
@@ -216,6 +227,79 @@
 .delivery-sub { font-size: 0.77rem; color: #9a7a6a; margin-top: 2px; line-height: 1.4; }
 
 .warn-note { margin-top: 12px; padding: 10px 12px; border-radius: 9px; background: #fdf3ec; border: 1px solid rgba(197,123,87,0.3); font-size: 0.8rem; color: #a06a52; line-height: 1.5; }
+
+/* ── Designed planning detail pages ───────────────────────────────────────── */
+.planning-detail { margin: -8px -10px 0; }
+.back-link { display: inline-flex; align-items: center; gap: 7px; margin: 0 0 18px; font-size: 0.84rem; color: #9a7a6a; text-decoration: none; font-weight: 600; }
+.back-link:hover { color: #c57b57; }
+.area-header { display: flex; align-items: center; gap: 16px; padding: 22px 24px 18px; border: 1px solid rgba(145,104,82,0.12); border-radius: 18px; background: rgba(255,255,255,0.72); margin-bottom: 18px; }
+.area-header-icon { width: 52px; height: 52px; border-radius: 15px; background: rgba(197,123,87,0.12); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.area-header-title { font-family: var(--serif); font-size: 1.65rem; font-weight: 500; color: #2f241f; margin: 0 0 3px; line-height: 1.15; }
+.area-header-desc { font-size: 0.88rem; color: #7a5341; margin: 0; line-height: 1.5; }
+.instructions-box { background: rgba(197,123,87,0.06); border: 1px solid rgba(197,123,87,0.22); border-radius: 16px; padding: 16px 18px; margin-bottom: 14px; }
+.instructions-toggle { width: 100%; border: none; background: transparent; display: flex; align-items: center; justify-content: space-between; gap: 14px; cursor: pointer; padding: 0; text-align: left; font-family: inherit; }
+.instructions-toggle-left { display: flex; align-items: center; gap: 9px; flex-wrap: wrap; }
+.instructions-toggle-left strong { font-size: 0.9rem; font-weight: 700; color: #2f241f; }
+.instructions-toggle-left span:last-child { font-size: 0.78rem; color: #9a7a6a; }
+.instructions-alert { width: 18px; height: 18px; border-radius: 50%; background: #c57b57; color: #fff; display: inline-flex; align-items: center; justify-content: center; font-size: 0.78rem; font-weight: 800; }
+.instructions-toggle-chevron { color: #c57b57; transition: transform 0.2s; flex-shrink: 0; font-size: 1.1rem; }
+.instructions-toggle-chevron.open { transform: rotate(180deg); }
+.instructions-body { margin-top: 14px; }
+.instructions-step { display: flex; gap: 12px; margin-bottom: 12px; align-items: flex-start; }
+.step-num { width: 24px; height: 24px; border-radius: 50%; background: #c57b57; color: #fff; font-size: 0.72rem; font-weight: 800; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 2px; }
+.step-text { font-size: 0.86rem; color: #3d2e26; line-height: 1.55; margin: 0; }
+.docs-list { margin: 10px 0 0; padding: 0; list-style: none; }
+.docs-list li { display: flex; align-items: flex-start; gap: 8px; font-size: 0.84rem; color: #3d2e26; padding: 7px 0; border-bottom: 1px solid rgba(145,104,82,0.08); line-height: 1.45; }
+.docs-list li:last-child { border-bottom: none; }
+.docs-list li::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: #c57b57; flex-shrink: 0; margin-top: 6px; }
+.instructions-tip { background: rgba(255,255,255,0.7); border-left: 3px solid rgba(197,123,87,0.5); border-radius: 0 8px 8px 0; padding: 10px 12px; margin-top: 12px; font-size: 0.82rem; color: #5c3a28; line-height: 1.5; }
+.security-note { background: rgba(255,245,230,0.9); border: 1px solid rgba(197,123,87,0.25); border-radius: 14px; padding: 13px 15px; margin-bottom: 18px; display: flex; gap: 10px; align-items: flex-start; }
+.security-note svg { flex-shrink: 0; margin-top: 2px; width: 18px; height: 18px; }
+.security-note p { margin: 0; font-size: 0.8rem; color: #5c3a28; line-height: 1.55; }
+.security-note strong { font-weight: 700; color: #3d2e26; }
+.planning-detail-grid { display: grid; grid-template-columns: minmax(0, 1.06fr) minmax(300px, 0.94fr); gap: 20px; align-items: start; }
+.planning-detail-form, .designed-saved-section { background: rgba(255,255,255,0.72); border: 1px solid rgba(145,104,82,0.14); border-radius: 18px; padding: 22px; }
+.planning-detail-form h2 { font-size: 1.05rem; font-weight: 700; color: #2f241f; margin: 0 0 16px; }
+.field-hint.danger { color: #a83030; font-weight: 600; }
+.add-another-btn {
+  width: 100%; min-height: 44px; border-radius: 14px;
+  border: 1px solid rgba(200,109,73,0.4); cursor: pointer;
+  background: transparent; color: #c86945; font-family: inherit;
+  font-size: 0.88rem; font-weight: 600; margin-top: 10px;
+}
+.add-another-btn:hover { background: rgba(200,109,73,0.06); }
+.success-flash {
+  background: rgba(89,157,107,0.12); border: 1px solid rgba(89,157,107,0.3);
+  border-radius: 10px; padding: 10px 14px; font-size: 0.84rem;
+  color: #2e6b42; font-weight: 600; margin-bottom: 14px; display: none;
+}
+.success-flash.show { display: flex; }
+.saved-section h3 { font-size: 0.75rem; font-weight: 800; letter-spacing: 0.05em; text-transform: uppercase; color: #9a7a6a; margin: 0 0 14px; }
+.saved-pill { display: flex; align-items: flex-start; gap: 12px; padding: 14px; background: rgba(255,255,255,0.86); border: 1px solid rgba(145,104,82,0.16); border-radius: 14px; margin-bottom: 10px; }
+.pill-icon { width: 34px; height: 34px; border-radius: 50%; background: rgba(200,109,73,0.12); display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px; }
+.pill-icon svg { width: 16px; height: 16px; }
+.pill-main { flex: 1; min-width: 0; }
+.pill-name { font-weight: 700; font-size: 0.9rem; color: #2f241f; }
+.pill-meta { font-size: 0.78rem; color: #7a5341; margin-top: 3px; line-height: 1.45; }
+.pill-main p { font-size: 0.78rem; color: #9a7a6a; margin: 6px 0 0; line-height: 1.45; }
+.pill-actions { display: flex; flex-direction: column; align-items: flex-end; gap: 6px; margin-left: auto; }
+.pill-actions button { background: none; border: none; color: #c57b57; font-size: 0.75rem; cursor: pointer; padding: 2px 4px; font-weight: 700; }
+.pill-actions button:last-child { color: #b0402e; }
+.empty-state.compact { margin: 20px 0 4px; }
+.empty-state.compact .emoji { width: 42px; height: 42px; border-radius: 13px; display: flex; align-items: center; justify-content: center; margin: 0 auto 10px; background: rgba(197,123,87,0.1); color: #c57b57; font-weight: 900; font-size: 1.4rem; }
+.back-to-plan { display: block; text-align: center; margin: 20px 0 0; padding: 13px; font-size: 0.88rem; color: #c86945; font-weight: 700; text-decoration: none; border: 1px solid rgba(200,109,73,0.3); border-radius: 12px; }
+.back-to-plan:hover { background: rgba(200,109,73,0.05); }
+
+@media (max-width: 900px) {
+  .planning-detail-grid { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 620px) {
+  .planning-detail { margin: 0; }
+  .area-header { padding: 18px; align-items: flex-start; }
+  .area-header-title { font-size: 1.35rem; }
+  .planning-detail-form, .designed-saved-section { padding: 18px; }
+}
 
 /* ── Portal designer ─────────────────────────────────────────────────────── */
 .portal-designer-preview {
